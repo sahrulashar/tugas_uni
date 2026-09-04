@@ -1,0 +1,30 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sistem_erp_ci4
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: sistem_erp_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: kas_keluar
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: erp
+      MYSQL_PASSWORD: erp123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

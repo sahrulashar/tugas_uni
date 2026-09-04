@@ -1,27 +1,41 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
-# 1. Install sistem dependensi dan ekstensi PHP yang dibutuhkan CodeIgniter 4
+# Install dependency dan PHP extensions
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
-    zip \
     unzip \
-    git \
     && docker-php-ext-install \
-    intl \
     mysqli \
+    pdo \
     pdo_mysql \
+    intl \
     zip \
-    && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Atur DocumentRoot Apache ke folder public/ CodeIgniter 4
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Aktifkan Apache mod_rewrite
+RUN a2enmod rewrite
 
-# 3. Direktori kerja
+# Arahkan Apache ke folder public CodeIgniter
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/*.conf \
+    /etc/apache2/apache2.conf \
+    /etc/apache2/conf-available/*.conf
+
 WORKDIR /var/www/html
 
-# 4. Port yang diexpose oleh Apache
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy project
+COPY . /var/www/html
+
+# Install dependency
+RUN composer install --no-interaction --prefer-dist -vvv
+
+# Permission writable CodeIgniter
+RUN chown -R www-data:www-data /var/www/html/writable
+
 EXPOSE 80
