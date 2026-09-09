@@ -1,0 +1,136 @@
+================================================================================
+          PANDUAN INSTALASI & SETUP SISTEM ERP (CODEIGNITER 4)
+                  Repository: sahrulashar/tugas_uni
+       GitHub: https://github.com/sahrulashar/tugas_uni.git
+================================================================================
+
+Terima kasih telah menggunakan project ini. Dokumen ini berisi petunjuk lengkap
+langkah demi langkah untuk memasang dan menjalankan project pada komputer Anda.
+
+--------------------------------------------------------------------------------
+1. PRASYARAT SISTEM (REQUIREMENTS)
+--------------------------------------------------------------------------------
+Sebelum memulai, pastikan perangkat Anda sudah terpasang:
+1. PHP versi 8.2 atau lebih tinggi (disarankan 8.2.x).
+   - Ekstensi PHP yang wajib aktif: intl, mbstring, mysqli, json, curl.
+2. MySQL Server atau MariaDB (bisa via XAMPP, Laragon, atau MySQL standalone).
+3. Composer (Package manager PHP).
+4. Git (untuk clone dan pull kode).
+
+--------------------------------------------------------------------------------
+2. CARA MENGAMBIL (CLONE / PULL) PROJECT DARI GITHUB
+--------------------------------------------------------------------------------
+
+A. JIKA ANDA BARU PERTAMA KALI MENGAMBIL PROJECT (CLONE):
+   1. Buka Terminal / Command Prompt / Git Bash.
+   2. Pindah ke folder tempat Anda ingin menyimpan project, misalnya:
+      cd C:\xampp\htdocs
+      atau
+      cd Documents
+   3. Jalankan perintah clone:
+      git clone https://github.com/sahrulashar/tugas_uni.git
+   4. Masuk ke dalam folder project:
+      cd tugas_uni
+   5. Install library/dependencies PHP menggunakan Composer:
+      composer install
+
+B. JIKA ANDA SUDAH MEMILIKI PROJECT DAN INGIN UPDATE TERBARU (PULL):
+   1. Buka Terminal / CMD di dalam folder project Anda.
+   2. Pastikan tidak ada perubahan lokal yang bentrok, lalu jalankan:
+      git pull origin main
+   3. Update dependensi (jika ada pembaruan package):
+      composer install
+
+--------------------------------------------------------------------------------
+3. CARA MEMASANG DATABASE DI MYSQL SERVER
+--------------------------------------------------------------------------------
+File database telah disediakan di root folder project dengan nama:
+>> kas_keluar.sql <<
+
+Anda dapat memilih salah satu cara di bawah ini:
+
+CARA 1: MELALUI PHPMYADMIN (Paling Mudah)
+1. Buka browser dan akses phpMyAdmin (biasanya http://localhost/phpmyadmin).
+2. Di panel kiri, klik tombol "New" (Baru) untuk membuat database baru.
+3. Beri nama database:
+   kas_keluar
+   Pilih collation: utf8mb4_general_ci atau utf8mb4_unicode_ci, lalu klik "Create".
+4. Klik database "kas_keluar" yang baru dibuat tersebut di panel kiri.
+5. Klik tab "Import" di menu bagian atas.
+6. Pada bagian "File to import", klik tombol "Choose File" / "Browse" dan pilih file:
+   kas_keluar.sql (ada di dalam folder project ini).
+7. Gulir ke bawah dan klik tombol "Import" / "Go" / "Kirim".
+8. Tunggu hingga muncul notifikasi hijau tanda import berhasil.
+
+CARA 2: MELALUI TERMINAL / CMD / POWERSHELL
+1. Buka CMD / Terminal di folder project (tempat file kas_keluar.sql berada).
+2. Jalankan perintah berikut:
+   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS kas_keluar;"
+   (Tekan Enter, jika tidak memakai password langsung tekan Enter lagi)
+3. Import file database:
+   mysql -u root -p kas_keluar < kas_keluar.sql
+   (Jika menggunakan PowerShell Windows, gunakan:
+    Get-Content kas_keluar.sql | mysql -u root -p kas_keluar)
+
+--------------------------------------------------------------------------------
+4. KONFIGURASI FILE ENVIRONMENT (.env)
+--------------------------------------------------------------------------------
+1. Di dalam folder project, cari file bernama "env.example".
+2. Salin (copy) file tersebut dan ubah namanya menjadi ".env"
+   (atau copy file "env" jika ada).
+3. Buka file ".env" menggunakan teks editor (VS Code, Notepad, dll).
+4. Pastikan baris konfigurasi database sudah sesuai dengan MySQL Anda:
+
+   CI_ENVIRONMENT = development
+
+   app.baseURL = 'http://localhost:8080/'
+
+   database.default.hostname = localhost
+   database.default.database = kas_keluar
+   database.default.username = root
+   database.default.password = 
+   database.default.DBDriver = MySQLi
+   database.default.port = 3306
+
+   *Catatan:
+   - Jika MySQL Anda menggunakan password (misal 'root' atau lainnya),
+     isikan password tersebut pada database.default.password.
+   - Jika MySQL Anda tidak memakai password (default XAMPP), kosongkan saja.
+
+--------------------------------------------------------------------------------
+5. CARA MENJALANKAN APLIKASI
+--------------------------------------------------------------------------------
+1. Buka Terminal / CMD di dalam folder project ini.
+2. Jalankan server lokal CodeIgniter dengan perintah:
+   php spark serve
+3. Server lokal akan aktif dan menampilkan pesan:
+   CodeIgniter development server started on http://localhost:8080
+4. Buka browser (Chrome, Firefox, Edge, dll) dan akses alamat berikut:
+   
+   Halaman Utama COA (Chart of Accounts):
+   http://localhost:8080/kas_keluar/coa
+
+   Halaman Karyawan:
+   http://localhost:8080/kas_keluar/karyawan
+
+   Halaman Supplier:
+   http://localhost:8080/kas_keluar/supplier
+
+--------------------------------------------------------------------------------
+6. TROUBLESHOOTING (PEMECAHAN MASALAH)
+--------------------------------------------------------------------------------
+Q: Error "Extension 'intl' is required"
+A: Buka file php.ini Anda, cari baris ";extension=intl", hapus tanda titik koma (;)
+   di depannya menjadi "extension=intl", simpan file lalu restart Apache/PHP.
+
+Q: Error "Access denied for user 'root'@'localhost'"
+A: Periksa username dan password MySQL di file .env Anda. Pastikan password
+   sudah sesuai dengan kredensial MySQL yang terpasang di komputer Anda.
+
+Q: Error "Table 'kas_keluar.coa' doesn't exist"
+A: Anda belum mengimport file kas_keluar.sql ke database kas_keluar.
+   Ikuti langkah pada Bagian 3 dokumen ini.
+
+================================================================================
+Selamat mencoba! Jika ada kendala teknis, silakan hubungi tim pengembang.
+================================================================================

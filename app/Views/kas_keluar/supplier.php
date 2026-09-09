@@ -408,7 +408,7 @@ function SupplierPage() {
                 >
                   <option value="Semua">Semua Status</option>
                   <option value="Aktif">Aktif</option>
-                  <option value="Nonaktif">Nonaktif</option>
+                  <option value="Tidak Aktif">Tidak Aktif</option>
                 </select>
 
                 <div className="text-xs text-slate-400 ml-auto whitespace-nowrap">

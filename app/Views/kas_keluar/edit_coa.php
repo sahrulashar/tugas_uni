@@ -186,18 +186,11 @@ function EditCoaPage() {
   const flash = window.__FLASH__ || {};
   const csrf  = window.__CSRF__ || {};
   const [collapsed, setCollapsed] = useState(false);
-  const [tipeAkun, setTipeAkun] = useState(coa.tipe_akun || 'Aset');
+  const [isHeader, setIsHeader]   = useState(coa.is_header || 'D');
+  const [tipe, setTipe]           = useState(coa.tipe || '');
   const [saldoNormal, setSaldoNormal] = useState(coa.saldo_normal || 'Debit');
 
-  const handleTipeChange = (e) => {
-    const val = e.target.value;
-    setTipeAkun(val);
-    if (val === 'Aset' || val === 'Beban') {
-      setSaldoNormal('Debit');
-    } else {
-      setSaldoNormal('Kredit');
-    }
-  };
+  const isAktif = coa.is_off == 0;
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -241,7 +234,7 @@ function EditCoaPage() {
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <form action="/kas_keluar/update_coa" method="POST">
                 <input type="hidden" name={csrf.name} value={csrf.value} />
-                <input type="hidden" name="id_coa" defaultValue={coa.id_coa} />
+                <input type="hidden" name="id" defaultValue={coa.id} />
 
                 <div className="p-6 space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -272,23 +265,40 @@ function EditCoaPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        Tipe Akun <span className="text-red-500">*</span>
+                        Header / Detail <span className="text-red-500">*</span>
                       </label>
                       <select
-                        name="tipe_akun"
-                        value={tipeAkun}
-                        onChange={handleTipeChange}
+                        name="is_header"
+                        value={isHeader}
+                        onChange={(e) => setIsHeader(e.target.value)}
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer"
                       >
-                        <option value="Aset">Aset</option>
-                        <option value="Liabilitas">Liabilitas</option>
-                        <option value="Ekuitas">Ekuitas</option>
-                        <option value="Pendapatan">Pendapatan</option>
-                        <option value="Beban">Beban</option>
+                        <option value="D">Detail (D)</option>
+                        <option value="H">Header (H)</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        Tipe Akun
+                      </label>
+                      <input
+                        type="text"
+                        name="tipe"
+                        value={tipe}
+                        onChange={(e) => setTipe(e.target.value)}
+                        list="tipe-options"
+                        placeholder="kasbank / operasional / pendanaan"
+                        className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+                      />
+                      <datalist id="tipe-options">
+                        <option value="kasbank" />
+                        <option value="operasional" />
+                        <option value="pendanaan" />
+                      </datalist>
                     </div>
 
                     <div>
@@ -306,25 +316,13 @@ function EditCoaPage() {
                       </select>
                     </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Status Akun</label>
-                    <select
-                      name="status"
-                      defaultValue={coa.status || 'Aktif'}
-                      className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer"
-                    >
-                      <option value="Aktif">Aktif</option>
-                      <option value="Tidak Aktif">Tidak Aktif</option>
-                    </select>
-                  </div>
                 </div>
 
                 <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    {coa.status === 'Aktif' ? (
+                    {isAktif ? (
                       <a
-                        href={`/kas_keluar/hapus_coa/${coa.id_coa}`}
+                        href={`/kas_keluar/hapus_coa/${coa.id}`}
                         onClick={e => !confirm('Yakin ingin menonaktifkan akun ini?') && e.preventDefault()}
                         className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1.5"
                       >
@@ -332,14 +330,14 @@ function EditCoaPage() {
                       </a>
                     ) : (
                       <a
-                        href={`/kas_keluar/aktifkan_coa/${coa.id_coa}`}
+                        href={`/kas_keluar/aktifkan_coa/${coa.id}`}
                         className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center gap-1.5"
                       >
                         <Icon name="Power" size={15}/> Aktifkan
                       </a>
                     )}
                     <a
-                      href={`/kas_keluar/hapus_permanen_coa/${coa.id_coa}`}
+                      href={`/kas_keluar/hapus_permanen_coa/${coa.id}`}
                       onClick={e => !confirm('Yakin ingin menghapus akun ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()}
                       className="text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1.5"
                     >

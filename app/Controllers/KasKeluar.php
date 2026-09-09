@@ -13,9 +13,13 @@ class KasKeluar extends BaseController
         $this->coaModel = new CoaModel();
     }
 
+    // ═══════════════════════════════════════════
+    //  COA — CRUD
+    // ═══════════════════════════════════════════
+
     public function coa()
     {
-        $data['coa'] = $this->coaModel->getAll();
+        $data['coa']   = $this->coaModel->getAll();
         $data['stats'] = $this->coaModel->getTotalPerTipe();
 
         return view('kas_keluar/coa', $data);
@@ -32,14 +36,14 @@ class KasKeluar extends BaseController
             return redirect()->to('/kas_keluar/coa');
         }
 
-        $kodeCoa = trim($this->request->getPost('kode_coa'));
-        $namaCoa = trim($this->request->getPost('nama_coa'));
-        $tipeAkun = trim($this->request->getPost('tipe_akun'));
+        $kodeCoa    = trim($this->request->getPost('kode_coa'));
+        $namaCoa    = trim($this->request->getPost('nama_coa'));
         $saldoNormal = trim($this->request->getPost('saldo_normal'));
-        $status = trim($this->request->getPost('status'));
+        $isHeader   = trim($this->request->getPost('is_header')) ?: 'D';
+        $tipe       = trim($this->request->getPost('tipe'));
 
-        if ($kodeCoa === '' || $namaCoa === '' || $tipeAkun === '' || $saldoNormal === '') {
-            return redirect()->back()->with('error', 'Semua field wajib diisi.');
+        if ($kodeCoa === '' || $namaCoa === '' || $saldoNormal === '') {
+            return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
         }
 
         if ($this->coaModel->cekKode($kodeCoa)) {
@@ -47,11 +51,12 @@ class KasKeluar extends BaseController
         }
 
         $this->coaModel->insert([
-            'kode_coa' => $kodeCoa,
-            'nama_coa' => $namaCoa,
-            'tipe_akun' => $tipeAkun,
+            'kode_coa'    => $kodeCoa,
+            'nama_coa'    => $namaCoa,
             'saldo_normal' => $saldoNormal,
-            'status' => $status ?: 'Aktif',
+            'is_header'   => $isHeader,
+            'tipe'        => $tipe ?: null,
+            'is_off'      => 0,
         ]);
 
         return redirect()->to('/kas_keluar/coa')
@@ -80,20 +85,20 @@ class KasKeluar extends BaseController
             return redirect()->to('/kas_keluar/coa');
         }
 
-        $id = $this->request->getPost('id_coa');
+        $id = $this->request->getPost('id');
 
         if (!$id) {
             return redirect()->to('/kas_keluar/coa');
         }
 
-        $kodeCoa = trim($this->request->getPost('kode_coa'));
-        $namaCoa = trim($this->request->getPost('nama_coa'));
-        $tipeAkun = trim($this->request->getPost('tipe_akun'));
+        $kodeCoa    = trim($this->request->getPost('kode_coa'));
+        $namaCoa    = trim($this->request->getPost('nama_coa'));
         $saldoNormal = trim($this->request->getPost('saldo_normal'));
-        $status = trim($this->request->getPost('status'));
+        $isHeader   = trim($this->request->getPost('is_header')) ?: 'D';
+        $tipe       = trim($this->request->getPost('tipe'));
 
-        if ($kodeCoa === '' || $namaCoa === '' || $tipeAkun === '' || $saldoNormal === '') {
-            return redirect()->back()->with('error', 'Semua field wajib diisi.');
+        if ($kodeCoa === '' || $namaCoa === '' || $saldoNormal === '') {
+            return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
         }
 
         if ($this->coaModel->cekKode($kodeCoa, (int) $id)) {
@@ -101,11 +106,11 @@ class KasKeluar extends BaseController
         }
 
         $this->coaModel->update($id, [
-            'kode_coa' => $kodeCoa,
-            'nama_coa' => $namaCoa,
-            'tipe_akun' => $tipeAkun,
+            'kode_coa'    => $kodeCoa,
+            'nama_coa'    => $namaCoa,
             'saldo_normal' => $saldoNormal,
-            'status' => $status,
+            'is_header'   => $isHeader,
+            'tipe'        => $tipe ?: null,
         ]);
 
         return redirect()->to('/kas_keluar/coa')
@@ -176,10 +181,13 @@ class KasKeluar extends BaseController
             ->with('success', 'Akun COA berhasil dihapus permanen.');
     }
 
+    // ═══════════════════════════════════════════
+    //  SUPPLIER — CRUD
+    // ═══════════════════════════════════════════
+
     public function supplier()
     {
         $supplierModel = model('SupplierModel');
-
         $data['supplier'] = $supplierModel->findAll();
 
         return view('kas_keluar/supplier', $data);
@@ -200,8 +208,8 @@ class KasKeluar extends BaseController
 
         $kodeSupplier = trim($this->request->getPost('kode_supplier'));
         $namaSupplier = trim($this->request->getPost('nama_supplier'));
-        $alamat = trim($this->request->getPost('alamat'));
-        $status = trim($this->request->getPost('status'));
+        $alamat       = trim($this->request->getPost('alamat'));
+        $status       = trim($this->request->getPost('status'));
 
         if ($kodeSupplier === '' || $namaSupplier === '') {
             return redirect()->back()->with('error', 'Kode dan Nama Supplier wajib diisi.');
@@ -214,8 +222,8 @@ class KasKeluar extends BaseController
         $supplierModel->insert([
             'kode_supplier' => $kodeSupplier,
             'nama_supplier' => $namaSupplier,
-            'alamat' => $alamat,
-            'status' => $status ?: 'Aktif',
+            'alamat'        => $alamat,
+            'status'        => $status ?: 'Aktif',
         ]);
 
         return redirect()->to('/kas_keluar/supplier')
@@ -229,7 +237,7 @@ class KasKeluar extends BaseController
         }
 
         $supplierModel = model('SupplierModel');
-        $supplier = $supplierModel->find($id);
+        $supplier      = $supplierModel->find($id);
 
         if (!$supplier) {
             return redirect()->to('/kas_keluar/supplier')
@@ -255,8 +263,8 @@ class KasKeluar extends BaseController
 
         $kodeSupplier = trim($this->request->getPost('kode_supplier'));
         $namaSupplier = trim($this->request->getPost('nama_supplier'));
-        $alamat = trim($this->request->getPost('alamat'));
-        $status = trim($this->request->getPost('status'));
+        $alamat       = trim($this->request->getPost('alamat'));
+        $status       = trim($this->request->getPost('status'));
 
         if ($kodeSupplier === '' || $namaSupplier === '') {
             return redirect()->back()->with('error', 'Kode dan Nama Supplier wajib diisi.');
@@ -269,8 +277,8 @@ class KasKeluar extends BaseController
         $supplierModel->update($id, [
             'kode_supplier' => $kodeSupplier,
             'nama_supplier' => $namaSupplier,
-            'alamat' => $alamat,
-            'status' => $status,
+            'alamat'        => $alamat,
+            'status'        => $status,
         ]);
 
         return redirect()->to('/kas_keluar/supplier')
@@ -284,7 +292,7 @@ class KasKeluar extends BaseController
         }
 
         $supplierModel = model('SupplierModel');
-        $supplier = $supplierModel->find($id);
+        $supplier      = $supplierModel->find($id);
 
         if (!$supplier) {
             return redirect()->to('/kas_keluar/supplier')
@@ -371,10 +379,10 @@ class KasKeluar extends BaseController
 
         $karyawanModel = model('KaryawanModel');
 
-        $nip           = trim($this->request->getPost('nip'));
-        $namaKaryawan  = trim($this->request->getPost('nama_karyawan'));
-        $jabatan       = trim($this->request->getPost('jabatan'));
-        $status        = trim($this->request->getPost('status'));
+        $nip          = trim($this->request->getPost('nip'));
+        $namaKaryawan = trim($this->request->getPost('nama_karyawan'));
+        $jabatan      = trim($this->request->getPost('jabatan'));
+        $status       = trim($this->request->getPost('status'));
 
         if ($nip === '' || $namaKaryawan === '') {
             return redirect()->back()->with('error', 'NIP dan Nama Karyawan wajib diisi.');
@@ -515,5 +523,4 @@ class KasKeluar extends BaseController
         return redirect()->to('/kas_keluar/karyawan')
             ->with('success', 'Karyawan berhasil dihapus permanen.');
     }
-
 }

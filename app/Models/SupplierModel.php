@@ -16,8 +16,6 @@ class SupplierModel extends Model
         'status',
     ];
 
-    // Jika ingin otomatis menggunakan fitur timestamps dari CI4, 
-    // ubah jadi true (pastikan ada field created_at & updated_at di DB)
     protected $useTimestamps = false;
 
     /**
@@ -51,11 +49,11 @@ class SupplierModel extends Model
     }
 
     /**
-     * Soft-delete: hanya menonaktifkan, tidak menghapus permanen
+     * Soft-delete: set status = 'Tidak Aktif'
      */
     public function nonaktifkan(int $id): bool
     {
-        return $this->update($id, ['status' => 'Nonaktif']);
+        return $this->update($id, ['status' => 'Tidak Aktif']);
     }
 
     /**

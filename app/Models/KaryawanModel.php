@@ -39,11 +39,17 @@ class KaryawanModel extends Model
         return $builder->countAllResults() > 0;
     }
 
+    /**
+     * Soft-delete: set status = 'Tidak Aktif'
+     */
     public function nonaktifkan(int $id): bool
     {
-        return $this->update($id, ['status' => 'Nonaktif']);
+        return $this->update($id, ['status' => 'Tidak Aktif']);
     }
 
+    /**
+     * Aktifkan kembali
+     */
     public function aktifkan(int $id): bool
     {
         return $this->update($id, ['status' => 'Aktif']);
@@ -52,9 +58,13 @@ class KaryawanModel extends Model
     public function getTotalPerJabatan(): array
     {
         return $this->db->table($this->table)
-            ->select("jabatan, COUNT(*) AS total,
-                SUM(CASE WHEN status = 'Aktif' THEN 1 ELSE 0 END) AS aktif,
-                SUM(CASE WHEN status = 'Nonaktif' THEN 1 ELSE 0 END) AS tidak_aktif", false)
+            ->select(
+                "jabatan,
+                 COUNT(*) AS total,
+                 SUM(CASE WHEN status = 'Aktif' THEN 1 ELSE 0 END) AS aktif,
+                 SUM(CASE WHEN status = 'Tidak Aktif' THEN 1 ELSE 0 END) AS tidak_aktif",
+                false
+            )
             ->groupBy('jabatan')
             ->orderBy('jabatan', 'ASC')
             ->get()

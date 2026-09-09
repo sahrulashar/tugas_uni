@@ -284,7 +284,7 @@ function EditKaryawanPage() {
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer"
                       >
                         <option value="Aktif">Aktif</option>
-                        <option value="Nonaktif">Nonaktif</option>
+                        <option value="Tidak Aktif">Tidak Aktif</option>
                       </select>
                     </div>
                   </div>

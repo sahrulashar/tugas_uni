@@ -184,18 +184,9 @@ function TambahCoaPage() {
   const flash = window.__FLASH__ || {};
   const csrf  = window.__CSRF__ || {};
   const [collapsed, setCollapsed] = useState(false);
-  const [tipeAkun, setTipeAkun] = useState('Aset');
+  const [isHeader, setIsHeader]   = useState('D');
+  const [tipe, setTipe]           = useState('operasional');
   const [saldoNormal, setSaldoNormal] = useState('Debit');
-
-  const handleTipeChange = (e) => {
-    const val = e.target.value;
-    setTipeAkun(val);
-    if (val === 'Aset' || val === 'Beban') {
-      setSaldoNormal('Debit');
-    } else {
-      setSaldoNormal('Kredit');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -250,7 +241,7 @@ function TambahCoaPage() {
                         type="text"
                         name="kode_coa"
                         required
-                        placeholder="Contoh: 1111, 5102..."
+                        placeholder="Contoh: 1111, 2111..."
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none font-mono"
                       />
                       <p className="text-xs text-slate-400 mt-1">Gunakan kode unik untuk memudahkan pencatatan buku besar.</p>
@@ -264,29 +255,46 @@ function TambahCoaPage() {
                         type="text"
                         name="nama_coa"
                         required
-                        placeholder="Contoh: Kas Utama, Beban Listrik..."
+                        placeholder="Contoh: Kas Kecil, Utang Usaha..."
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        Tipe Akun <span className="text-red-500">*</span>
+                        Header / Detail <span className="text-red-500">*</span>
                       </label>
                       <select
-                        name="tipe_akun"
-                        value={tipeAkun}
-                        onChange={handleTipeChange}
+                        name="is_header"
+                        value={isHeader}
+                        onChange={(e) => setIsHeader(e.target.value)}
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer"
                       >
-                        <option value="Aset">Aset</option>
-                        <option value="Liabilitas">Liabilitas</option>
-                        <option value="Ekuitas">Ekuitas</option>
-                        <option value="Pendapatan">Pendapatan</option>
-                        <option value="Beban">Beban</option>
+                        <option value="D">Detail (D)</option>
+                        <option value="H">Header (H)</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        Tipe Akun
+                      </label>
+                      <input
+                        type="text"
+                        name="tipe"
+                        value={tipe}
+                        onChange={(e) => setTipe(e.target.value)}
+                        list="tipe-options"
+                        placeholder="kasbank / operasional / pendanaan"
+                        className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+                      />
+                      <datalist id="tipe-options">
+                        <option value="kasbank" />
+                        <option value="operasional" />
+                        <option value="pendanaan" />
+                      </datalist>
                     </div>
 
                     <div>
@@ -303,18 +311,6 @@ function TambahCoaPage() {
                         <option value="Kredit">Kredit</option>
                       </select>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Status Akun</label>
-                    <select
-                      name="status"
-                      defaultValue="Aktif"
-                      className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer"
-                    >
-                      <option value="Aktif">Aktif</option>
-                      <option value="Tidak Aktif">Tidak Aktif</option>
-                    </select>
                   </div>
                 </div>
 

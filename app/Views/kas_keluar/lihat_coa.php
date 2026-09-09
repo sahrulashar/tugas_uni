@@ -224,11 +224,9 @@ function DetailRow({ label, children, last = false }) {
 
 /* ── Tipe config ──────────────────────── */
 const TIPE_CONFIG = {
-  'Aset':        { bg:'bg-blue-50',   text:'text-blue-700',   border:'border-blue-200',   iconBg:'bg-blue-100',   icon:'text-blue-600',   iconName:'Landmark',    desc:'Sumber daya ekonomi yang dimiliki perusahaan' },
-  'Liabilitas':  { bg:'bg-red-50',    text:'text-red-700',    border:'border-red-200',    iconBg:'bg-red-100',    icon:'text-red-600',    iconName:'CreditCard',  desc:'Kewajiban atau hutang perusahaan kepada pihak lain' },
-  'Ekuitas':     { bg:'bg-purple-50', text:'text-purple-700', border:'border-purple-200', iconBg:'bg-purple-100', icon:'text-purple-600', iconName:'PiggyBank',   desc:'Hak kepemilikan pemegang saham atas aset perusahaan' },
-  'Pendapatan':  { bg:'bg-green-50',  text:'text-green-700',  border:'border-green-200',  iconBg:'bg-green-100',  icon:'text-green-600',  iconName:'TrendingUp',  desc:'Penghasilan dari kegiatan operasional utama perusahaan' },
-  'Beban':       { bg:'bg-orange-50', text:'text-orange-700', border:'border-orange-200', iconBg:'bg-orange-100', icon:'text-orange-600', iconName:'TrendingDown',desc:'Pengeluaran yang terjadi dalam proses menghasilkan pendapatan' },
+  'kasbank':     { bg:'bg-cyan-50',   text:'text-cyan-700',   border:'border-cyan-200',   iconBg:'bg-cyan-100',   icon:'text-cyan-600',   iconName:'Landmark',    desc:'Kas dan Rekening Bank' },
+  'operasional': { bg:'bg-amber-50',  text:'text-amber-700',  border:'border-amber-200',  iconBg:'bg-amber-100',  icon:'text-amber-600',  iconName:'Briefcase',   desc:'Akun aktivitas operasional perusahaan' },
+  'pendanaan':   { bg:'bg-violet-50', text:'text-violet-700', border:'border-violet-200', iconBg:'bg-violet-100', icon:'text-violet-600', iconName:'PiggyBank',   desc:'Akun modal dan aktivitas pendanaan' },
 };
 
 /* ── Main Page ────────────────────────── */
@@ -237,12 +235,12 @@ function LihatCoaPage() {
   const [collapsed, setCollapsed] = useState(false);
   const currentPath = '/kas_keluar/coa';
 
-  const tipeConf = TIPE_CONFIG[coa.tipe_akun] || {
+  const tipeConf = TIPE_CONFIG[coa.tipe] || {
     bg:'bg-slate-50', text:'text-slate-700', border:'border-slate-200',
-    iconBg:'bg-slate-100', icon:'text-slate-600', iconName:'BookOpen', desc:'Tipe akun lainnya',
+    iconBg:'bg-slate-100', icon:'text-slate-600', iconName:'BookOpen', desc:'Klasifikasi akun',
   };
 
-  const isAktif = coa.status === 'Aktif';
+  const isAktif = coa.is_off == 0;
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -276,7 +274,7 @@ function LihatCoaPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a href={`/kas_keluar/edit_coa/${coa.id_coa}`}
+                <a href={`/kas_keluar/edit_coa/${coa.id}`}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">
                   <Icon name="Pencil" size={15}/>
                   Edit
@@ -297,7 +295,10 @@ function LihatCoaPage() {
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
                     ${isAktif ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-slate-200 text-slate-600 border border-slate-300'}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${isAktif ? 'bg-green-500' : 'bg-slate-400'}`}></span>
-                    {coa.status}
+                    {isAktif ? 'Aktif' : 'Tidak Aktif'}
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    {coa.is_header === 'H' ? 'Header (H)' : 'Detail (D)'}
                   </span>
                 </div>
                 <h2 className={`text-2xl font-bold ${tipeConf.text}`}>{coa.nama_coa}</h2>
@@ -307,8 +308,8 @@ function LihatCoaPage() {
               {/* Quick info chips */}
               <div className="flex sm:flex-col gap-2 flex-wrap">
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
-                  <p className="text-xs text-slate-500 font-medium">Tipe Akun</p>
-                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe_akun}</p>
+                  <p className="text-xs text-slate-500 font-medium">Tipe</p>
+                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe || '—'}</p>
                 </div>
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
                   <p className="text-xs text-slate-500 font-medium">Saldo Normal</p>
@@ -333,7 +334,7 @@ function LihatCoaPage() {
                 <div className="px-6">
                   <DetailRow label="ID Akun">
                     <span className="font-mono text-slate-500 text-xs bg-slate-100 px-2 py-1 rounded">
-                      #{coa.id_coa}
+                      #{coa.id}
                     </span>
                   </DetailRow>
                   <DetailRow label="Kode COA">
@@ -344,10 +345,15 @@ function LihatCoaPage() {
                   <DetailRow label="Nama Akun">
                     <span className="font-semibold text-slate-800">{coa.nama_coa}</span>
                   </DetailRow>
-                  <DetailRow label="Tipe Akun">
+                  <DetailRow label="Kategori">
+                    <span className="font-medium text-slate-700">
+                      {coa.is_header === 'H' ? 'Header (H)' : 'Detail (D)'}
+                    </span>
+                  </DetailRow>
+                  <DetailRow label="Tipe">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${tipeConf.border} ${tipeConf.text} ${tipeConf.bg}`}>
                       <Icon name={tipeConf.iconName} size={12} className="mr-1.5"/>
-                      {coa.tipe_akun}
+                      {coa.tipe || '—'}
                     </span>
                   </DetailRow>
                   <DetailRow label="Saldo Normal">
@@ -363,61 +369,14 @@ function LihatCoaPage() {
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
                       ${isAktif ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${isAktif ? 'bg-green-500' : 'bg-slate-400'}`}></span>
-                      {coa.status}
+                      {isAktif ? 'Aktif' : 'Tidak Aktif'}
                     </span>
                   </DetailRow>
                 </div>
               </div>
 
-              {/* Right: Aturan akuntansi */}
+              {/* Right: Actions */}
               <div className="space-y-4">
-
-                {/* Aturan debit/kredit */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                  <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                    <Icon name="BookMarked" size={16} className="text-brand-600"/>
-                    <h3 className="font-semibold text-slate-800 text-sm">Aturan Akuntansi</h3>
-                  </div>
-                  <div className="p-5 space-y-3">
-                    {/* Debit */}
-                    <div className={`rounded-xl p-3 border ${coa.saldo_normal === 'Debit' ? 'bg-blue-50 border-blue-200' : 'bg-slate-50 border-slate-200'}`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-xs font-semibold flex items-center gap-1
-                          ${coa.saldo_normal === 'Debit' ? 'text-blue-700' : 'text-slate-500'}`}>
-                          <Icon name="ArrowUpRight" size={12}/>
-                          DEBIT
-                        </span>
-                        {coa.saldo_normal === 'Debit' && (
-                          <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded-full">NORMAL</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-600">
-                        {coa.tipe_akun === 'Aset' || coa.tipe_akun === 'Beban'
-                          ? '↑ Menambah saldo akun'
-                          : '↓ Mengurangi saldo akun'}
-                      </p>
-                    </div>
-                    {/* Kredit */}
-                    <div className={`rounded-xl p-3 border ${coa.saldo_normal === 'Kredit' ? 'bg-pink-50 border-pink-200' : 'bg-slate-50 border-slate-200'}`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-xs font-semibold flex items-center gap-1
-                          ${coa.saldo_normal === 'Kredit' ? 'text-pink-700' : 'text-slate-500'}`}>
-                          <Icon name="ArrowDownRight" size={12}/>
-                          KREDIT
-                        </span>
-                        {coa.saldo_normal === 'Kredit' && (
-                          <span className="text-[10px] font-bold text-pink-700 bg-pink-100 px-1.5 py-0.5 rounded-full">NORMAL</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-600">
-                        {coa.tipe_akun === 'Liabilitas' || coa.tipe_akun === 'Ekuitas' || coa.tipe_akun === 'Pendapatan'
-                          ? '↑ Menambah saldo akun'
-                          : '↓ Mengurangi saldo akun'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Quick Actions */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                   <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
@@ -425,7 +384,7 @@ function LihatCoaPage() {
                     <h3 className="font-semibold text-slate-800 text-sm">Aksi Cepat</h3>
                   </div>
                   <div className="p-3 space-y-2">
-                    <a href={`/kas_keluar/edit_coa/${coa.id_coa}`}
+                    <a href={`/kas_keluar/edit_coa/${coa.id}`}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
                       <span className="p-1 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100">
                         <Icon name="Pencil" size={14}/>
@@ -434,7 +393,7 @@ function LihatCoaPage() {
                     </a>
 
                     {isAktif ? (
-                      <a href={`/kas_keluar/hapus_coa/${coa.id_coa}`}
+                      <a href={`/kas_keluar/hapus_coa/${coa.id}`}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group"
                         onClick={(e) => { if(!confirm('Nonaktifkan akun ini?')) e.preventDefault(); }}>
                         <span className="p-1 rounded-lg bg-amber-50 text-amber-500 group-hover:bg-amber-100">
@@ -443,7 +402,7 @@ function LihatCoaPage() {
                         Nonaktifkan Akun
                       </a>
                     ) : (
-                      <a href={`/kas_keluar/aktifkan_coa/${coa.id_coa}`}
+                      <a href={`/kas_keluar/aktifkan_coa/${coa.id}`}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-colors group">
                         <span className="p-1 rounded-lg bg-green-50 text-green-600 group-hover:bg-green-100">
                           <Icon name="Power" size={14}/>
@@ -452,7 +411,7 @@ function LihatCoaPage() {
                       </a>
                     )}
 
-                    <a href={`/kas_keluar/hapus_permanen_coa/${coa.id_coa}`}
+                    <a href={`/kas_keluar/hapus_permanen_coa/${coa.id}`}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors group"
                       onClick={(e) => { if(!confirm('Hapus akun COA ini secara permanen? Data tidak dapat dikembalikan!')) e.preventDefault(); }}>
                       <span className="p-1 rounded-lg bg-red-50 text-red-500 group-hover:bg-red-100">
