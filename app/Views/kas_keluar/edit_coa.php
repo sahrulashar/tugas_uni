@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
@@ -88,6 +88,9 @@ const NAV = [
     { label:'Neraca',    icon:'Scale',      href:'#' },
     { label:'Laba Rugi', icon:'TrendingUp', href:'#' },
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
+  ]},
+  { label:'Aktivitas',  icon:'ClipboardList', children:[
+    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];

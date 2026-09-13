@@ -121,6 +121,13 @@ const navItems = [
     ],
   },
   {
+    label: 'Aktivitas',
+    icon: 'ClipboardList',
+    children: [
+      { label: 'Rencana Beli',      icon: 'ShoppingCart', href: '/aktivitas/aktivitas1' },
+    ],
+  },
+  {
     label: 'Laporan',
     icon: 'BarChart3',
     children: [

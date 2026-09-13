@@ -37,3 +37,14 @@ $routes->group('kas_keluar', function ($routes) {
     $routes->get('aktifkan_karyawan/(:num)', 'KasKeluar::aktifkan_karyawan/$1');
     $routes->get('hapus_permanen_karyawan/(:num)', 'KasKeluar::hapus_permanen_karyawan/$1');
 });
+
+$routes->group('aktivitas', function ($routes) {
+    // ── Aktivitas 1: Rencana Beli ──────────────────────────────────
+    $routes->get('aktivitas1', 'Aktivitas\Aktivitas1::index');
+    $routes->get('aktivitas1/tambah', 'Aktivitas\Aktivitas1::tambah');
+    $routes->post('aktivitas1/simpan', 'Aktivitas\Aktivitas1::simpan');
+    $routes->get('aktivitas1/lihat/(:num)', 'Aktivitas\Aktivitas1::lihat/$1');
+    $routes->get('aktivitas1/edit/(:num)', 'Aktivitas\Aktivitas1::edit/$1');
+    $routes->post('aktivitas1/update', 'Aktivitas\Aktivitas1::update');
+    $routes->get('aktivitas1/hapus/(:num)', 'Aktivitas\Aktivitas1::hapus/$1');
+});

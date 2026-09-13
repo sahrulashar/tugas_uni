@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Karyawan — FinanceOS</title>
+  <title>Rencana Beli — FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -45,13 +45,12 @@
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
 <script>
-  window.__KARYAWAN__ = <?= json_encode($karyawan ?? []) ?>;
-  window.__STATS__    = <?= json_encode($stats ?? []) ?>;
-  window.__FLASH__ = {
+  window.__RBELI__  = <?= json_encode($rbeli ?? []) ?>;
+  window.__FLASH__  = {
     success: "<?= addslashes(session()->getFlashdata('success') ?? '') ?>",
     error:   "<?= addslashes(session()->getFlashdata('error')   ?? '') ?>"
   };
-  window.__CSRF__ = {
+  window.__CSRF__   = {
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>"
   };
@@ -62,6 +61,7 @@
 <script type="text/babel">
 const { useState, useEffect, useRef, useMemo } = React;
 
+/* ── Icon helper ── */
 function Icon({ name, size = 18, className = '' }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -76,6 +76,7 @@ function Icon({ name, size = 18, className = '' }) {
   return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
 }
 
+/* ── Navigation ── */
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
@@ -87,13 +88,13 @@ const NAV = [
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
     { label:'Piutang',    icon:'FilePlus', href:'#' },
   ]},
+  { label:'Aktivitas',  icon:'ClipboardList', children:[
+    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+  ]},
   { label:'Laporan',    icon:'BarChart3', children:[
     { label:'Neraca',    icon:'Scale',      href:'#' },
     { label:'Laba Rugi', icon:'TrendingUp', href:'#' },
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
-  ]},
-  { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -103,17 +104,15 @@ function NavItem({ item, currentPath }) {
   const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
   const [open, setOpen] = useState(isParentActive);
 
-  if (!hasChildren) {
-    return (
-      <li>
-        <a href={item.href}
-          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-            ${currentPath === item.href ? 'text-white bg-brand-600' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-          <Icon name={item.icon} size={16}/>{item.label}
-        </a>
-      </li>
-    );
-  }
+  if (!hasChildren) return (
+    <li>
+      <a href={item.href}
+        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+          ${currentPath === item.href ? 'text-white bg-brand-600' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+        <Icon name={item.icon} size={16}/>{item.label}
+      </a>
+    </li>
+  );
 
   return (
     <li>
@@ -159,8 +158,7 @@ function Sidebar({ collapsed, currentPath }) {
         <ul className="space-y-0.5">
           {NAV.map(item => collapsed ? (
             <li key={item.label} title={item.label}>
-              <a href={item.href || '#'}
-                className="flex items-center justify-center w-full py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+              <a href={item.href || '#'} className="flex items-center justify-center w-full py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                 <Icon name={item.icon} size={18}/>
               </a>
             </li>
@@ -187,6 +185,7 @@ function Sidebar({ collapsed, currentPath }) {
   );
 }
 
+/* ── Toast ── */
 function Toast({ flash, onClose }) {
   useEffect(() => {
     if (flash.success || flash.error) {
@@ -194,62 +193,21 @@ function Toast({ flash, onClose }) {
       return () => clearTimeout(t);
     }
   }, [flash]);
-
   if (!flash.success && !flash.error) return null;
-  const isSuccess = !!flash.success;
-
+  const ok = !!flash.success;
   return (
     <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-xl text-sm font-medium slide-down
-      ${isSuccess ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
-      <Icon name={isSuccess ? 'CheckCircle' : 'XCircle'} size={18}/>
+      ${ok ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+      <Icon name={ok ? 'CheckCircle' : 'XCircle'} size={18}/>
       <span>{flash.success || flash.error}</span>
-      <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
-        <Icon name="X" size={15}/>
-      </button>
+      <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100"><Icon name="X" size={15}/></button>
     </div>
   );
 }
 
-function ConfirmModal({ item, onCancel }) {
-  if (!item) return null;
-  const isAktif = item.status === 'Aktif';
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md fade-in">
-        <div className="p-6">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${isAktif ? 'bg-amber-100' : 'bg-green-100'}`}>
-            <Icon name={isAktif ? 'AlertTriangle' : 'CheckCircle'} size={22} className={isAktif ? 'text-amber-600' : 'text-green-600'}/>
-          </div>
-          <h3 className="text-lg font-semibold text-slate-800">
-            {isAktif ? 'Nonaktifkan Karyawan?' : 'Aktifkan Karyawan?'}
-          </h3>
-          <p className="text-sm text-slate-500 mt-2">
-            {isAktif
-              ? <>Karyawan <strong>{item.nama_karyawan} ({item.nip})</strong> akan dinonaktifkan dari sistem. Data masih tersimpan dan dapat diaktifkan kembali kapan saja.</>
-              : <>Karyawan <strong>{item.nama_karyawan} ({item.nip})</strong> akan diaktifkan kembali ke sistem.</>
-            }
-          </p>
-        </div>
-        <div className="flex gap-3 px-6 pb-6">
-          <button onClick={onCancel} className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
-            Batal
-          </button>
-          <a
-            href={isAktif ? `/kas_keluar/hapus_karyawan/${item.id_karyawan}` : `/kas_keluar/aktifkan_karyawan/${item.id_karyawan}`}
-            className={`flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors ${isAktif ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'}`}
-          >
-            {isAktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/* ── Confirm Hapus Modal ── */
 function DeleteModal({ item, onCancel }) {
   if (!item) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md fade-in">
@@ -257,22 +215,18 @@ function DeleteModal({ item, onCancel }) {
           <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-100">
             <Icon name="Trash2" size={22} className="text-red-600"/>
           </div>
-          <h3 className="text-lg font-semibold text-slate-800">
-            Hapus Karyawan Permanen?
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-800">Hapus Rencana Beli?</h3>
           <p className="text-sm text-slate-500 mt-2">
-            Data karyawan <strong>{item.nama_karyawan} ({item.nip})</strong> akan dihapus permanen dari basis data. Tindakan ini tidak dapat dibatalkan.
+            Data rencana beli <strong>{item.no_rbeli}</strong> beserta seluruh detail fakturnya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
           </p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
           <button onClick={onCancel} className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a
-            href={`/kas_keluar/hapus_permanen_karyawan/${item.id_karyawan}`}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm"
-          >
-            Ya, Hapus Permanen
+          <a href={`/aktivitas/aktivitas1/hapus/${item.id}`}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm">
+            Ya, Hapus
           </a>
         </div>
       </div>
@@ -280,43 +234,44 @@ function DeleteModal({ item, onCancel }) {
   );
 }
 
-function KaryawanPage() {
-  const rawKaryawan = window.__KARYAWAN__ || [];
-  const rawStats    = window.__STATS__ || [];
-  const flash       = window.__FLASH__ || {};
+/* ── Format currency ── */
+function formatRp(val) {
+  return 'Rp ' + Number(val).toLocaleString('id-ID');
+}
 
-  const [collapsed, setCollapsed]       = useState(false);
-  const [search, setSearch]             = useState('');
-  const [filterJabatan, setFilterJabatan] = useState('Semua');
-  const [filterStatus, setFilterStatus]   = useState('Semua');
-  const [confirmItem, setConfirmItem]   = useState(null);
-  const [deleteItem, setDeleteItem]     = useState(null);
-  const [showFlash, setShowFlash]       = useState(true);
+/* ── Main Page ── */
+function RencanaBeli() {
+  const data      = window.__RBELI__ || [];
+  const flash     = window.__FLASH__ || {};
+  const [collapsed, setCollapsed] = useState(false);
+  const [search, setSearch]       = useState('');
+  const [deleteItem, setDeleteItem] = useState(null);
+  const [showFlash, setShowFlash]   = useState(true);
 
-  const currentPath = '/kas_keluar/karyawan';
+  const currentPath = '/aktivitas/aktivitas1';
 
-  const listJabatan = useMemo(() => {
-    const list = [...new Set(rawKaryawan.map(r => r.jabatan || 'Lainnya'))];
-    return ['Semua', ...list];
-  }, [rawKaryawan]);
+  const stats = useMemo(() => ({
+    total    : data.length,
+    bulanIni : data.filter(r => r.tgl && r.tgl.startsWith(new Date().toISOString().slice(0,7))).length,
+    totalNilai: 0, // placeholder — dihitung di server jika perlu
+  }), [data]);
 
   const filtered = useMemo(() => {
-    return rawKaryawan.filter(row => {
-      const q = search.toLowerCase();
-      const matchSearch = search === '' ||
-        (row.nip && row.nip.toLowerCase().includes(q)) ||
-        (row.nama_karyawan && row.nama_karyawan.toLowerCase().includes(q));
-      const matchJabatan = filterJabatan === 'Semua' || (row.jabatan || 'Lainnya') === filterJabatan;
-      const matchStatus  = filterStatus === 'Semua'  || row.status === filterStatus;
-      return matchSearch && matchJabatan && matchStatus;
-    });
-  }, [rawKaryawan, search, filterJabatan, filterStatus]);
+    const q = search.toLowerCase();
+    return data.filter(r =>
+      search === '' ||
+      (r.no_rbeli && r.no_rbeli.toLowerCase().includes(q)) ||
+      (r.nama_supplier && r.nama_supplier.toLowerCase().includes(q)) ||
+      (r.kete && r.kete.toLowerCase().includes(q))
+    );
+  }, [data, search]);
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath={currentPath} />
+      <Sidebar collapsed={collapsed} currentPath={currentPath}/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Topbar */}
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
           <div className="flex items-center gap-3">
             <button onClick={() => setCollapsed(c => !c)} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
@@ -325,7 +280,9 @@ function KaryawanPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <span className="font-semibold text-slate-800">Karyawan</span>
+              <span className="text-slate-500">Aktivitas</span>
+              <Icon name="ChevronRight" size={13} className="text-slate-400"/>
+              <span className="font-semibold text-slate-800">Rencana Beli</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -333,54 +290,55 @@ function KaryawanPage() {
               <Icon name="Printer" size={15}/>
               <span className="hidden sm:inline">Cetak</span>
             </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
-              <Icon name="Download" size={15}/>
-              <span className="hidden sm:inline">Export</span>
-            </button>
-            <a href="/kas_keluar/tambah_karyawan" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
+            <a href="/aktivitas/aktivitas1/tambah"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
               <Icon name="Plus" size={15}/>
-              Tambah Karyawan
+              Tambah
             </a>
           </div>
         </header>
 
         <main className="pt-16 min-h-screen">
           <div className="p-6 space-y-6 fade-in">
-            {/* Header */}
+
+            {/* Page Title */}
             <div>
               <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <Icon name="Users" size={20} className="text-brand-600"/> Data Karyawan
+                <Icon name="ShoppingCart" size={20} className="text-brand-600"/> Rencana Beli
               </h1>
-              <p className="text-sm text-slate-500 mt-0.5">Kelola identitas, jabatan, dan status kepegawaian</p>
+              <p className="text-sm text-slate-500 mt-0.5">Kelola dokumen rencana pembelian dari supplier</p>
             </div>
 
-            {/* Stats Cards */}
-            {rawStats.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {rawStats.map(s => (
-                  <div key={s.jabatan} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-                    <div className="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center flex-shrink-0">
-                      <Icon name="Briefcase" size={19}/>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{s.jabatan || 'Lainnya'}</p>
-                      <p className="text-xl font-bold text-slate-800 mt-0.5">{s.total} <span className="text-xs font-normal text-slate-400">orang</span></p>
-                      <p className="text-xs text-green-600 font-medium mt-0.5">{s.aktif} aktif</p>
-                    </div>
-                  </div>
-                ))}
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center flex-shrink-0">
+                  <Icon name="ClipboardList" size={20}/>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Rencana Beli</p>
+                  <p className="text-2xl font-bold text-slate-800 mt-0.5">{stats.total} <span className="text-xs font-normal text-slate-400">dokumen</span></p>
+                </div>
               </div>
-            )}
+              <div className="bg-white p-4 rounded-xl border border-green-100 shadow-sm flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                  <Icon name="CalendarDays" size={20}/>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Bulan Ini</p>
+                  <p className="text-2xl font-bold text-green-700 mt-0.5">{stats.bulanIni} <span className="text-xs font-normal text-slate-400">dokumen</span></p>
+                </div>
+              </div>
+            </div>
 
-            {/* Table Area */}
+            {/* Table */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-              {/* Toolbar */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 flex-1 max-w-sm">
                   <Icon name="Search" size={14} className="text-slate-400 flex-shrink-0"/>
                   <input
                     type="text"
-                    placeholder="Cari NIP atau nama karyawan..."
+                    placeholder="Cari no. rencana, supplier, keterangan..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none w-full"
@@ -391,46 +349,20 @@ function KaryawanPage() {
                     </button>
                   )}
                 </div>
-
-                <select
-                  value={filterStatus}
-                  onChange={e => setFilterStatus(e.target.value)}
-                  className="text-sm border border-slate-200 rounded-lg px-3 py-2 text-slate-700 bg-white outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
-                >
-                  <option value="Semua">Semua Status</option>
-                  <option value="Aktif">Aktif</option>
-                  <option value="Tidak Aktif">Tidak Aktif</option>
-                </select>
-
                 <div className="text-xs text-slate-400 ml-auto whitespace-nowrap">
-                  <span className="font-semibold text-slate-700">{filtered.length}</span> dari {rawKaryawan.length} pegawai
+                  <span className="font-semibold text-slate-700">{filtered.length}</span> dari {data.length} dokumen
                 </div>
               </div>
 
-              {/* Jabatan Tabs */}
-              <div className="flex items-center gap-1 px-5 py-2 border-b border-slate-100 overflow-x-auto">
-                {listJabatan.map(jab => (
-                  <button
-                    key={jab}
-                    onClick={() => setFilterJabatan(jab)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors
-                      ${filterJabatan === jab ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}
-                  >
-                    {jab}
-                  </button>
-                ))}
-              </div>
-
-              {/* Table */}
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-10">#</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">NIP</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Nama Karyawan</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Jabatan</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">No. Rencana Beli</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Tanggal</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Supplier</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Keterangan</th>
                       <th className="px-5 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">Aksi</th>
                     </tr>
                   </thead>
@@ -439,49 +371,37 @@ function KaryawanPage() {
                       <tr>
                         <td colSpan="6" className="py-14 text-center text-slate-500">
                           <Icon name="SearchX" size={36} className="text-slate-300 mx-auto mb-2"/>
-                          <p className="font-medium">Tidak ada data karyawan ditemukan.</p>
+                          <p className="font-medium">Tidak ada data rencana beli ditemukan.</p>
+                          <a href="/aktivitas/aktivitas1/tambah" className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors">
+                            <Icon name="Plus" size={14}/> Tambah Sekarang
+                          </a>
                         </td>
                       </tr>
                     ) : filtered.map((row, i) => (
-                      <tr key={row.id_karyawan} className={`hover:bg-slate-50 transition-colors ${row.status !== 'Aktif' ? 'opacity-60' : ''}`}>
+                      <tr key={row.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-5 py-3.5 text-slate-400 text-xs">{i + 1}</td>
                         <td className="px-5 py-3.5">
                           <code className="font-mono text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded">
-                            {row.nip}
+                            {row.no_rbeli}
                           </code>
                         </td>
-                        <td className="px-5 py-3.5 font-medium text-slate-800">{row.nama_karyawan}</td>
                         <td className="px-5 py-3.5 text-slate-600">
-                          <span className="px-2.5 py-1 bg-slate-100 rounded-md text-xs font-medium text-slate-700">
-                            {row.jabatan || '-'}
-                          </span>
+                          {new Date(row.tgl).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}
                         </td>
-                        <td className="px-5 py-3.5">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${row.status === 'Aktif' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${row.status === 'Aktif' ? 'bg-green-500' : 'bg-slate-400'}`}></span>
-                            {row.status}
-                          </span>
-                        </td>
+                        <td className="px-5 py-3.5 font-medium text-slate-800">{row.nama_supplier || '-'}</td>
+                        <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">{row.kete || '-'}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-center gap-1">
-                            <a href={`/kas_keluar/lihat_karyawan/${row.id_karyawan}`} title="Detail" className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                            <a href={`/aktivitas/aktivitas1/lihat/${row.id}`} title="Detail"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                               <Icon name="Eye" size={15}/>
                             </a>
-                            <a href={`/kas_keluar/edit_karyawan/${row.id_karyawan}`} title="Edit" className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                            <a href={`/aktivitas/aktivitas1/edit/${row.id}`} title="Edit"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                               <Icon name="Pencil" size={15}/>
                             </a>
-                            <button
-                              onClick={() => setConfirmItem(row)}
-                              title={row.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
-                              className={`p-1.5 rounded-lg transition-colors ${row.status === 'Aktif' ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-slate-400 hover:text-green-600 hover:bg-green-50'}`}
-                            >
-                              <Icon name={row.status === 'Aktif' ? 'PowerOff' : 'Power'} size={15}/>
-                            </button>
-                            <button
-                              onClick={() => setDeleteItem(row)}
-                              title="Hapus Permanen"
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                            >
+                            <button onClick={() => setDeleteItem(row)} title="Hapus"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
                               <Icon name="Trash2" size={15}/>
                             </button>
                           </div>
@@ -494,23 +414,23 @@ function KaryawanPage() {
 
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                  <span>Menampilkan {filtered.length} karyawan</span>
+                  <span>Menampilkan {filtered.length} rencana beli</span>
                   <span>FinanceOS © 2026</span>
                 </div>
               )}
             </div>
+
           </div>
         </main>
       </div>
 
-      <ConfirmModal item={confirmItem} onCancel={() => setConfirmItem(null)} />
-      <DeleteModal item={deleteItem} onCancel={() => setDeleteItem(null)} />
-      {showFlash && <Toast flash={flash} onClose={() => setShowFlash(false)} />}
+      <DeleteModal item={deleteItem} onCancel={() => setDeleteItem(null)}/>
+      {showFlash && <Toast flash={flash} onClose={() => setShowFlash(false)}/>}
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<KaryawanPage />);
+ReactDOM.createRoot(document.getElementById('root')).render(<RencanaBeli/>);
 </script>
 </body>
 </html>
