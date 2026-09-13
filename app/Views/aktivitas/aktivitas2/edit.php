@@ -203,7 +203,16 @@ function EditPage() {
 
   const addRow    = () => setRows(r => [...r, { id_rbeli_d:'', nilai:'', id_coa:'', id_coa_kb:'' }]);
   const removeRow = (i) => setRows(r => r.length > 1 ? r.filter((_, idx) => idx !== i) : r);
-  const updateRow = (i, field, val) => setRows(r => r.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
+  const updateRow = (i, updates) => setRows(r => r.map((row, idx) => idx === i ? { ...row, ...updates } : row));
+
+  // Auto-fill nilai saat referensi rencana beli dipilih
+  const onChangeRbeliD = (i, val) => {
+    const selected = rbeliD.find(r => String(r.id) === val);
+    updateRow(i, {
+      id_rbeli_d: val,
+      nilai: selected ? String(selected.nilai) : '',
+    });
+  };
 
   const totalNilai = rows.reduce((sum, r) => sum + (parseFloat(r.nilai) || 0), 0);
 
@@ -322,7 +331,7 @@ function EditPage() {
                           <td className="px-3 py-3">
                             <select name="id_rbeli_d[]"
                               value={row.id_rbeli_d}
-                              onChange={e => updateRow(i, 'id_rbeli_d', e.target.value)}
+                              onChange={e => onChangeRbeliD(i, e.target.value)}
                               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
                               <option value="">— Tanpa Ref —</option>
                               {rbeliD.map(r => (
@@ -335,7 +344,7 @@ function EditPage() {
                           <td className="px-3 py-3">
                             <select name="id_coa[]"
                               value={row.id_coa}
-                              onChange={e => updateRow(i, 'id_coa', e.target.value)}
+                              onChange={e => updateRow(i, { id_coa: e.target.value })}
                               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
                               <option value="">— Pilih COA —</option>
                               {coa.map(c => (
@@ -348,7 +357,7 @@ function EditPage() {
                           <td className="px-3 py-3">
                             <select name="id_coa_kb[]"
                               value={row.id_coa_kb}
-                              onChange={e => updateRow(i, 'id_coa_kb', e.target.value)}
+                              onChange={e => updateRow(i, { id_coa_kb: e.target.value })}
                               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
                               <option value="">— Pilih COA —</option>
                               {coa.map(c => (
@@ -361,9 +370,11 @@ function EditPage() {
                           <td className="px-3 py-3">
                             <input type="number" name="nilai[]" min="0" step="0.01"
                               value={row.nilai}
-                              onChange={e => updateRow(i, 'nilai', e.target.value)}
+                              onChange={e => updateRow(i, { nilai: e.target.value })}
                               placeholder="0"
-                              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-right"/>
+                              className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-right
+                                ${row.id_rbeli_d ? 'bg-blue-50 border-blue-300 text-blue-800 font-semibold' : 'border-slate-300'}`}
+                            />
                           </td>
                           <td className="px-3 py-3 text-center">
                             <button type="button" onClick={() => removeRow(i)}

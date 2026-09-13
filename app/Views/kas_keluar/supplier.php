@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supplier â€” FinanceOS</title>
+  <title>Supplier — FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -92,7 +92,8 @@ const NAV = [
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -488,7 +489,7 @@ function SupplierPage() {
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span>Menampilkan {filtered.length} supplier</span>
-                  <span>FinanceOS Â© 2026</span>
+                  <span>FinanceOS © 2026</span>
                 </div>
               )}
             </div>

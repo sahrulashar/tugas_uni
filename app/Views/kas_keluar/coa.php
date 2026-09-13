@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chart of Accounts — FinanceOS</title>
+  <title>Chart of Accounts � FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -44,9 +44,9 @@
 </head>
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
-<!-- ════════════════════════════════════════════
-     PHP → JavaScript Data Bridge
-════════════════════════════════════════════ -->
+<!-- --------------------------------------------
+     PHP ? JavaScript Data Bridge
+-------------------------------------------- -->
 <script>
   window.__COA__  = <?= json_encode($coa ?? []) ?>;
   window.__STATS__ = <?= json_encode($stats ?? []) ?>;
@@ -65,7 +65,7 @@
 <script type="text/babel">
 const { useState, useEffect, useRef, useMemo } = React;
 
-/* ── Icon wrapper ─────────────────────── */
+/* -- Icon wrapper ----------------------- */
 function Icon({ name, size = 18, className = '' }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -80,7 +80,7 @@ function Icon({ name, size = 18, className = '' }) {
   return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
 }
 
-/* ── Nav data ─────────────────────────── */
+/* -- Nav data --------------------------- */
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
@@ -98,12 +98,13 @@ const NAV = [
     { label:'Arus Kas', icon:'Activity',    href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
 
-/* ── Sidebar NavItem ──────────────────── */
+/* -- Sidebar NavItem -------------------- */
 function NavItem({ item, currentPath }) {
   const hasChildren = item.children?.length > 0;
   const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
@@ -148,7 +149,7 @@ function NavItem({ item, currentPath }) {
   );
 }
 
-/* ── Sidebar ──────────────────────────── */
+/* -- Sidebar ---------------------------- */
 function Sidebar({ collapsed, currentPath }) {
   return (
     <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-sidebar sidebar-transition ${collapsed ? 'w-16' : 'w-64'}`}>
@@ -203,7 +204,7 @@ function Sidebar({ collapsed, currentPath }) {
   );
 }
 
-/* ── Topbar ───────────────────────────── */
+/* -- Topbar ----------------------------- */
 function Topbar({ collapsed, onToggle, breadcrumbs }) {
   return (
     <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -242,7 +243,7 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
   );
 }
 
-/* ── Flash Toast ──────────────────────── */
+/* -- Flash Toast ------------------------ */
 function Toast({ flash, onClose }) {
   useEffect(() => {
     if (flash.success || flash.error) {
@@ -266,7 +267,7 @@ function Toast({ flash, onClose }) {
   );
 }
 
-/* ── Badge Status (is_off) ─────────────── */
+/* -- Badge Status (is_off) --------------- */
 function StatusBadge({ isOff }) {
   const aktif = isOff == 0;
   return (
@@ -278,7 +279,7 @@ function StatusBadge({ isOff }) {
   );
 }
 
-/* ── Badge Header / Detail (is_header) ─── */
+/* -- Badge Header / Detail (is_header) --- */
 function HeaderBadge({ isHeader }) {
   const isH = isHeader === 'H';
   return (
@@ -289,7 +290,7 @@ function HeaderBadge({ isHeader }) {
   );
 }
 
-/* ── Tipe Badge ───────────────────────── */
+/* -- Tipe Badge ------------------------- */
 const TIPE_COLORS = {
   'Aset':        'bg-blue-100 text-blue-700',
   'Liabilitas':  'bg-red-100 text-red-700',
@@ -303,12 +304,12 @@ const TIPE_COLORS = {
 function TipeBadge({ tipe }) {
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${TIPE_COLORS[tipe] || 'bg-slate-100 text-slate-600'}`}>
-      {tipe || '—'}
+      {tipe || '�'}
     </span>
   );
 }
 
-/* ── Stat Card ────────────────────────── */
+/* -- Stat Card -------------------------- */
 function StatCard({ tipe, total, aktif, tidakAktif }) {
   const colors = {
     'kasbank':     { bg:'bg-cyan-50',    border:'border-cyan-100',    icon:'text-cyan-600',    iconName:'Landmark' },
@@ -334,7 +335,7 @@ function StatCard({ tipe, total, aktif, tidakAktif }) {
   );
 }
 
-/* ── Delete Confirm Modal ─────────────── */
+/* -- Delete Confirm Modal --------------- */
 function ConfirmModal({ coa, onConfirm, onCancel }) {
   if (!coa) return null;
   const isAktif = coa.is_off == 0;
@@ -352,8 +353,8 @@ function ConfirmModal({ coa, onConfirm, onCancel }) {
           </h3>
           <p className="text-sm text-slate-500 mt-2">
             {isAktif
-              ? <>Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan dinonaktifkan. Data tidak akan dihapus permanen.</>
-              : <>Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan diaktifkan kembali.</>
+              ? <>Akun <strong>{coa.kode_coa} � {coa.nama_coa}</strong> akan dinonaktifkan. Data tidak akan dihapus permanen.</>
+              : <>Akun <strong>{coa.kode_coa} � {coa.nama_coa}</strong> akan diaktifkan kembali.</>
             }
           </p>
         </div>
@@ -373,7 +374,7 @@ function ConfirmModal({ coa, onConfirm, onCancel }) {
   );
 }
 
-/* ── Delete Permanent Modal ──────────── */
+/* -- Delete Permanent Modal ------------ */
 function DeleteModal({ coa, onCancel }) {
   if (!coa) return null;
 
@@ -388,7 +389,7 @@ function DeleteModal({ coa, onCancel }) {
             Hapus Akun COA Permanen?
           </h3>
           <p className="text-sm text-slate-500 mt-2">
-            Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan dihapus permanen dari basis data. Tindakan ini tidak dapat dibatalkan.
+            Akun <strong>{coa.kode_coa} � {coa.nama_coa}</strong> akan dihapus permanen dari basis data. Tindakan ini tidak dapat dibatalkan.
           </p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
@@ -406,7 +407,7 @@ function DeleteModal({ coa, onCancel }) {
   );
 }
 
-/* ── COA Table ────────────────────────── */
+/* -- COA Table -------------------------- */
 function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
   if (data.length === 0) {
     return (
@@ -498,7 +499,7 @@ function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
   );
 }
 
-/* ── Main COA Page ────────────────────── */
+/* -- Main COA Page ---------------------- */
 function CoaPage() {
   const rawCoa   = window.__COA__  || [];
   const rawStats = window.__STATS__ || [];
@@ -567,7 +568,7 @@ function CoaPage() {
         <main className="pt-16 min-h-screen">
           <div className="p-6 space-y-6 fade-in">
 
-            {/* ── Page Header ── */}
+            {/* -- Page Header -- */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -597,7 +598,7 @@ function CoaPage() {
               </div>
             </div>
 
-            {/* ── Stats Cards ── */}
+            {/* -- Stats Cards -- */}
             {stats.length > 0 && (
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                 {stats.map(s => (
@@ -612,7 +613,7 @@ function CoaPage() {
               </div>
             )}
 
-            {/* ── Table Card ── */}
+            {/* -- Table Card -- */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
 
               {/* Toolbar */}
@@ -688,7 +689,7 @@ function CoaPage() {
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span>Menampilkan {filtered.length} akun</span>
-                  <span>FinanceOS © 2026</span>
+                  <span>FinanceOS � 2026</span>
                 </div>
               )}
             </div>

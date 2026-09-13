@@ -5,16 +5,19 @@ namespace App\Controllers\Aktivitas;
 use App\Controllers\BaseController;
 use App\Models\TbBkkModel;
 use App\Models\TbBkkDModel;
+use CodeIgniter\Database\BaseConnection;
 
 class Aktivitas2 extends BaseController
 {
-    protected TbBkkModel  $bkkModel;
-    protected TbBkkDModel $bkkDModel;
+    protected TbBkkModel     $bkkModel;
+    protected TbBkkDModel    $bkkDModel;
+    protected BaseConnection $db;
 
     public function __construct()
     {
         $this->bkkModel  = new TbBkkModel();
         $this->bkkDModel = new TbBkkDModel();
+        $this->db        = \Config\Database::connect();
     }
 
     // ═══════════════════════════════════════════
@@ -34,11 +37,10 @@ class Aktivitas2 extends BaseController
 
     public function tambah()
     {
-        $coaModel         = model('CoaModel');
-        $rbeliDModel      = model('TbRbeliDModel');
+        $coaModel = model('CoaModel');
 
-        $data['coa']      = $coaModel->findAll();
-        $data['rbeli_d']  = $this->getRbeliDOptions();
+        $data['coa']     = $coaModel->getAll();
+        $data['rbeli_d'] = $this->getRbeliDOptions();
 
         return view('aktivitas/aktivitas2/tambah', $data);
     }
@@ -152,7 +154,7 @@ class Aktivitas2 extends BaseController
 
         $data['bkk']     = $bkk;
         $data['detail']  = $this->bkkDModel->getByIdBkk((int) $id);
-        $data['coa']     = $coaModel->findAll();
+        $data['coa']     = $coaModel->getAll();
         $data['rbeli_d'] = $this->getRbeliDOptions();
 
         return view('aktivitas/aktivitas2/edit', $data);

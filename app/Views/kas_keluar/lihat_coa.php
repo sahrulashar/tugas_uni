@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detail COA — FinanceOS</title>
+  <title>Detail COA � FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -42,7 +42,7 @@
 </head>
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
-<!-- PHP → JS Bridge -->
+<!-- PHP ? JS Bridge -->
 <script>
   window.__COA__ = <?= json_encode($coa ?? []) ?>;
 </script>
@@ -52,7 +52,7 @@
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
-/* ── Icon ─────────────────────────────── */
+/* -- Icon ------------------------------- */
 function Icon({ name, size = 18, className = '' }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -67,7 +67,7 @@ function Icon({ name, size = 18, className = '' }) {
   return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
 }
 
-/* ── Nav data ─────────────────────────── */
+/* -- Nav data --------------------------- */
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
@@ -85,12 +85,13 @@ const NAV = [
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli', icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
 
-/* ── NavItem ──────────────────────────── */
+/* -- NavItem ---------------------------- */
 function NavItem({ item, currentPath }) {
   const hasChildren = item.children?.length > 0;
   const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
@@ -133,7 +134,7 @@ function NavItem({ item, currentPath }) {
   );
 }
 
-/* ── Sidebar ──────────────────────────── */
+/* -- Sidebar ---------------------------- */
 function Sidebar({ collapsed, currentPath }) {
   return (
     <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-sidebar sidebar-transition ${collapsed ? 'w-16' : 'w-64'}`}>
@@ -181,7 +182,7 @@ function Sidebar({ collapsed, currentPath }) {
   );
 }
 
-/* ── Topbar ───────────────────────────── */
+/* -- Topbar ----------------------------- */
 function Topbar({ collapsed, onToggle, breadcrumbs }) {
   return (
     <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -215,7 +216,7 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
   );
 }
 
-/* ── Detail Row ───────────────────────── */
+/* -- Detail Row ------------------------- */
 function DetailRow({ label, children, last = false }) {
   return (
     <div className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-0 py-4 ${!last ? 'border-b border-slate-100' : ''}`}>
@@ -225,14 +226,14 @@ function DetailRow({ label, children, last = false }) {
   );
 }
 
-/* ── Tipe config ──────────────────────── */
+/* -- Tipe config ------------------------ */
 const TIPE_CONFIG = {
   'kasbank':     { bg:'bg-cyan-50',   text:'text-cyan-700',   border:'border-cyan-200',   iconBg:'bg-cyan-100',   icon:'text-cyan-600',   iconName:'Landmark',    desc:'Kas dan Rekening Bank' },
   'operasional': { bg:'bg-amber-50',  text:'text-amber-700',  border:'border-amber-200',  iconBg:'bg-amber-100',  icon:'text-amber-600',  iconName:'Briefcase',   desc:'Akun aktivitas operasional perusahaan' },
   'pendanaan':   { bg:'bg-violet-50', text:'text-violet-700', border:'border-violet-200', iconBg:'bg-violet-100', icon:'text-violet-600', iconName:'PiggyBank',   desc:'Akun modal dan aktivitas pendanaan' },
 };
 
-/* ── Main Page ────────────────────────── */
+/* -- Main Page -------------------------- */
 function LihatCoaPage() {
   const coa = window.__COA__ || {};
   const [collapsed, setCollapsed] = useState(false);
@@ -264,7 +265,7 @@ function LihatCoaPage() {
         <main className="pt-16 min-h-screen">
           <div className="p-6 max-w-4xl mx-auto space-y-5 fade-in">
 
-            {/* ── Page Header ── */}
+            {/* -- Page Header -- */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <a href="/kas_keluar/coa"
@@ -285,7 +286,7 @@ function LihatCoaPage() {
               </div>
             </div>
 
-            {/* ── Hero Card ── */}
+            {/* -- Hero Card -- */}
             <div className={`rounded-2xl border ${tipeConf.border} ${tipeConf.bg} p-6 flex flex-col sm:flex-row sm:items-center gap-5`}>
               <div className={`${tipeConf.iconBg} rounded-2xl p-5 flex-shrink-0 w-fit`}>
                 <Icon name={tipeConf.iconName} size={32} className={tipeConf.icon}/>
@@ -312,7 +313,7 @@ function LihatCoaPage() {
               <div className="flex sm:flex-col gap-2 flex-wrap">
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
                   <p className="text-xs text-slate-500 font-medium">Tipe</p>
-                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe || '—'}</p>
+                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe || '�'}</p>
                 </div>
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
                   <p className="text-xs text-slate-500 font-medium">Saldo Normal</p>
@@ -325,7 +326,7 @@ function LihatCoaPage() {
               </div>
             </div>
 
-            {/* ── Detail Section ── */}
+            {/* -- Detail Section -- */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
               {/* Left: Detail info */}
@@ -356,7 +357,7 @@ function LihatCoaPage() {
                   <DetailRow label="Tipe">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${tipeConf.border} ${tipeConf.text} ${tipeConf.bg}`}>
                       <Icon name={tipeConf.iconName} size={12} className="mr-1.5"/>
-                      {coa.tipe || '—'}
+                      {coa.tipe || '�'}
                     </span>
                   </DetailRow>
                   <DetailRow label="Saldo Normal">
