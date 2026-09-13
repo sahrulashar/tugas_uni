@@ -119,7 +119,7 @@ function NavItem({ item, currentPath }) {
       {open && (
         <ul className="mt-1 ml-4 pl-3 border-l border-slate-700 space-y-0.5 fade-in">
           {item.children.map(c => (
-            <li key={c.href}>
+            <li key={c.label}>
               <a href={c.href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
                   ${currentPath === c.href ? 'text-white bg-brand-600 font-medium' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
