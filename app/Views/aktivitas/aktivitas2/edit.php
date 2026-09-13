@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tambah Rencana Beli — FinanceOS</title>
+  <title>Edit BKK — FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -43,8 +43,11 @@
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
 <script>
-  window.__SUPPLIER__ = <?= json_encode($supplier ?? []) ?>;
-  window.__FLASH__ = {
+  window.__BKK__     = <?= json_encode($bkk     ?? []) ?>;
+  window.__DETAIL__  = <?= json_encode($detail  ?? []) ?>;
+  window.__COA__     = <?= json_encode($coa     ?? []) ?>;
+  window.__RBELI_D__ = <?= json_encode($rbeli_d ?? []) ?>;
+  window.__FLASH__   = {
     error:   "<?= addslashes(session()->getFlashdata('error')   ?? '') ?>",
     success: "<?= addslashes(session()->getFlashdata('success') ?? '') ?>"
   };
@@ -100,7 +103,6 @@ function NavItem({ item, currentPath }) {
   const hasChildren = item.children?.length > 0;
   const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
   const [open, setOpen] = useState(isParentActive);
-
   if (!hasChildren) return (
     <li>
       <a href={item.href}
@@ -110,7 +112,6 @@ function NavItem({ item, currentPath }) {
       </a>
     </li>
   );
-
   return (
     <li>
       <button onClick={() => setOpen(o => !o)}
@@ -182,24 +183,33 @@ function Sidebar({ collapsed, currentPath }) {
   );
 }
 
-/* ── Form tambah dengan detail rows dinamis ── */
-function TambahPage() {
-  const supplier = window.__SUPPLIER__ || [];
-  const flash    = window.__FLASH__    || {};
-  const csrf     = window.__CSRF__     || {};
+function EditPage() {
+  const bkk     = window.__BKK__     || {};
+  const coa     = window.__COA__     || [];
+  const rbeliD  = window.__RBELI_D__ || [];
+  const flash   = window.__FLASH__   || {};
+  const csrf    = window.__CSRF__    || {};
   const [collapsed, setCollapsed] = useState(false);
 
-  const [rows, setRows] = useState([{ no_faktur: '', nilai: '' }]);
+  // Inisialisasi rows dari data existing
+  const initRows = (window.__DETAIL__ || []).map(d => ({
+    id_rbeli_d: String(d.id_rbeli_d || ''),
+    nilai:      String(d.nilai      || ''),
+    id_coa:     String(d.id_coa     || ''),
+    id_coa_kb:  String(d.id_coa_kb  || ''),
+  }));
 
-  const addRow    = () => setRows(r => [...r, { no_faktur: '', nilai: '' }]);
+  const [rows, setRows] = useState(initRows.length > 0 ? initRows : [{ id_rbeli_d:'', nilai:'', id_coa:'', id_coa_kb:'' }]);
+
+  const addRow    = () => setRows(r => [...r, { id_rbeli_d:'', nilai:'', id_coa:'', id_coa_kb:'' }]);
   const removeRow = (i) => setRows(r => r.length > 1 ? r.filter((_, idx) => idx !== i) : r);
   const updateRow = (i, field, val) => setRows(r => r.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
-  const totalNilai = rows.reduce((sum, r) => sum + (parseFloat(r.nilai.replace(/,/g,'')) || 0), 0);
+  const totalNilai = rows.reduce((sum, r) => sum + (parseFloat(r.nilai) || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas1"/>
+      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas2"/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -210,24 +220,24 @@ function TambahPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/aktivitas/aktivitas1" className="text-slate-500 hover:text-brand-600">Rencana Beli</a>
+              <a href="/aktivitas/aktivitas2" className="text-slate-500 hover:text-brand-600">Bukti Kas Keluar</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <span className="font-semibold text-slate-800">Tambah</span>
+              <span className="font-semibold text-slate-800">Edit</span>
             </div>
           </div>
         </header>
 
         <main className="pt-16 min-h-screen">
-          <div className="p-6 max-w-4xl mx-auto space-y-6 fade-in">
+          <div className="p-6 max-w-5xl mx-auto space-y-6 fade-in">
 
             {/* Back + Title */}
             <div className="flex items-center gap-3">
-              <a href="/aktivitas/aktivitas1" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/aktivitas/aktivitas2" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
-                <h1 className="text-xl font-bold text-slate-800">Tambah Rencana Beli</h1>
-                <p className="text-sm text-slate-500">Buat dokumen rencana pembelian baru beserta detail faktur</p>
+                <h1 className="text-xl font-bold text-slate-800">Edit Bukti Kas Keluar</h1>
+                <p className="text-sm text-slate-500">Perbarui data BKK <code className="font-mono text-brand-600">{bkk.no_bkk}</code></p>
               </div>
             </div>
 
@@ -240,8 +250,9 @@ function TambahPage() {
             )}
 
             {/* Form */}
-            <form action="/aktivitas/aktivitas1/simpan" method="POST">
+            <form action="/aktivitas/aktivitas2/update" method="POST">
               <input type="hidden" name={csrf.name} value={csrf.value}/>
+              <input type="hidden" name="id" value={bkk.id}/>
 
               {/* Header Section */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5">
@@ -253,10 +264,10 @@ function TambahPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        No. Rencana Beli <span className="text-red-500">*</span>
+                        No. BKK <span className="text-red-500">*</span>
                       </label>
-                      <input type="text" name="no_rbeli" required
-                        placeholder="Contoh: RB-2026-001"
+                      <input type="text" name="no_bkk" required
+                        defaultValue={bkk.no_bkk}
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none font-mono"/>
                     </div>
                     <div>
@@ -264,28 +275,14 @@ function TambahPage() {
                         Tanggal <span className="text-red-500">*</span>
                       </label>
                       <input type="date" name="tgl" required
-                        defaultValue={new Date().toISOString().slice(0,10)}
+                        defaultValue={bkk.tgl}
                         className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"/>
                     </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                      Supplier <span className="text-red-500">*</span>
-                    </label>
-                    <select name="id_supp" required
-                      className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white cursor-pointer">
-                      <option value="">-- Pilih Supplier --</option>
-                      {supplier.map(s => (
-                        <option key={s.id_supplier} value={s.id_supplier}>{s.nama_supplier}</option>
-                      ))}
-                    </select>
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Keterangan</label>
                     <textarea name="kete" rows="2"
-                      placeholder="Catatan atau keterangan tambahan..."
+                      defaultValue={bkk.kete || ''}
                       className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none">
                     </textarea>
                   </div>
@@ -297,7 +294,7 @@ function TambahPage() {
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Icon name="List" size={16} className="text-brand-600"/>
-                    <h2 className="font-semibold text-slate-800 text-sm">Detail Faktur</h2>
+                    <h2 className="font-semibold text-slate-800 text-sm">Detail Transaksi</h2>
                     <span className="ml-1 bg-brand-100 text-brand-700 text-xs font-semibold px-2 py-0.5 rounded-full">{rows.length} baris</span>
                   </div>
                   <button type="button" onClick={addRow}
@@ -310,31 +307,65 @@ function TambahPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-10">#</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">No. Faktur <span className="text-red-400">*</span></th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Nilai (Rp) <span className="text-red-400">*</span></th>
-                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide w-14">Hapus</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-8">#</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide min-w-[180px]">Ref. Rencana Beli</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide min-w-[180px]">COA Debit <span className="text-red-400">*</span></th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide min-w-[180px]">COA Kredit/Kas <span className="text-red-400">*</span></th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide min-w-[130px]">Nilai (Rp) <span className="text-red-400">*</span></th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide w-12">Hapus</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {rows.map((row, i) => (
                         <tr key={i} className="hover:bg-slate-50">
-                          <td className="px-4 py-3 text-slate-400 text-xs">{i + 1}</td>
-                          <td className="px-4 py-3">
-                            <input type="text" name="no_faktur[]"
-                              value={row.no_faktur}
-                              onChange={e => updateRow(i, 'no_faktur', e.target.value)}
-                              placeholder="Contoh: INV-001"
-                              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none font-mono"/>
+                          <td className="px-3 py-3 text-slate-400 text-xs">{i + 1}</td>
+                          <td className="px-3 py-3">
+                            <select name="id_rbeli_d[]"
+                              value={row.id_rbeli_d}
+                              onChange={e => updateRow(i, 'id_rbeli_d', e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
+                              <option value="">— Tanpa Ref —</option>
+                              {rbeliD.map(r => (
+                                <option key={r.id} value={r.id}>
+                                  {r.no_rbeli} / {r.no_faktur}
+                                </option>
+                              ))}
+                            </select>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-3">
+                            <select name="id_coa[]"
+                              value={row.id_coa}
+                              onChange={e => updateRow(i, 'id_coa', e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
+                              <option value="">— Pilih COA —</option>
+                              {coa.map(c => (
+                                <option key={c.id} value={c.id}>
+                                  {c.kode_coa} — {c.nama_coa}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-3 py-3">
+                            <select name="id_coa_kb[]"
+                              value={row.id_coa_kb}
+                              onChange={e => updateRow(i, 'id_coa_kb', e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
+                              <option value="">— Pilih COA —</option>
+                              {coa.map(c => (
+                                <option key={c.id} value={c.id}>
+                                  {c.kode_coa} — {c.nama_coa}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-3 py-3">
                             <input type="number" name="nilai[]" min="0" step="0.01"
                               value={row.nilai}
                               onChange={e => updateRow(i, 'nilai', e.target.value)}
                               placeholder="0"
                               className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-right"/>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-3 py-3 text-center">
                             <button type="button" onClick={() => removeRow(i)}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
                               <Icon name="Trash2" size={14}/>
@@ -345,8 +376,8 @@ function TambahPage() {
                     </tbody>
                     <tfoot>
                       <tr className="bg-slate-50 border-t-2 border-slate-200">
-                        <td colSpan="2" className="px-4 py-3 text-right text-sm font-semibold text-slate-700">Total:</td>
-                        <td className="px-4 py-3 text-right text-sm font-bold text-brand-700">
+                        <td colSpan="4" className="px-3 py-3 text-right text-sm font-semibold text-slate-700">Total:</td>
+                        <td className="px-3 py-3 text-right text-sm font-bold text-brand-700">
                           Rp {totalNilai.toLocaleString('id-ID')}
                         </td>
                         <td></td>
@@ -358,13 +389,13 @@ function TambahPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <a href="/aktivitas/aktivitas1"
+                <a href={`/aktivitas/aktivitas2/lihat/${bkk.id}`}
                   className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                   Batal
                 </a>
                 <button type="submit"
                   className="px-6 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-sm transition-colors flex items-center gap-2">
-                  <Icon name="Save" size={16}/> Simpan Rencana Beli
+                  <Icon name="Save" size={16}/> Simpan Perubahan
                 </button>
               </div>
             </form>
@@ -376,7 +407,7 @@ function TambahPage() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<TambahPage/>);
+ReactDOM.createRoot(document.getElementById('root')).render(<EditPage/>);
 </script>
 </body>
 </html>

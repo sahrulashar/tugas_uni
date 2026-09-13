@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detail Rencana Beli — FinanceOS</title>
+  <title>Detail BKK — FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -38,19 +38,14 @@
     .sidebar-transition { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease forwards; }
-    @media print {
-      aside, header { display: none !important; }
-      .sidebar-transition { margin-left: 0 !important; }
-      main { padding-top: 0 !important; }
-    }
   </style>
 </head>
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
 <script>
-  window.__RBELI__  = <?= json_encode($rbeli  ?? []) ?>;
+  window.__BKK__    = <?= json_encode($bkk    ?? []) ?>;
   window.__DETAIL__ = <?= json_encode($detail ?? []) ?>;
-  window.__TOTAL__  = <?= json_encode($total  ?? 0) ?>;
+  window.__TOTAL__  = <?= json_encode($total  ?? 0)  ?>;
 </script>
 
 <div id="root"></div>
@@ -99,7 +94,6 @@ function NavItem({ item, currentPath }) {
   const hasChildren = item.children?.length > 0;
   const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
   const [open, setOpen] = useState(isParentActive);
-
   if (!hasChildren) return (
     <li>
       <a href={item.href}
@@ -109,7 +103,6 @@ function NavItem({ item, currentPath }) {
       </a>
     </li>
   );
-
   return (
     <li>
       <button onClick={() => setOpen(o => !o)}
@@ -182,18 +175,19 @@ function Sidebar({ collapsed, currentPath }) {
 }
 
 function LihatPage() {
-  const rbeli  = window.__RBELI__  || {};
+  const bkk    = window.__BKK__    || {};
   const detail = window.__DETAIL__ || [];
   const total  = window.__TOTAL__  || 0;
   const [collapsed, setCollapsed] = useState(false);
 
-  const tglFormatted = rbeli.tgl
-    ? new Date(rbeli.tgl).toLocaleDateString('id-ID', { weekday:'long', day:'2-digit', month:'long', year:'numeric' })
+  const fmtTgl = (tgl) => tgl
+    ? new Date(tgl).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
     : '-';
+  const fmtRp = (v) => 'Rp ' + Number(v).toLocaleString('id-ID');
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas1"/>
+      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas2"/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -204,39 +198,39 @@ function LihatPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/aktivitas/aktivitas1" className="text-slate-500 hover:text-brand-600">Rencana Beli</a>
+              <a href="/aktivitas/aktivitas2" className="text-slate-500 hover:text-brand-600">Bukti Kas Keluar</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Detail</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => window.print()}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+            <button onClick={() => window.print()} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
               <Icon name="Printer" size={15}/>
               <span className="hidden sm:inline">Cetak</span>
             </button>
-            <a href={`/aktivitas/aktivitas1/edit/${rbeli.id}`}
+            <a href={`/aktivitas/aktivitas2/edit/${bkk.id}`}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
-              <Icon name="Pencil" size={15}/> Edit
+              <Icon name="Pencil" size={15}/>
+              Edit
             </a>
           </div>
         </header>
 
         <main className="pt-16 min-h-screen">
-          <div className="p-6 max-w-4xl mx-auto space-y-6 fade-in">
+          <div className="p-6 max-w-5xl mx-auto space-y-6 fade-in">
 
             {/* Back + Title */}
             <div className="flex items-center gap-3">
-              <a href="/aktivitas/aktivitas1" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/aktivitas/aktivitas2" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
-                <h1 className="text-xl font-bold text-slate-800">Detail Rencana Beli</h1>
-                <p className="text-sm text-slate-500">Informasi lengkap dokumen beserta daftar faktur</p>
+                <h1 className="text-xl font-bold text-slate-800">Detail Bukti Kas Keluar</h1>
+                <p className="text-sm text-slate-500">Informasi lengkap dokumen BKK</p>
               </div>
             </div>
 
-            {/* Header Card */}
+            {/* Header Info Card */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -244,98 +238,97 @@ function LihatPage() {
                   <h2 className="font-semibold text-slate-800 text-sm">Informasi Header</h2>
                 </div>
                 <code className="font-mono text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-lg">
-                  {rbeli.no_rbeli}
+                  {bkk.no_bkk}
                 </code>
               </div>
-              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Tanggal</p>
-                  <p className="text-sm font-medium text-slate-800 flex items-center gap-2">
-                    <Icon name="Calendar" size={14} className="text-slate-400"/>
-                    {tglFormatted}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Supplier</p>
-                  <p className="text-sm font-medium text-slate-800 flex items-center gap-2">
-                    <Icon name="Truck" size={14} className="text-slate-400"/>
-                    {rbeli.nama_supplier || '-'}
-                  </p>
-                </div>
-                <div className="sm:col-span-2">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Keterangan</p>
-                  <p className="text-sm text-slate-700 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
-                    {rbeli.kete || <span className="text-slate-400 italic">Tidak ada keterangan</span>}
-                  </p>
+              <div className="p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tanggal</p>
+                    <p className="text-sm font-medium text-slate-800 mt-1">{fmtTgl(bkk.tgl)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Nilai</p>
+                    <p className="text-lg font-bold text-brand-700 mt-1">{fmtRp(total)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Keterangan</p>
+                    <p className="text-sm text-slate-600 mt-1">{bkk.kete || <span className="text-slate-400 italic">—</span>}</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Detail Faktur */}
+            {/* Detail Table */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
                 <Icon name="List" size={16} className="text-brand-600"/>
-                <h2 className="font-semibold text-slate-800 text-sm">Detail Faktur</h2>
-                <span className="ml-1 bg-brand-100 text-brand-700 text-xs font-semibold px-2 py-0.5 rounded-full">{detail.length} faktur</span>
+                <h2 className="font-semibold text-slate-800 text-sm">Detail Transaksi</h2>
+                <span className="ml-1 bg-brand-100 text-brand-700 text-xs font-semibold px-2 py-0.5 rounded-full">{detail.length} baris</span>
               </div>
-
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-10">#</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">No. Faktur</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Ref. Rencana Beli</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">COA Debit</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">COA Kredit/Kas</th>
                       <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Nilai</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {detail.length === 0 ? (
                       <tr>
-                        <td colSpan="3" className="py-10 text-center text-slate-400 text-sm">
-                          <Icon name="FileX" size={28} className="text-slate-300 mx-auto mb-2"/>
-                          Belum ada detail faktur.
-                        </td>
+                        <td colSpan="5" className="py-10 text-center text-slate-400 text-sm">Tidak ada detail transaksi.</td>
                       </tr>
-                    ) : detail.map((row, i) => (
-                      <tr key={row.id} className="hover:bg-slate-50 transition-colors">
+                    ) : detail.map((d, i) => (
+                      <tr key={d.id} className="hover:bg-slate-50">
                         <td className="px-5 py-3.5 text-slate-400 text-xs">{i + 1}</td>
                         <td className="px-5 py-3.5">
-                          <code className="font-mono text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded">
-                            {row.no_faktur}
-                          </code>
+                          {d.no_faktur_rbeli
+                            ? <code className="font-mono text-xs text-slate-700 bg-slate-100 px-2 py-0.5 rounded">{d.no_faktur_rbeli}</code>
+                            : <span className="text-slate-400 italic text-xs">—</span>
+                          }
                         </td>
-                        <td className="px-5 py-3.5 text-right font-semibold text-slate-800">
-                          Rp {Number(row.nilai).toLocaleString('id-ID')}
+                        <td className="px-5 py-3.5">
+                          <div>
+                            <code className="font-mono text-xs text-brand-600">{d.kode_coa_debit}</code>
+                            <p className="text-xs text-slate-500 mt-0.5">{d.nama_coa_debit}</p>
+                          </div>
                         </td>
+                        <td className="px-5 py-3.5">
+                          <div>
+                            <code className="font-mono text-xs text-green-600">{d.kode_coa_kredit}</code>
+                            <p className="text-xs text-slate-500 mt-0.5">{d.nama_coa_kredit}</p>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-right font-semibold text-slate-800">{fmtRp(d.nilai)}</td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot>
-                    <tr className="bg-brand-50 border-t-2 border-brand-100">
-                      <td colSpan="2" className="px-5 py-4 text-right text-sm font-semibold text-brand-700">
-                        Total Nilai
-                      </td>
-                      <td className="px-5 py-4 text-right text-lg font-bold text-brand-700">
-                        Rp {Number(total).toLocaleString('id-ID')}
-                      </td>
-                    </tr>
-                  </tfoot>
+                  {detail.length > 0 && (
+                    <tfoot>
+                      <tr className="bg-slate-50 border-t-2 border-slate-200">
+                        <td colSpan="4" className="px-5 py-3 text-right text-sm font-semibold text-slate-700">Total:</td>
+                        <td className="px-5 py-3 text-right text-sm font-bold text-brand-700">{fmtRp(total)}</td>
+                      </tr>
+                    </tfoot>
+                  )}
                 </table>
               </div>
             </div>
 
-            {/* Action Footer */}
-            <div className="flex items-center justify-between">
-              <a href="/aktivitas/aktivitas1"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm transition-colors">
-                <Icon name="ArrowLeft" size={15}/> Kembali ke Daftar
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 justify-end">
+              <a href="/aktivitas/aktivitas2"
+                className="px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm transition-colors">
+                Kembali ke Daftar
               </a>
-              <div className="flex items-center gap-2">
-                <a href={`/aktivitas/aktivitas1/edit/${rbeli.id}`}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-colors">
-                  <Icon name="Pencil" size={15}/> Edit
-                </a>
-              </div>
+              <a href={`/aktivitas/aktivitas2/edit/${bkk.id}`}
+                className="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-sm transition-colors flex items-center gap-2">
+                <Icon name="Pencil" size={15}/> Edit BKK
+              </a>
             </div>
 
           </div>

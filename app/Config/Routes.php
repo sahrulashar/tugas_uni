@@ -47,4 +47,13 @@ $routes->group('aktivitas', function ($routes) {
     $routes->get('aktivitas1/edit/(:num)', 'Aktivitas\Aktivitas1::edit/$1');
     $routes->post('aktivitas1/update', 'Aktivitas\Aktivitas1::update');
     $routes->get('aktivitas1/hapus/(:num)', 'Aktivitas\Aktivitas1::hapus/$1');
+
+    // ── Aktivitas 2: Bukti Kas Keluar (BKK) ───────────────────────
+    $routes->get('aktivitas2', 'Aktivitas\Aktivitas2::index');
+    $routes->get('aktivitas2/tambah', 'Aktivitas\Aktivitas2::tambah');
+    $routes->post('aktivitas2/simpan', 'Aktivitas\Aktivitas2::simpan');
+    $routes->get('aktivitas2/lihat/(:num)', 'Aktivitas\Aktivitas2::lihat/$1');
+    $routes->get('aktivitas2/edit/(:num)', 'Aktivitas\Aktivitas2::edit/$1');
+    $routes->post('aktivitas2/update', 'Aktivitas\Aktivitas2::update');
+    $routes->get('aktivitas2/hapus/(:num)', 'Aktivitas\Aktivitas2::hapus/$1');
 });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rencana Beli — FinanceOS</title>
+  <title>Bukti Kas Keluar — FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -45,12 +45,12 @@
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
 <script>
-  window.__RBELI__  = <?= json_encode($rbeli ?? []) ?>;
-  window.__FLASH__  = {
+  window.__BKK__   = <?= json_encode($bkk ?? []) ?>;
+  window.__FLASH__ = {
     success: "<?= addslashes(session()->getFlashdata('success') ?? '') ?>",
     error:   "<?= addslashes(session()->getFlashdata('error')   ?? '') ?>"
   };
-  window.__CSRF__   = {
+  window.__CSRF__ = {
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>"
   };
@@ -216,16 +216,16 @@ function DeleteModal({ item, onCancel }) {
           <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-100">
             <Icon name="Trash2" size={22} className="text-red-600"/>
           </div>
-          <h3 className="text-lg font-semibold text-slate-800">Hapus Rencana Beli?</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Hapus Bukti Kas Keluar?</h3>
           <p className="text-sm text-slate-500 mt-2">
-            Data rencana beli <strong>{item.no_rbeli}</strong> beserta seluruh detail fakturnya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
+            Data BKK <strong>{item.no_bkk}</strong> beserta seluruh detail transaksinya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
           </p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
           <button onClick={onCancel} className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={`/aktivitas/aktivitas1/hapus/${item.id}`}
+          <a href={`/aktivitas/aktivitas2/hapus/${item.id}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm">
             Ya, Hapus
           </a>
@@ -235,35 +235,32 @@ function DeleteModal({ item, onCancel }) {
   );
 }
 
-/* ── Format currency ── */
 function formatRp(val) {
   return 'Rp ' + Number(val).toLocaleString('id-ID');
 }
 
 /* ── Main Page ── */
-function RencanaBeli() {
-  const data      = window.__RBELI__ || [];
-  const flash     = window.__FLASH__ || {};
-  const [collapsed, setCollapsed] = useState(false);
-  const [search, setSearch]       = useState('');
+function BuktKasKeluar() {
+  const data    = window.__BKK__   || [];
+  const flash   = window.__FLASH__ || {};
+  const [collapsed, setCollapsed]   = useState(false);
+  const [search, setSearch]         = useState('');
   const [deleteItem, setDeleteItem] = useState(null);
   const [showFlash, setShowFlash]   = useState(true);
 
-  const currentPath = '/aktivitas/aktivitas1';
+  const currentPath = '/aktivitas/aktivitas2';
 
   const stats = useMemo(() => ({
     total    : data.length,
     bulanIni : data.filter(r => r.tgl && r.tgl.startsWith(new Date().toISOString().slice(0,7))).length,
-    totalNilai: 0, // placeholder — dihitung di server jika perlu
   }), [data]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return data.filter(r =>
       search === '' ||
-      (r.no_rbeli && r.no_rbeli.toLowerCase().includes(q)) ||
-      (r.nama_supplier && r.nama_supplier.toLowerCase().includes(q)) ||
-      (r.kete && r.kete.toLowerCase().includes(q))
+      (r.no_bkk && r.no_bkk.toLowerCase().includes(q)) ||
+      (r.kete   && r.kete.toLowerCase().includes(q))
     );
   }, [data, search]);
 
@@ -283,7 +280,7 @@ function RencanaBeli() {
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="text-slate-500">Aktivitas</span>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <span className="font-semibold text-slate-800">Rencana Beli</span>
+              <span className="font-semibold text-slate-800">Bukti Kas Keluar</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -291,7 +288,7 @@ function RencanaBeli() {
               <Icon name="Printer" size={15}/>
               <span className="hidden sm:inline">Cetak</span>
             </button>
-            <a href="/aktivitas/aktivitas1/tambah"
+            <a href="/aktivitas/aktivitas2/tambah"
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
               <Icon name="Plus" size={15}/>
               Tambah
@@ -305,19 +302,19 @@ function RencanaBeli() {
             {/* Page Title */}
             <div>
               <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <Icon name="ShoppingCart" size={20} className="text-brand-600"/> Rencana Beli
+                <Icon name="Receipt" size={20} className="text-brand-600"/> Bukti Kas Keluar (BKK)
               </h1>
-              <p className="text-sm text-slate-500 mt-0.5">Kelola dokumen rencana pembelian dari supplier</p>
+              <p className="text-sm text-slate-500 mt-0.5">Kelola dokumen bukti pengeluaran kas</p>
             </div>
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center flex-shrink-0">
-                  <Icon name="ClipboardList" size={20}/>
+                <div className="w-11 h-11 rounded-xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0">
+                  <Icon name="FileText" size={20}/>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Rencana Beli</p>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total BKK</p>
                   <p className="text-2xl font-bold text-slate-800 mt-0.5">{stats.total} <span className="text-xs font-normal text-slate-400">dokumen</span></p>
                 </div>
               </div>
@@ -339,7 +336,7 @@ function RencanaBeli() {
                   <Icon name="Search" size={14} className="text-slate-400 flex-shrink-0"/>
                   <input
                     type="text"
-                    placeholder="Cari no. rencana, supplier, keterangan..."
+                    placeholder="Cari no. BKK, keterangan..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none w-full"
@@ -360,9 +357,8 @@ function RencanaBeli() {
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-10">#</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">No. Rencana Beli</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">No. BKK</th>
                       <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Tanggal</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Supplier</th>
                       <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Keterangan</th>
                       <th className="px-5 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">Aksi</th>
                     </tr>
@@ -370,10 +366,10 @@ function RencanaBeli() {
                   <tbody className="divide-y divide-slate-100">
                     {filtered.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="py-14 text-center text-slate-500">
+                        <td colSpan="5" className="py-14 text-center text-slate-500">
                           <Icon name="SearchX" size={36} className="text-slate-300 mx-auto mb-2"/>
-                          <p className="font-medium">Tidak ada data rencana beli ditemukan.</p>
-                          <a href="/aktivitas/aktivitas1/tambah" className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors">
+                          <p className="font-medium">Tidak ada data BKK ditemukan.</p>
+                          <a href="/aktivitas/aktivitas2/tambah" className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors">
                             <Icon name="Plus" size={14}/> Tambah Sekarang
                           </a>
                         </td>
@@ -383,21 +379,20 @@ function RencanaBeli() {
                         <td className="px-5 py-3.5 text-slate-400 text-xs">{i + 1}</td>
                         <td className="px-5 py-3.5">
                           <code className="font-mono text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded">
-                            {row.no_rbeli}
+                            {row.no_bkk}
                           </code>
                         </td>
                         <td className="px-5 py-3.5 text-slate-600">
                           {new Date(row.tgl).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}
                         </td>
-                        <td className="px-5 py-3.5 font-medium text-slate-800">{row.nama_supplier || '-'}</td>
                         <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">{row.kete || '-'}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-center gap-1">
-                            <a href={`/aktivitas/aktivitas1/lihat/${row.id}`} title="Detail"
+                            <a href={`/aktivitas/aktivitas2/lihat/${row.id}`} title="Detail"
                               className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                               <Icon name="Eye" size={15}/>
                             </a>
-                            <a href={`/aktivitas/aktivitas1/edit/${row.id}`} title="Edit"
+                            <a href={`/aktivitas/aktivitas2/edit/${row.id}`} title="Edit"
                               className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                               <Icon name="Pencil" size={15}/>
                             </a>
@@ -415,7 +410,7 @@ function RencanaBeli() {
 
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                  <span>Menampilkan {filtered.length} rencana beli</span>
+                  <span>Menampilkan {filtered.length} bukti kas keluar</span>
                   <span>FinanceOS © 2026</span>
                 </div>
               )}
@@ -431,7 +426,7 @@ function RencanaBeli() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<RencanaBeli/>);
+ReactDOM.createRoot(document.getElementById('root')).render(<BuktKasKeluar/>);
 </script>
 </body>
 </html>
