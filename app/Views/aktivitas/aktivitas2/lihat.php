@@ -81,6 +81,7 @@ const NAV = [
   { label:'Aktivitas',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
   ]},
   { label:'Laporan',    icon:'BarChart3', children:[
     { label:'Neraca',    icon:'Scale',      href:'#' },

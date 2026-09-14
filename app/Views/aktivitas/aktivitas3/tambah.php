@@ -52,7 +52,12 @@
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>"
   };
-  window.__OLD__ = <?= json_encode(old() ?: new stdClass()) ?>;
+  window.__OLD__ = {
+    no_rec: "<?= addslashes(old('no_rec') ?? '') ?>",
+    tgl:    "<?= addslashes(old('tgl')    ?? '') ?>",
+    id_bkk: "<?= addslashes(old('id_bkk') ?? '') ?>",
+    ket:    "<?= addslashes(old('ket')    ?? '') ?>"
+  };
 </script>
 
 <div id="root"></div>
@@ -285,20 +290,30 @@ function TambahPage() {
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Bukti Kas Keluar (BKK) <span className="text-red-500">*</span>
           </label>
-          <select name="id_bkk" value={idBkk} onChange={e => setIdBkk(e.target.value)}
-            className={inputCls(errors.idBkk)}>
-            <option value="">-- Pilih BKK --</option>
-            {bkkList.map(b => (
-              <option key={b.id} value={b.id}>
-                {b.no_bkk} — {b.tgl}
-              </option>
-            ))}
-          </select>
+          {bkkList.length === 0 ? (
+            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
+              <Icon name="AlertCircle" size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium">Belum ada data Bukti Kas Keluar (BKK).</p>
+                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/aktivitas/aktivitas2/tambah" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu sebelum membuat rekap.</p>
+              </div>
+            </div>
+          ) : (
+            <select name="id_bkk" value={idBkk} onChange={e => setIdBkk(e.target.value)}
+              className={inputCls(errors.idBkk)}>
+              <option value="">-- Pilih BKK --</option>
+              {bkkList.map(b => (
+                <option key={b.id} value={b.id}>
+                  {b.no_bkk} - {b.tgl}
+                </option>
+              ))}
+            </select>
+          )}
           {errors.idBkk && <p className="text-xs text-red-500 mt-1">{errors.idBkk}</p>}
           {selectedBkk && (
             <div className="mt-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700">
               <span className="font-semibold">BKK Terpilih:</span> {selectedBkk.no_bkk}
-              {selectedBkk.kete ? ` — ${selectedBkk.kete}` : ''}
+              {selectedBkk.kete ? ` - ${selectedBkk.kete}` : ''}
             </div>
           )}
         </div>

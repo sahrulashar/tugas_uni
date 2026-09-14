@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chart of Accounts — FinanceOS</title>
+  <title>Chart of Accounts ï¿½ FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -100,6 +100,7 @@ const NAV = [
   { label:'Aktivitas',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -304,7 +305,7 @@ const TIPE_COLORS = {
 function TipeBadge({ tipe }) {
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${TIPE_COLORS[tipe] || 'bg-slate-100 text-slate-600'}`}>
-      {tipe || '—'}
+      {tipe || 'ï¿½'}
     </span>
   );
 }
@@ -353,8 +354,8 @@ function ConfirmModal({ coa, onConfirm, onCancel }) {
           </h3>
           <p className="text-sm text-slate-500 mt-2">
             {isAktif
-              ? <>Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan dinonaktifkan. Data tidak akan dihapus permanen.</>
-              : <>Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan diaktifkan kembali.</>
+              ? <>Akun <strong>{coa.kode_coa} ï¿½ {coa.nama_coa}</strong> akan dinonaktifkan. Data tidak akan dihapus permanen.</>
+              : <>Akun <strong>{coa.kode_coa} ï¿½ {coa.nama_coa}</strong> akan diaktifkan kembali.</>
             }
           </p>
         </div>
@@ -389,7 +390,7 @@ function DeleteModal({ coa, onCancel }) {
             Hapus Akun COA Permanen?
           </h3>
           <p className="text-sm text-slate-500 mt-2">
-            Akun <strong>{coa.kode_coa} — {coa.nama_coa}</strong> akan dihapus permanen dari basis data. Tindakan ini tidak dapat dibatalkan.
+            Akun <strong>{coa.kode_coa} ï¿½ {coa.nama_coa}</strong> akan dihapus permanen dari basis data. Tindakan ini tidak dapat dibatalkan.
           </p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
@@ -689,7 +690,7 @@ function CoaPage() {
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span>Menampilkan {filtered.length} akun</span>
-                  <span>FinanceOS © 2026</span>
+                  <span>FinanceOS ï¿½ 2026</span>
                 </div>
               )}
             </div>

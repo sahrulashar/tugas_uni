@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Karyawan — FinanceOS</title>
+  <title>Karyawan ï¿½ FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -95,6 +95,7 @@ const NAV = [
   { label:'Aktivitas',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -496,7 +497,7 @@ function KaryawanPage() {
               {filtered.length > 0 && (
                 <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span>Menampilkan {filtered.length} karyawan</span>
-                  <span>FinanceOS © 2026</span>
+                  <span>FinanceOS ï¿½ 2026</span>
                 </div>
               )}
             </div>

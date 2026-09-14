@@ -60,12 +60,17 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
 
-        $this->recordModel->insert([
-            'no_rec' => $noRec,
-            'tgl'    => $tgl,
-            'id_bkk' => $idBkk,
-            'ket'    => $ket ?: null,
-        ]);
+        try {
+            $this->recordModel->insert([
+                'no_rec' => $noRec,
+                'tgl'    => $tgl,
+                'id_bkk' => $idBkk,
+                'ket'    => $ket ?: null,
+            ]);
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        }
 
         return redirect()->to('/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil disimpan.');
@@ -145,12 +150,17 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
 
-        $this->recordModel->update($id, [
-            'no_rec' => $noRec,
-            'tgl'    => $tgl,
-            'id_bkk' => $idBkk,
-            'ket'    => $ket ?: null,
-        ]);
+        try {
+            $this->recordModel->update($id, [
+                'no_rec' => $noRec,
+                'tgl'    => $tgl,
+                'id_bkk' => $idBkk,
+                'ket'    => $ket ?: null,
+            ]);
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+        }
 
         return redirect()->to('/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil diperbarui.');
@@ -173,7 +183,12 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
-        $this->recordModel->delete((int) $id);
+        try {
+            $this->recordModel->delete((int) $id);
+        } catch (\Throwable $e) {
+            return redirect()->to('/aktivitas/aktivitas3')
+                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
 
         return redirect()->to('/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil dihapus.');

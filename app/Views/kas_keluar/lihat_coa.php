@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detail COA — FinanceOS</title>
+  <title>Detail COA ï¿½ FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -87,6 +87,7 @@ const NAV = [
   { label:'Aktivitas',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -313,7 +314,7 @@ function LihatCoaPage() {
               <div className="flex sm:flex-col gap-2 flex-wrap">
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
                   <p className="text-xs text-slate-500 font-medium">Tipe</p>
-                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe || '—'}</p>
+                  <p className={`text-sm font-bold mt-0.5 ${tipeConf.text}`}>{coa.tipe || 'ï¿½'}</p>
                 </div>
                 <div className="bg-white/70 rounded-xl px-4 py-3 text-center border border-white/80 shadow-sm min-w-[100px]">
                   <p className="text-xs text-slate-500 font-medium">Saldo Normal</p>
@@ -357,7 +358,7 @@ function LihatCoaPage() {
                   <DetailRow label="Tipe">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${tipeConf.border} ${tipeConf.text} ${tipeConf.bg}`}>
                       <Icon name={tipeConf.iconName} size={12} className="mr-1.5"/>
-                      {coa.tipe || '—'}
+                      {coa.tipe || 'ï¿½'}
                     </span>
                   </DetailRow>
                   <DetailRow label="Saldo Normal">
