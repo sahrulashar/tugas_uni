@@ -56,4 +56,13 @@ $routes->group('aktivitas', function ($routes) {
     $routes->get('aktivitas2/edit/(:num)', 'Aktivitas\Aktivitas2::edit/$1');
     $routes->post('aktivitas2/update', 'Aktivitas\Aktivitas2::update');
     $routes->get('aktivitas2/hapus/(:num)', 'Aktivitas\Aktivitas2::hapus/$1');
+
+    // ── Aktivitas 3: Rekap BKK ────────────────────────────────────
+    $routes->get('aktivitas3', 'Aktivitas\Aktivitas3::index');
+    $routes->get('aktivitas3/tambah', 'Aktivitas\Aktivitas3::tambah');
+    $routes->post('aktivitas3/simpan', 'Aktivitas\Aktivitas3::simpan');
+    $routes->get('aktivitas3/lihat/(:num)', 'Aktivitas\Aktivitas3::lihat/$1');
+    $routes->get('aktivitas3/edit/(:num)', 'Aktivitas\Aktivitas3::edit/$1');
+    $routes->post('aktivitas3/update', 'Aktivitas\Aktivitas3::update');
+    $routes->get('aktivitas3/hapus/(:num)', 'Aktivitas\Aktivitas3::hapus/$1');
 });

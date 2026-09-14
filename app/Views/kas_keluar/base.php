@@ -126,6 +126,7 @@ const navItems = [
     children: [
       { label: 'Rencana Beli',      icon: 'ShoppingCart', href: '/aktivitas/aktivitas1' },
       { label: 'Bukti Kas Keluar',  icon: 'Receipt',      href: '/aktivitas/aktivitas2' },
+      { label: 'Rekap BKK',         icon: 'ClipboardCheck', href: '/aktivitas/aktivitas3' },
     ],
   },
   {
