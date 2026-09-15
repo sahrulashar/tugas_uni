@@ -20,7 +20,7 @@ class TbRbeliDModel extends Model
     /**
      * Ambil semua detail berdasarkan id_rbeli (header)
      */
-    public function getByIdRbeli(int $idRbeli): array
+    public function getByIdRbeli_l1H(int $idRbeli): array
     {
         return $this->where('id_rbeli', $idRbeli)->findAll();
     }
@@ -28,7 +28,7 @@ class TbRbeliDModel extends Model
     /**
      * Hapus semua detail milik satu header
      */
-    public function hapusByIdRbeli(int $idRbeli): bool
+    public function hapusByIdRbeli_l1H(int $idRbeli): bool
     {
         return $this->where('id_rbeli', $idRbeli)->delete();
     }
@@ -36,7 +36,7 @@ class TbRbeliDModel extends Model
     /**
      * Hitung total nilai dari semua detail satu header
      */
-    public function getTotalNilai(int $idRbeli): float
+    public function getTotalNilai_l1H(int $idRbeli): float
     {
         $result = $this->selectSum('nilai')
                        ->where('id_rbeli', $idRbeli)

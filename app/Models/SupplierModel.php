@@ -21,7 +21,7 @@ class SupplierModel extends Model
     /**
      * Mengambil semua data supplier diurutkan berdasarkan nama
      */
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->orderBy('nama_supplier', 'ASC')->findAll();
     }
@@ -29,7 +29,7 @@ class SupplierModel extends Model
     /**
      * Mengambil supplier yang statusnya Aktif
      */
-    public function getAktif(): array
+    public function getAktif_l1H(): array
     {
         return $this->where('status', 'Aktif')
                     ->orderBy('nama_supplier', 'ASC')
@@ -39,7 +39,7 @@ class SupplierModel extends Model
     /**
      * Cek apakah kode supplier sudah digunakan
      */
-    public function cekKode(string $kodeSupplier, ?int $id = null): bool
+    public function cekKode_l1H(string $kodeSupplier, ?int $id = null): bool
     {
         $builder = $this->where('kode_supplier', $kodeSupplier);
         if ($id !== null) {
@@ -51,7 +51,7 @@ class SupplierModel extends Model
     /**
      * Soft-delete: set status = 'Tidak Aktif'
      */
-    public function nonaktifkan(int $id): bool
+    public function nonaktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['status' => 'Tidak Aktif']);
     }
@@ -59,7 +59,7 @@ class SupplierModel extends Model
     /**
      * Mengaktifkan kembali supplier
      */
-    public function aktifkan(int $id): bool
+    public function aktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['status' => 'Aktif']);
     }

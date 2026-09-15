@@ -26,7 +26,7 @@ class Aktivitas2 extends BaseController
 
     public function index()
     {
-        $data['bkk'] = $this->bkkModel->getAll();
+        $data['bkk'] = $this->bkkModel->getAll_l1H();
 
         return view('aktivitas/aktivitas2/index', $data);
     }
@@ -35,17 +35,17 @@ class Aktivitas2 extends BaseController
     //  TAMBAH
     // ═══════════════════════════════════════════
 
-    public function tambah()
+    public function tambah_l1H()
     {
         $coaModel = model('CoaModel');
 
-        $data['coa']     = $coaModel->getAll();
+        $data['coa']     = $coaModel->getAll_l1H();
         $data['rbeli_d'] = $this->getRbeliDOptions();
 
         return view('aktivitas/aktivitas2/tambah', $data);
     }
 
-    public function simpan()
+    public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas2');
@@ -61,7 +61,7 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'No. BKK dan Tanggal wajib diisi.');
         }
 
-        if ($this->bkkModel->cekNoBkk($noBkk)) {
+        if ($this->bkkModel->cekNoBkk_l1H($noBkk)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor BKK sudah digunakan.');
         }
@@ -113,13 +113,13 @@ class Aktivitas2 extends BaseController
     //  LIHAT DETAIL
     // ═══════════════════════════════════════════
 
-    public function lihat($id = null)
+    public function lihat_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas2');
         }
 
-        $bkk = $this->bkkModel->getById((int) $id);
+        $bkk = $this->bkkModel->getById_l1H((int) $id);
 
         if (!$bkk) {
             return redirect()->to('/aktivitas/aktivitas2')
@@ -127,8 +127,8 @@ class Aktivitas2 extends BaseController
         }
 
         $data['bkk']    = $bkk;
-        $data['detail'] = $this->bkkDModel->getByIdBkk((int) $id);
-        $data['total']  = $this->bkkDModel->getTotalNilai((int) $id);
+        $data['detail'] = $this->bkkDModel->getByIdBkk_l1H((int) $id);
+        $data['total']  = $this->bkkDModel->getTotalNilai_l1H((int) $id);
 
         return view('aktivitas/aktivitas2/lihat', $data);
     }
@@ -137,13 +137,13 @@ class Aktivitas2 extends BaseController
     //  EDIT
     // ═══════════════════════════════════════════
 
-    public function edit($id = null)
+    public function edit_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas2');
         }
 
-        $bkk = $this->bkkModel->getById((int) $id);
+        $bkk = $this->bkkModel->getById_l1H((int) $id);
 
         if (!$bkk) {
             return redirect()->to('/aktivitas/aktivitas2')
@@ -153,14 +153,14 @@ class Aktivitas2 extends BaseController
         $coaModel = model('CoaModel');
 
         $data['bkk']     = $bkk;
-        $data['detail']  = $this->bkkDModel->getByIdBkk((int) $id);
-        $data['coa']     = $coaModel->getAll();
+        $data['detail']  = $this->bkkDModel->getByIdBkk_l1H((int) $id);
+        $data['coa']     = $coaModel->getAll_l1H();
         $data['rbeli_d'] = $this->getRbeliDOptions();
 
         return view('aktivitas/aktivitas2/edit', $data);
     }
 
-    public function update()
+    public function update_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas2');
@@ -182,7 +182,7 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'No. BKK dan Tanggal wajib diisi.');
         }
 
-        if ($this->bkkModel->cekNoBkk($noBkk, $id)) {
+        if ($this->bkkModel->cekNoBkk_l1H($noBkk, $id)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor BKK sudah digunakan.');
         }
@@ -206,7 +206,7 @@ class Aktivitas2 extends BaseController
         ]);
 
         // Hapus detail lama lalu insert ulang
-        $this->bkkDModel->hapusByIdBkk($id);
+        $this->bkkDModel->hapusByIdBkk_l1H($id);
 
         foreach ($nilaiArr as $i => $nilaiRaw) {
             $nilai   = (float) str_replace(',', '', $nilaiRaw ?? 0);
@@ -236,7 +236,7 @@ class Aktivitas2 extends BaseController
     //  HAPUS
     // ═══════════════════════════════════════════
 
-    public function hapus($id = null)
+    public function hapus_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas2');
@@ -250,7 +250,7 @@ class Aktivitas2 extends BaseController
         }
 
         // Hapus detail terlebih dahulu (foreign key)
-        $this->bkkDModel->hapusByIdBkk((int) $id);
+        $this->bkkDModel->hapusByIdBkk_l1H((int) $id);
 
         // Hapus header
         $this->bkkModel->delete((int) $id);

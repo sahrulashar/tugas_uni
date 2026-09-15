@@ -23,7 +23,7 @@ class Aktivitas1 extends BaseController
 
     public function index()
     {
-        $data['rbeli'] = $this->rbeliModel->getAll();
+        $data['rbeli'] = $this->rbeliModel->getAll_l1H();
 
         return view('aktivitas/aktivitas1/index', $data);
     }
@@ -32,15 +32,15 @@ class Aktivitas1 extends BaseController
     //  TAMBAH
     // ═══════════════════════════════════════════
 
-    public function tambah()
+    public function tambah_l1H()
     {
         $supplierModel      = model('SupplierModel');
-        $data['supplier']   = $supplierModel->getAktif();
+        $data['supplier']   = $supplierModel->getAktif_l1H();
 
         return view('aktivitas/aktivitas1/tambah', $data);
     }
 
-    public function simpan()
+    public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas1');
@@ -57,7 +57,7 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'No. Rencana Beli, Tanggal, dan Supplier wajib diisi.');
         }
 
-        if ($this->rbeliModel->cekNoRbeli($noRbeli)) {
+        if ($this->rbeliModel->cekNoRbeli_l1H($noRbeli)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor Rencana Beli sudah digunakan.');
         }
@@ -103,13 +103,13 @@ class Aktivitas1 extends BaseController
     //  LIHAT DETAIL
     // ═══════════════════════════════════════════
 
-    public function lihat($id = null)
+    public function lihat_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas1');
         }
 
-        $rbeli = $this->rbeliModel->getById((int) $id);
+        $rbeli = $this->rbeliModel->getById_l1H((int) $id);
 
         if (!$rbeli) {
             return redirect()->to('/aktivitas/aktivitas1')
@@ -117,8 +117,8 @@ class Aktivitas1 extends BaseController
         }
 
         $data['rbeli']  = $rbeli;
-        $data['detail'] = $this->rbeliDModel->getByIdRbeli((int) $id);
-        $data['total']  = $this->rbeliDModel->getTotalNilai((int) $id);
+        $data['detail'] = $this->rbeliDModel->getByIdRbeli_l1H((int) $id);
+        $data['total']  = $this->rbeliDModel->getTotalNilai_l1H((int) $id);
 
         return view('aktivitas/aktivitas1/lihat', $data);
     }
@@ -127,13 +127,13 @@ class Aktivitas1 extends BaseController
     //  EDIT
     // ═══════════════════════════════════════════
 
-    public function edit($id = null)
+    public function edit_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas1');
         }
 
-        $rbeli = $this->rbeliModel->getById((int) $id);
+        $rbeli = $this->rbeliModel->getById_l1H((int) $id);
 
         if (!$rbeli) {
             return redirect()->to('/aktivitas/aktivitas1')
@@ -142,13 +142,13 @@ class Aktivitas1 extends BaseController
 
         $supplierModel    = model('SupplierModel');
         $data['rbeli']    = $rbeli;
-        $data['detail']   = $this->rbeliDModel->getByIdRbeli((int) $id);
-        $data['supplier'] = $supplierModel->getAktif();
+        $data['detail']   = $this->rbeliDModel->getByIdRbeli_l1H((int) $id);
+        $data['supplier'] = $supplierModel->getAktif_l1H();
 
         return view('aktivitas/aktivitas1/edit', $data);
     }
 
-    public function update()
+    public function update_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas1');
@@ -171,7 +171,7 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'No. Rencana Beli, Tanggal, dan Supplier wajib diisi.');
         }
 
-        if ($this->rbeliModel->cekNoRbeli($noRbeli, $id)) {
+        if ($this->rbeliModel->cekNoRbeli_l1H($noRbeli, $id)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor Rencana Beli sudah digunakan.');
         }
@@ -194,7 +194,7 @@ class Aktivitas1 extends BaseController
         ]);
 
         // Hapus detail lama lalu insert ulang
-        $this->rbeliDModel->hapusByIdRbeli($id);
+        $this->rbeliDModel->hapusByIdRbeli_l1H($id);
 
         foreach ($noFakturArr as $i => $noFaktur) {
             $noFaktur = trim($noFaktur);
@@ -219,7 +219,7 @@ class Aktivitas1 extends BaseController
     //  HAPUS
     // ═══════════════════════════════════════════
 
-    public function hapus($id = null)
+    public function hapus_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas1');
@@ -233,7 +233,7 @@ class Aktivitas1 extends BaseController
         }
 
         // Hapus detail terlebih dahulu (foreign key)
-        $this->rbeliDModel->hapusByIdRbeli((int) $id);
+        $this->rbeliDModel->hapusByIdRbeli_l1H((int) $id);
 
         // Hapus header
         $this->rbeliModel->delete((int) $id);

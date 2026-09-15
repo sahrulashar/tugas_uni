@@ -20,7 +20,7 @@ class TbBkkModel extends Model
     /**
      * Ambil semua BKK
      */
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->db->table('tbbkk b')
             ->select('b.*')
@@ -32,7 +32,7 @@ class TbBkkModel extends Model
     /**
      * Ambil satu BKK berdasarkan ID
      */
-    public function getById(int $id): ?array
+    public function getById_l1H(int $id): ?array
     {
         $row = $this->db->table('tbbkk b')
             ->select('b.*')
@@ -46,7 +46,7 @@ class TbBkkModel extends Model
     /**
      * Cek apakah nomor BKK sudah digunakan
      */
-    public function cekNoBkk(string $noBkk, ?int $id = null): bool
+    public function cekNoBkk_l1H(string $noBkk, ?int $id = null): bool
     {
         $builder = $this->where('no_bkk', $noBkk);
         if ($id !== null) {

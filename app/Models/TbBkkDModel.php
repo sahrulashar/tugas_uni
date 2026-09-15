@@ -23,7 +23,7 @@ class TbBkkDModel extends Model
      * Ambil semua detail BKK berdasarkan id_bkk,
      * JOIN ke tbcoa (debit & kredit) dan tbrbeli_d (opsional)
      */
-    public function getByIdBkk(int $idBkk): array
+    public function getByIdBkk_l1H(int $idBkk): array
     {
         return $this->db->table('tbbkk_d d')
             ->select([
@@ -45,7 +45,7 @@ class TbBkkDModel extends Model
     /**
      * Hapus semua detail milik satu BKK
      */
-    public function hapusByIdBkk(int $idBkk): bool
+    public function hapusByIdBkk_l1H(int $idBkk): bool
     {
         return $this->where('id_bkk', $idBkk)->delete();
     }
@@ -53,7 +53,7 @@ class TbBkkDModel extends Model
     /**
      * Hitung total nilai dari semua detail satu BKK
      */
-    public function getTotalNilai(int $idBkk): float
+    public function getTotalNilai_l1H(int $idBkk): float
     {
         $result = $this->selectSum('nilai')
                        ->where('id_bkk', $idBkk)

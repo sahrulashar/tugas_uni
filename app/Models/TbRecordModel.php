@@ -21,7 +21,7 @@ class TbRecordModel extends Model
     /**
      * Ambil semua Rekap BKK beserta info BKK terkait
      */
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->db->table('tbrecord r')
             ->select('r.*, b.no_bkk, b.tgl AS tgl_bkk, b.kete AS kete_bkk')
@@ -34,7 +34,7 @@ class TbRecordModel extends Model
     /**
      * Ambil satu Rekap berdasarkan ID
      */
-    public function getById(int $id): ?array
+    public function getById_l1H(int $id): ?array
     {
         $row = $this->db->table('tbrecord r')
             ->select('r.*, b.no_bkk, b.tgl AS tgl_bkk, b.kete AS kete_bkk')
@@ -49,7 +49,7 @@ class TbRecordModel extends Model
     /**
      * Cek apakah nomor rekap sudah digunakan
      */
-    public function cekNoRec(string $noRec, ?int $id = null): bool
+    public function cekNoRec_l1H(string $noRec, ?int $id = null): bool
     {
         $builder = $this->where('no_rec', $noRec);
         if ($id !== null) {

@@ -17,20 +17,20 @@ class KasKeluar extends BaseController
     //  COA — CRUD
     // ═══════════════════════════════════════════
 
-    public function coa()
+    public function coa_l1H()
     {
-        $data['coa']   = $this->coaModel->getAll();
-        $data['stats'] = $this->coaModel->getTotalPerTipe();
+        $data['coa']   = $this->coaModel->getAll_l1H();
+        $data['stats'] = $this->coaModel->getTotalPerTipe_l1H();
 
         return view('kas_keluar/coa', $data);
     }
 
-    public function tambah_coa()
+    public function tambah_coa_l1H()
     {
         return view('kas_keluar/tambah_coa');
     }
 
-    public function simpan_coa()
+    public function simpan_coa_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/coa');
@@ -46,7 +46,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
         }
 
-        if ($this->coaModel->cekKode($kodeCoa)) {
+        if ($this->coaModel->cekKode_l1H($kodeCoa)) {
             return redirect()->back()->with('error', 'Kode COA sudah digunakan.');
         }
 
@@ -63,7 +63,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Akun COA berhasil ditambahkan.');
     }
 
-    public function edit_coa($id = null)
+    public function edit_coa_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/coa');
@@ -79,7 +79,7 @@ class KasKeluar extends BaseController
         return view('kas_keluar/edit_coa', ['coa' => $coa]);
     }
 
-    public function update_coa()
+    public function update_coa_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/coa');
@@ -101,7 +101,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
         }
 
-        if ($this->coaModel->cekKode($kodeCoa, (int) $id)) {
+        if ($this->coaModel->cekKode_l1H($kodeCoa, (int) $id)) {
             return redirect()->back()->with('error', 'Kode COA sudah digunakan.');
         }
 
@@ -117,7 +117,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Akun COA berhasil diperbarui.');
     }
 
-    public function lihat_coa($id = null)
+    public function lihat_coa_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/coa');
@@ -133,7 +133,7 @@ class KasKeluar extends BaseController
         return view('kas_keluar/lihat_coa', ['coa' => $coa]);
     }
 
-    public function hapus_coa($id = null)
+    public function hapus_coa_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/coa');
@@ -146,23 +146,23 @@ class KasKeluar extends BaseController
                 ->with('error', 'Data COA tidak ditemukan.');
         }
 
-        $this->coaModel->nonaktifkan($id);
+        $this->coaModel->nonaktifkan_l1H($id);
 
         return redirect()->to('/kas_keluar/coa')
             ->with('success', 'Akun COA berhasil dinonaktifkan.');
     }
 
-    public function aktifkan_coa($id = null)
+    public function aktifkan_coa_l1H($id = null)
     {
         if ($id) {
-            $this->coaModel->aktifkan($id);
+            $this->coaModel->aktifkan_l1H($id);
         }
 
         return redirect()->to('/kas_keluar/coa')
             ->with('success', 'Akun COA berhasil diaktifkan.');
     }
 
-    public function hapus_permanen_coa($id = null)
+    public function hapus_permanen_coa_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/coa');
@@ -185,7 +185,7 @@ class KasKeluar extends BaseController
     //  SUPPLIER — CRUD
     // ═══════════════════════════════════════════
 
-    public function supplier()
+    public function supplier_l1H()
     {
         $supplierModel = model('SupplierModel');
         $data['supplier'] = $supplierModel->findAll();
@@ -193,12 +193,12 @@ class KasKeluar extends BaseController
         return view('kas_keluar/supplier', $data);
     }
 
-    public function tambah_supplier()
+    public function tambah_supplier_l1H()
     {
         return view('kas_keluar/tambah_supplier');
     }
 
-    public function simpan_supplier()
+    public function simpan_supplier_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/supplier');
@@ -215,7 +215,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode dan Nama Supplier wajib diisi.');
         }
 
-        if ($supplierModel->cekKode($kodeSupplier)) {
+        if ($supplierModel->cekKode_l1H($kodeSupplier)) {
             return redirect()->back()->with('error', 'Kode Supplier sudah digunakan.');
         }
 
@@ -230,7 +230,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Supplier berhasil ditambahkan.');
     }
 
-    public function edit_supplier($id = null)
+    public function edit_supplier_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/supplier');
@@ -247,7 +247,7 @@ class KasKeluar extends BaseController
         return view('kas_keluar/edit_supplier', ['supplier' => $supplier]);
     }
 
-    public function update_supplier()
+    public function update_supplier_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/supplier');
@@ -270,7 +270,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode dan Nama Supplier wajib diisi.');
         }
 
-        if ($supplierModel->cekKode($kodeSupplier, (int) $id)) {
+        if ($supplierModel->cekKode_l1H($kodeSupplier, (int) $id)) {
             return redirect()->back()->with('error', 'Kode Supplier sudah digunakan.');
         }
 
@@ -285,7 +285,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Supplier berhasil diperbarui.');
     }
 
-    public function hapus_supplier($id = null)
+    public function hapus_supplier_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/supplier');
@@ -299,24 +299,24 @@ class KasKeluar extends BaseController
                 ->with('error', 'Data Supplier tidak ditemukan.');
         }
 
-        $supplierModel->nonaktifkan($id);
+        $supplierModel->nonaktifkan_l1H($id);
 
         return redirect()->to('/kas_keluar/supplier')
             ->with('success', 'Supplier berhasil dinonaktifkan.');
     }
 
-    public function aktifkan_supplier($id = null)
+    public function aktifkan_supplier_l1H($id = null)
     {
         if ($id) {
             $supplierModel = model('SupplierModel');
-            $supplierModel->aktifkan($id);
+            $supplierModel->aktifkan_l1H($id);
         }
 
         return redirect()->to('/kas_keluar/supplier')
             ->with('success', 'Supplier berhasil diaktifkan.');
     }
 
-    public function hapus_permanen_supplier($id = null)
+    public function hapus_permanen_supplier_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/supplier');
@@ -336,7 +336,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Supplier berhasil dihapus permanen.');
     }
 
-    public function lihat_supplier($id = null)
+    public function lihat_supplier_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/supplier');
@@ -357,21 +357,21 @@ class KasKeluar extends BaseController
     //  KARYAWAN — CRUD
     // ═══════════════════════════════════════════
 
-    public function karyawan()
+    public function karyawan_l1H()
     {
         $karyawanModel    = model('KaryawanModel');
-        $data['karyawan'] = $karyawanModel->getAll();
-        $data['stats']    = $karyawanModel->getTotalPerJabatan();
+        $data['karyawan'] = $karyawanModel->getAll_l1H();
+        $data['stats']    = $karyawanModel->getTotalPerJabatan_l1H();
 
         return view('kas_keluar/karyawan', $data);
     }
 
-    public function tambah_karyawan()
+    public function tambah_karyawan_l1H()
     {
         return view('kas_keluar/tambah_karyawan');
     }
 
-    public function simpan_karyawan()
+    public function simpan_karyawan_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/karyawan');
@@ -388,7 +388,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'NIP dan Nama Karyawan wajib diisi.');
         }
 
-        if ($karyawanModel->cekNip($nip)) {
+        if ($karyawanModel->cekNip_l1H($nip)) {
             return redirect()->back()->with('error', 'NIP sudah digunakan.');
         }
 
@@ -403,7 +403,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Karyawan berhasil ditambahkan.');
     }
 
-    public function edit_karyawan($id = null)
+    public function edit_karyawan_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/karyawan');
@@ -420,7 +420,7 @@ class KasKeluar extends BaseController
         return view('kas_keluar/edit_karyawan', ['karyawan' => $karyawan]);
     }
 
-    public function update_karyawan()
+    public function update_karyawan_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/kas_keluar/karyawan');
@@ -442,7 +442,7 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'NIP dan Nama Karyawan wajib diisi.');
         }
 
-        if ($karyawanModel->cekNip($nip, (int) $id)) {
+        if ($karyawanModel->cekNip_l1H($nip, (int) $id)) {
             return redirect()->back()->with('error', 'NIP sudah digunakan.');
         }
 
@@ -457,7 +457,7 @@ class KasKeluar extends BaseController
             ->with('success', 'Karyawan berhasil diperbarui.');
     }
 
-    public function lihat_karyawan($id = null)
+    public function lihat_karyawan_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/karyawan');
@@ -474,7 +474,7 @@ class KasKeluar extends BaseController
         return view('kas_keluar/lihat_karyawan', ['karyawan' => $karyawan]);
     }
 
-    public function hapus_karyawan($id = null)
+    public function hapus_karyawan_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/karyawan');
@@ -488,23 +488,23 @@ class KasKeluar extends BaseController
                 ->with('error', 'Data Karyawan tidak ditemukan.');
         }
 
-        $karyawanModel->nonaktifkan($id);
+        $karyawanModel->nonaktifkan_l1H($id);
 
         return redirect()->to('/kas_keluar/karyawan')
             ->with('success', 'Karyawan berhasil dinonaktifkan.');
     }
 
-    public function aktifkan_karyawan($id = null)
+    public function aktifkan_karyawan_l1H($id = null)
     {
         if ($id) {
-            model('KaryawanModel')->aktifkan($id);
+            model('KaryawanModel')->aktifkan_l1H($id);
         }
 
         return redirect()->to('/kas_keluar/karyawan')
             ->with('success', 'Karyawan berhasil diaktifkan.');
     }
 
-    public function hapus_permanen_karyawan($id = null)
+    public function hapus_permanen_karyawan_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/kas_keluar/karyawan');

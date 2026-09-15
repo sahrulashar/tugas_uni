@@ -20,7 +20,7 @@ class Aktivitas3 extends BaseController
 
     public function index()
     {
-        $data['rekap'] = $this->recordModel->getAll();
+        $data['rekap'] = $this->recordModel->getAll_l1H();
 
         return view('aktivitas/aktivitas3/index', $data);
     }
@@ -29,15 +29,15 @@ class Aktivitas3 extends BaseController
     //  TAMBAH
     // ═══════════════════════════════════════════
 
-    public function tambah()
+    public function tambah_l1H()
     {
         $bkkModel = model('TbBkkModel');
-        $data['bkk'] = $bkkModel->getAll();
+        $data['bkk'] = $bkkModel->getAll_l1H();
 
         return view('aktivitas/aktivitas3/tambah', $data);
     }
 
-    public function simpan()
+    public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas3');
@@ -55,7 +55,7 @@ class Aktivitas3 extends BaseController
         }
 
         // Cek duplikat nomor rekap
-        if ($this->recordModel->cekNoRec($noRec)) {
+        if ($this->recordModel->cekNoRec_l1H($noRec)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
@@ -80,13 +80,13 @@ class Aktivitas3 extends BaseController
     //  LIHAT DETAIL
     // ═══════════════════════════════════════════
 
-    public function lihat($id = null)
+    public function lihat_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas3');
         }
 
-        $rekap = $this->recordModel->getById((int) $id);
+        $rekap = $this->recordModel->getById_l1H((int) $id);
 
         if (!$rekap) {
             return redirect()->to('/aktivitas/aktivitas3')
@@ -102,13 +102,13 @@ class Aktivitas3 extends BaseController
     //  EDIT
     // ═══════════════════════════════════════════
 
-    public function edit($id = null)
+    public function edit_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas3');
         }
 
-        $rekap = $this->recordModel->getById((int) $id);
+        $rekap = $this->recordModel->getById_l1H((int) $id);
 
         if (!$rekap) {
             return redirect()->to('/aktivitas/aktivitas3')
@@ -117,12 +117,12 @@ class Aktivitas3 extends BaseController
 
         $bkkModel = model('TbBkkModel');
         $data['rekap'] = $rekap;
-        $data['bkk']   = $bkkModel->getAll();
+        $data['bkk']   = $bkkModel->getAll_l1H();
 
         return view('aktivitas/aktivitas3/edit', $data);
     }
 
-    public function update()
+    public function update_l1H()
     {
         if (!$this->request->is('post')) {
             return redirect()->to('/aktivitas/aktivitas3');
@@ -145,7 +145,7 @@ class Aktivitas3 extends BaseController
         }
 
         // Cek duplikat (kecuali milik sendiri)
-        if ($this->recordModel->cekNoRec($noRec, $id)) {
+        if ($this->recordModel->cekNoRec_l1H($noRec, $id)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
@@ -170,7 +170,7 @@ class Aktivitas3 extends BaseController
     //  HAPUS
     // ═══════════════════════════════════════════
 
-    public function hapus($id = null)
+    public function hapus_l1H($id = null)
     {
         if (!$id) {
             return redirect()->to('/aktivitas/aktivitas3');

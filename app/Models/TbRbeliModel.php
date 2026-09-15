@@ -21,7 +21,7 @@ class TbRbeliModel extends Model
     /**
      * Ambil semua rencana beli beserta nama supplier (JOIN)
      */
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->db->table('tbrbeli r')
             ->select('r.*, s.nama_supplier')
@@ -34,7 +34,7 @@ class TbRbeliModel extends Model
     /**
      * Ambil satu rencana beli beserta nama supplier
      */
-    public function getById(int $id): ?array
+    public function getById_l1H(int $id): ?array
     {
         $row = $this->db->table('tbrbeli r')
             ->select('r.*, s.nama_supplier')
@@ -49,7 +49,7 @@ class TbRbeliModel extends Model
     /**
      * Cek apakah nomor rencana beli sudah digunakan
      */
-    public function cekNoRbeli(string $noRbeli, ?int $id = null): bool
+    public function cekNoRbeli_l1H(string $noRbeli, ?int $id = null): bool
     {
         $builder = $this->where('no_rbeli', $noRbeli);
         if ($id !== null) {

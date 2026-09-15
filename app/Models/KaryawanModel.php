@@ -18,19 +18,19 @@ class KaryawanModel extends Model
 
     protected $useTimestamps = false;
 
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->orderBy('nama_karyawan', 'ASC')->findAll();
     }
 
-    public function getAktif(): array
+    public function getAktif_l1H(): array
     {
         return $this->where('status', 'Aktif')
                     ->orderBy('nama_karyawan', 'ASC')
                     ->findAll();
     }
 
-    public function cekNip(string $nip, ?int $id = null): bool
+    public function cekNip_l1H(string $nip, ?int $id = null): bool
     {
         $builder = $this->where('nip', $nip);
         if ($id !== null) {
@@ -42,7 +42,7 @@ class KaryawanModel extends Model
     /**
      * Soft-delete: set status = 'Tidak Aktif'
      */
-    public function nonaktifkan(int $id): bool
+    public function nonaktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['status' => 'Tidak Aktif']);
     }
@@ -50,12 +50,12 @@ class KaryawanModel extends Model
     /**
      * Aktifkan kembali
      */
-    public function aktifkan(int $id): bool
+    public function aktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['status' => 'Aktif']);
     }
 
-    public function getTotalPerJabatan(): array
+    public function getTotalPerJabatan_l1H(): array
     {
         return $this->db->table($this->table)
             ->select(

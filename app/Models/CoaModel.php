@@ -23,7 +23,7 @@ class CoaModel extends Model
     /**
      * Ambil semua COA, diurutkan berdasarkan kode_coa
      */
-    public function getAll(): array
+    public function getAll_l1H(): array
     {
         return $this->db->table($this->table)
             ->select('id, kode_coa, nama_coa, saldo_normal, is_header, tipe, is_off')
@@ -35,7 +35,7 @@ class CoaModel extends Model
     /**
      * Ambil COA berdasarkan tipe (kolom `tipe`)
      */
-    public function getByTipe(string $tipe): array
+    public function getByTipe_l1H(string $tipe): array
     {
         return $this->select('id, kode_coa, nama_coa, saldo_normal, is_header, tipe, is_off')
             ->where('tipe', $tipe)
@@ -47,7 +47,7 @@ class CoaModel extends Model
     /**
      * Ambil daftar tipe yang unik (untuk filter)
      */
-    public function getTipeList(): array
+    public function getTipeList_l1H(): array
     {
         return $this->db->table($this->table)
             ->select('DISTINCT tipe')
@@ -60,7 +60,7 @@ class CoaModel extends Model
     /**
      * Cek apakah kode_coa sudah digunakan (exclude id tertentu saat edit)
      */
-    public function cekKode(string $kodeCoa, ?int $id = null): bool
+    public function cekKode_l1H(string $kodeCoa, ?int $id = null): bool
     {
         $builder = $this->where('kode_coa', $kodeCoa);
 
@@ -74,7 +74,7 @@ class CoaModel extends Model
     /**
      * Nonaktifkan: set is_off = 1
      */
-    public function nonaktifkan(int $id): bool
+    public function nonaktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['is_off' => 1]);
     }
@@ -82,7 +82,7 @@ class CoaModel extends Model
     /**
      * Aktifkan: set is_off = 0
      */
-    public function aktifkan(int $id): bool
+    public function aktifkan_l1H(int $id): bool
     {
         return $this->update($id, ['is_off' => 0]);
     }
@@ -90,7 +90,7 @@ class CoaModel extends Model
     /**
      * Statistik total akun per tipe (untuk stat cards di halaman COA)
      */
-    public function getTotalPerTipe(): array
+    public function getTotalPerTipe_l1H(): array
     {
         return $this->db->table($this->table)
             ->select(
