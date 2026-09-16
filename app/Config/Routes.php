@@ -66,3 +66,14 @@ $routes->group('aktivitas', function ($routes) {
     $routes->post('aktivitas3/update', 'Aktivitas\Aktivitas3::update_l1H');
     $routes->get('aktivitas3/hapus/(:num)', 'Aktivitas\Aktivitas3::hapus_l1H/$1');
 });
+
+// ── Pengujian ERP: Database Transaction & Audit Trail ─────────
+$routes->group('test-transaksi', function ($routes) {
+    $routes->get('/', 'TestTransaksi::index');
+    $routes->get('uji1', 'TestTransaksi::ujiRollbackNegatif');
+    $routes->get('sukses', 'TestTransaksi::ujiTransaksiSukses');
+    $routes->get('soft-delete', 'TestTransaksi::ujiSoftDelete');
+    $routes->get('soft-delete/(:num)', 'TestTransaksi::ujiSoftDelete/$1');
+    $routes->get('uji2', 'TestTransaksi::ujiSimulasiCrash');
+});
+

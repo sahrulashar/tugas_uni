@@ -24,6 +24,37 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `kas_keluar` /*!40100 DEFAULT CHARACTER
 USE `kas_keluar`;
 
 --
+-- Table structure for table `audit_log`
+--
+
+DROP TABLE IF EXISTS `audit_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `audit_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL COMMENT 'ID user yang melakukan aksi',
+  `aksi` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'TAMBAH | EDIT | SOFT_DELETE',
+  `tabel_terdampak` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nama tabel yang diubah',
+  `record_id` int NOT NULL COMMENT 'ID record yang terdampak',
+  `waktu` datetime NOT NULL COMMENT 'Waktu aksi dilakukan (NOW())',
+  PRIMARY KEY (`id`),
+  KEY `idx_audit_tabel_record` (`tabel_terdampak`,`record_id`),
+  KEY `idx_audit_user` (`user_id`),
+  KEY `idx_audit_waktu` (`waktu`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Audit trail semua aksi pengguna pada tabel master';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `audit_log`
+--
+
+LOCK TABLES `audit_log` WRITE;
+/*!40000 ALTER TABLE `audit_log` DISABLE KEYS */;
+INSERT INTO `audit_log` VALUES (1,1,'TAMBAH','tbbeli',1,'2026-09-16 19:30:41'),(2,1,'TAMBAH','tbbeli',2,'2026-09-16 19:30:41'),(3,1,'SOFT_DELETE','tbbeli',2,'2026-09-16 19:30:41');
+/*!40000 ALTER TABLE `audit_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `coa`
 --
 
@@ -109,6 +140,62 @@ INSERT INTO `supplier` VALUES (1,'SUP001','CV Aci Oil','Yogyakarta','Aktif'),(2,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tbbeli`
+--
+
+DROP TABLE IF EXISTS `tbbeli`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbbeli` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `no_beli` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nomor transaksi pembelian',
+  `tgl` date NOT NULL COMMENT 'Tanggal transaksi',
+  `toko` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nama toko/vendor',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=aktif, 1=soft-deleted',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `no_beli` (`no_beli`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Header transaksi pembelian';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbbeli`
+--
+
+LOCK TABLES `tbbeli` WRITE;
+/*!40000 ALTER TABLE `tbbeli` DISABLE KEYS */;
+INSERT INTO `tbbeli` VALUES (1,'BL-001','2026-09-15','Toko Sumber Makmur',0),(2,'BL-002','2026-09-16','Toko Berkah Jaya',0);
+/*!40000 ALTER TABLE `tbbeli` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbbeli_d`
+--
+
+DROP TABLE IF EXISTS `tbbeli_d`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbbeli_d` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_beli` int NOT NULL COMMENT 'FK ke tbbeli.id',
+  `barng` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nama barang',
+  `harga` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Harga barang (tidak boleh negatif)',
+  PRIMARY KEY (`id`),
+  KEY `fk_tbbeli_d_beli` (`id_beli`),
+  CONSTRAINT `fk_tbbeli_d_beli` FOREIGN KEY (`id_beli`) REFERENCES `tbbeli` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Detail item transaksi pembelian';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbbeli_d`
+--
+
+LOCK TABLES `tbbeli_d` WRITE;
+/*!40000 ALTER TABLE `tbbeli_d` DISABLE KEYS */;
+INSERT INTO `tbbeli_d` VALUES (1,1,'Beras 5kg',60000.00),(2,1,'Minyak 2L',38000.00),(3,1,'Gula 1kg',16000.00),(4,2,'Tepung 1kg',12000.00),(5,2,'Telur 1kg',28000.00);
+/*!40000 ALTER TABLE `tbbeli_d` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tbbkk`
 --
 
@@ -121,7 +208,7 @@ CREATE TABLE `tbbkk` (
   `tgl` date NOT NULL,
   `kete` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,6 +217,7 @@ CREATE TABLE `tbbkk` (
 
 LOCK TABLES `tbbkk` WRITE;
 /*!40000 ALTER TABLE `tbbkk` DISABLE KEYS */;
+INSERT INTO `tbbkk` VALUES (2,'BKK01','2026-09-14','Bukti');
 /*!40000 ALTER TABLE `tbbkk` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,7 +231,7 @@ DROP TABLE IF EXISTS `tbbkk_d`;
 CREATE TABLE `tbbkk_d` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_bkk` int NOT NULL,
-  `id_rbeli_d` int NOT NULL,
+  `id_rbeli_d` int DEFAULT NULL,
   `nilai` decimal(15,2) NOT NULL DEFAULT '0.00',
   `id_coa` int NOT NULL,
   `id_coa_kb` int NOT NULL,
@@ -156,7 +244,7 @@ CREATE TABLE `tbbkk_d` (
   CONSTRAINT `tbbkk_d_ibfk_2` FOREIGN KEY (`id_rbeli_d`) REFERENCES `tbrbeli_d` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tbbkk_d_ibfk_3` FOREIGN KEY (`id_coa`) REFERENCES `coa` (`id`),
   CONSTRAINT `tbbkk_d_ibfk_4` FOREIGN KEY (`id_coa_kb`) REFERENCES `coa` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,6 +253,7 @@ CREATE TABLE `tbbkk_d` (
 
 LOCK TABLES `tbbkk_d` WRITE;
 /*!40000 ALTER TABLE `tbbkk_d` DISABLE KEYS */;
+INSERT INTO `tbbkk_d` VALUES (2,2,1,200000.00,1,8);
 /*!40000 ALTER TABLE `tbbkk_d` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -184,7 +273,7 @@ CREATE TABLE `tbrbeli` (
   PRIMARY KEY (`id`),
   KEY `id_supp` (`id_supp`),
   CONSTRAINT `tbrbeli_ibfk_1` FOREIGN KEY (`id_supp`) REFERENCES `supplier` (`id_supplier`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,6 +282,7 @@ CREATE TABLE `tbrbeli` (
 
 LOCK TABLES `tbrbeli` WRITE;
 /*!40000 ALTER TABLE `tbrbeli` DISABLE KEYS */;
+INSERT INTO `tbrbeli` VALUES (1,'RB001','2026-09-13',1,'Tunai');
 /*!40000 ALTER TABLE `tbrbeli` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,7 +301,7 @@ CREATE TABLE `tbrbeli_d` (
   PRIMARY KEY (`id`),
   KEY `id_rbeli` (`id_rbeli`),
   CONSTRAINT `tbrbeli_d_ibfk_1` FOREIGN KEY (`id_rbeli`) REFERENCES `tbrbeli` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,6 +310,7 @@ CREATE TABLE `tbrbeli_d` (
 
 LOCK TABLES `tbrbeli_d` WRITE;
 /*!40000 ALTER TABLE `tbrbeli_d` DISABLE KEYS */;
+INSERT INTO `tbrbeli_d` VALUES (1,1,'INV-001',200000.00);
 /*!40000 ALTER TABLE `tbrbeli_d` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -239,7 +330,7 @@ CREATE TABLE `tbrecord` (
   PRIMARY KEY (`id`),
   KEY `id_bkk` (`id_bkk`),
   CONSTRAINT `tbrecord_ibfk_1` FOREIGN KEY (`id_bkk`) REFERENCES `tbbkk` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,6 +339,7 @@ CREATE TABLE `tbrecord` (
 
 LOCK TABLES `tbrecord` WRITE;
 /*!40000 ALTER TABLE `tbrecord` DISABLE KEYS */;
+INSERT INTO `tbrecord` VALUES (1,'REC-2026-01','2026-09-14',2,'Rekap');
 /*!40000 ALTER TABLE `tbrecord` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -260,4 +352,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-09 15:32:55
+-- Dump completed on 2026-09-16 19:33:28
