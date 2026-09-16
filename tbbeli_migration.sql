@@ -1,9 +1,10 @@
-﻿-- ============================================================
---  SQL MIGRATION — Tugas ERP: Database Transaction & Audit Trail
+-- ============================================================
+--  SQL MIGRATION / PATCH — Database Transaction & Audit Trail
 --  Tabel: tbbeli, tbbeli_d, audit_log
---  Framework: CodeIgniter 4 | Database: MySQL
+--  Database: kas_keluar
 -- ============================================================
 
+USE kas_keluar;
 
 -- ────────────────────────────────────────────────────────────
 --  1. TABEL MASTER PEMBELIAN (tbbeli)
@@ -73,23 +74,23 @@ CREATE TABLE IF NOT EXISTS audit_log (
 -- ────────────────────────────────────────────────────────────
 
 -- Transaksi valid
-INSERT INTO tbbeli (no_beli, tgl, toko, is_deleted) VALUES
+INSERT IGNORE INTO tbbeli (no_beli, tgl, toko, is_deleted) VALUES
     ('BL-001', '2026-09-15', 'Toko Sumber Makmur', 0),
     ('BL-002', '2026-09-16', 'Toko Berkah Jaya',   0);
 
 -- Detail valid (harga semua positif)
-INSERT INTO tbbeli_d (id_beli, barng, harga) VALUES
-    (1, 'Beras 5kg',   60000),
-    (1, 'Minyak 2L',   38000),
-    (1, 'Gula 1kg',    16000),
-    (2, 'Tepung 1kg',  12000),
-    (2, 'Telur 1kg',   28000);
+INSERT IGNORE INTO tbbeli_d (id, id_beli, barng, harga) VALUES
+    (1, 1, 'Beras 5kg',   60000),
+    (2, 1, 'Minyak 2L',   38000),
+    (3, 1, 'Gula 1kg',    16000),
+    (4, 2, 'Tepung 1kg',  12000),
+    (5, 2, 'Telur 1kg',   28000);
 
 -- Contoh audit log
-INSERT INTO audit_log (user_id, aksi, tabel_terdampak, record_id, waktu) VALUES
-    (1, 'TAMBAH',      'tbbeli', 1, NOW()),
-    (1, 'TAMBAH',      'tbbeli', 2, NOW()),
-    (1, 'SOFT_DELETE', 'tbbeli', 2, NOW());
+INSERT IGNORE INTO audit_log (id, user_id, aksi, tabel_terdampak, record_id, waktu) VALUES
+    (1, 1, 'TAMBAH',      'tbbeli', 1, NOW()),
+    (2, 1, 'TAMBAH',      'tbbeli', 2, NOW()),
+    (3, 1, 'SOFT_DELETE', 'tbbeli', 2, NOW());
 
 
 -- ────────────────────────────────────────────────────────────

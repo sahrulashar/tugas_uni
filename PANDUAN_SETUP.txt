@@ -72,6 +72,18 @@ CARA 2: MELALUI TERMINAL / CMD / POWERSHELL
    (Jika menggunakan PowerShell Windows, gunakan:
     Get-Content kas_keluar.sql | mysql -u root -p kas_keluar)
 
+CARA 3: JIKA SUDAH PUNYA DATABASE KAS_KELUAR (HANYA INGIN UPDATE / PATCH):
+Jika di MySQL server sudah ada database kas_keluar dan hanya ingin menambahkan
+modul Transaksi Pembelian & Audit Trail tanpa merusak data yang sudah ada:
+1. Melalui phpMyAdmin:
+   - Klik database `kas_keluar` di panel kiri.
+   - Klik tab "Import".
+   - Pilih file: `tbbeli_migration.sql`.
+   - Klik tombol "Import" / "Kirim".
+2. Melalui Terminal / CMD:
+   mysql -u root -p kas_keluar < tbbeli_migration.sql
+   (PowerShell: Get-Content tbbeli_migration.sql | mysql -u root -p kas_keluar)
+
 --------------------------------------------------------------------------------
 4. KONFIGURASI FILE ENVIRONMENT (.env)
 --------------------------------------------------------------------------------
@@ -115,6 +127,9 @@ CARA 2: MELALUI TERMINAL / CMD / POWERSHELL
 
    Halaman Supplier:
    http://localhost:8080/kas_keluar/supplier
+
+   Panel Pengujian Transaksi & Audit Trail (Tugas Baru):
+   http://localhost:8080/test-transaksi
 
 --------------------------------------------------------------------------------
 6. TROUBLESHOOTING (PEMECAHAN MASALAH)
