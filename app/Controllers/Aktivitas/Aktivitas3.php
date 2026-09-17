@@ -4,6 +4,7 @@ namespace App\Controllers\Aktivitas;
 
 use App\Controllers\BaseController;
 use App\Models\TbRecordModel;
+use App\Libraries\AuditLogger;
 
 class Aktivitas3 extends BaseController
 {
@@ -60,17 +61,21 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
 
+        $dataRekap = [
+            'no_rec' => $noRec,
+            'tgl'    => $tgl,
+            'id_bkk' => $idBkk,
+            'ket'    => $ket ?: null,
+        ];
+
         try {
-            $this->recordModel->insert([
-                'no_rec' => $noRec,
-                'tgl'    => $tgl,
-                'id_bkk' => $idBkk,
-                'ket'    => $ket ?: null,
-            ]);
+            $idRec = $this->recordModel->insert($dataRekap);
         } catch (\Throwable $e) {
             return redirect()->back()->withInput()
                 ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
+
+        AuditLogger::catat('TAMBAH', 'tbrecord', (int) $idRec, ['after' => $dataRekap]);
 
         return redirect()->to('/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil disimpan.');
@@ -150,17 +155,26 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Nomor Rekap sudah digunakan.');
         }
 
+        $dataBaru = [
+            'no_rec' => $noRec,
+            'tgl'    => $tgl,
+            'id_bkk' => $idBkk,
+            'ket'    => $ket ?: null,
+        ];
+
+        $dataLama = $this->recordModel->find($id);
+
         try {
-            $this->recordModel->update($id, [
-                'no_rec' => $noRec,
-                'tgl'    => $tgl,
-                'id_bkk' => $idBkk,
-                'ket'    => $ket ?: null,
-            ]);
+            $this->recordModel->update($id, $dataBaru);
         } catch (\Throwable $e) {
             return redirect()->back()->withInput()
                 ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
+
+        AuditLogger::catat('EDIT', 'tbrecord', $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
+        ]);
 
         return redirect()->to('/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil diperbarui.');
@@ -183,8 +197,10 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
+        AuditLogger::catat('SOFT_DELETE', 'tbrecord', (int) $id, ['before' => $rekap]);
+
         try {
-            $this->recordModel->delete((int) $id);
+            $this->recordModel->softDelete_l1H((int) $id);
         } catch (\Throwable $e) {
             return redirect()->to('/aktivitas/aktivitas3')
                 ->with('error', 'Gagal menghapus data: ' . $e->getMessage());

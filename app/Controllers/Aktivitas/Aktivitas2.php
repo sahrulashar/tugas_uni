@@ -5,6 +5,7 @@ namespace App\Controllers\Aktivitas;
 use App\Controllers\BaseController;
 use App\Models\TbBkkModel;
 use App\Models\TbBkkDModel;
+use App\Libraries\AuditLogger;
 use CodeIgniter\Database\BaseConnection;
 
 class Aktivitas2 extends BaseController
@@ -78,11 +79,13 @@ class Aktivitas2 extends BaseController
         }
 
         // Simpan header
-        $idBkk = $this->bkkModel->insert([
+        $dataHeader = [
             'no_bkk' => $noBkk,
             'tgl'    => $tgl,
             'kete'   => $kete ?: null,
-        ]);
+        ];
+
+        $idBkk = $this->bkkModel->insert($dataHeader);
 
         // Simpan detail
         foreach ($nilaiArr as $i => $nilaiRaw) {
@@ -104,6 +107,8 @@ class Aktivitas2 extends BaseController
                 'id_coa_kb'  => $idCoaKb,
             ]);
         }
+
+        AuditLogger::catat('TAMBAH', 'tbbkk', (int) $idBkk, ['after' => $dataHeader]);
 
         return redirect()->to('/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil disimpan.');
@@ -198,12 +203,15 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'Minimal satu baris detail wajib diisi.');
         }
 
-        // Update header
-        $this->bkkModel->update($id, [
+        $dataBaru = [
             'no_bkk' => $noBkk,
             'tgl'    => $tgl,
             'kete'   => $kete ?: null,
-        ]);
+        ];
+
+        // Update header
+        $dataLama = $this->bkkModel->find($id);
+        $this->bkkModel->update($id, $dataBaru);
 
         // Hapus detail lama lalu insert ulang
         $this->bkkDModel->hapusByIdBkk_l1H($id);
@@ -228,6 +236,11 @@ class Aktivitas2 extends BaseController
             ]);
         }
 
+        AuditLogger::catat('EDIT', 'tbbkk', $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
+        ]);
+
         return redirect()->to('/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil diperbarui.');
     }
@@ -249,11 +262,10 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
-        // Hapus detail terlebih dahulu (foreign key)
-        $this->bkkDModel->hapusByIdBkk_l1H((int) $id);
+        AuditLogger::catat('SOFT_DELETE', 'tbbkk', (int) $id, ['before' => $bkk]);
 
-        // Hapus header
-        $this->bkkModel->delete((int) $id);
+        // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
+        $this->bkkModel->softDelete_l1H((int) $id);
 
         return redirect()->to('/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil dihapus.');

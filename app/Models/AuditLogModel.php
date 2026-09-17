@@ -14,6 +14,7 @@ class AuditLogModel extends Model
         'aksi',
         'tabel_terdampak',
         'record_id',
+        'detail_perubahan',
         'waktu',
     ];
 
