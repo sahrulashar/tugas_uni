@@ -14,6 +14,12 @@ class AuditLogModel extends Model
         'aksi',
         'tabel_terdampak',
         'record_id',
+<<<<<<< Updated upstream
+=======
+        'keterangan',
+        'url',
+        'detail_perubahan',
+>>>>>>> Stashed changes
         'waktu',
     ];
 
