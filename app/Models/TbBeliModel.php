@@ -190,19 +190,11 @@ class TbBeliModel extends Model
      *   // Setelah soft delete:
      *   $beliModel->catatAuditLog_l1H($userId, 'SOFT_DELETE', 'tbbeli', $id);
      */
-    public function catatAuditLog_l1H(int $userId, string $aksi, string $tabel, int $recordId): bool
+    public function catatAuditLog_l1H(int $userId, string $aksi, string $tabel, int $recordId, array $detail = []): bool
     {
-        $auditModel = new AuditLogModel();
-
-        $inserted = $auditModel->insert([
-            'user_id'         => $userId,
-            'aksi'            => $aksi,
-            'tabel_terdampak' => $tabel,
-            'record_id'       => $recordId,
-            'waktu'           => date('Y-m-d H:i:s'), // setara dengan NOW()
-        ]);
-
-        return (bool) $inserted;
+        // Delegasi ke AuditLogger terpusat (user_id diambil otomatis dari session)
+        // Parameter $userId dipertahankan untuk kompatibilitas pemanggil lama.
+        return \App\Libraries\AuditLogger::catat($aksi, $tabel, $recordId, $detail);
     }
 
     // ═══════════════════════════════════════════

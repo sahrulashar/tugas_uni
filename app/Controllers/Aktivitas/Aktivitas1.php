@@ -5,6 +5,7 @@ namespace App\Controllers\Aktivitas;
 use App\Controllers\BaseController;
 use App\Models\TbRbeliModel;
 use App\Models\TbRbeliDModel;
+use App\Libraries\AuditLogger;
 
 class Aktivitas1 extends BaseController
 {
@@ -72,12 +73,14 @@ class Aktivitas1 extends BaseController
         }
 
         // Simpan header
-        $idRbeli = $this->rbeliModel->insert([
+        $dataHeader = [
             'no_rbeli' => $noRbeli,
             'tgl'      => $tgl,
             'id_supp'  => $idSupp,
             'kete'     => $kete ?: null,
-        ]);
+        ];
+
+        $idRbeli = $this->rbeliModel->insert($dataHeader);
 
         // Simpan detail
         foreach ($noFakturArr as $i => $noFaktur) {
@@ -94,6 +97,8 @@ class Aktivitas1 extends BaseController
                 'nilai'     => $nilai,
             ]);
         }
+
+        AuditLogger::catat('TAMBAH', 'tbrbeli', (int) $idRbeli, ['after' => $dataHeader]);
 
         return redirect()->to('/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil disimpan.');
@@ -185,13 +190,16 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'Minimal satu baris detail wajib diisi.');
         }
 
-        // Update header
-        $this->rbeliModel->update($id, [
+        $dataBaru = [
             'no_rbeli' => $noRbeli,
             'tgl'      => $tgl,
             'id_supp'  => $idSupp,
             'kete'     => $kete ?: null,
-        ]);
+        ];
+
+        // Update header
+        $dataLama = $this->rbeliModel->find($id);
+        $this->rbeliModel->update($id, $dataBaru);
 
         // Hapus detail lama lalu insert ulang
         $this->rbeliDModel->hapusByIdRbeli_l1H($id);
@@ -210,6 +218,11 @@ class Aktivitas1 extends BaseController
                 'nilai'     => $nilai,
             ]);
         }
+
+        AuditLogger::catat('EDIT', 'tbrbeli', $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
+        ]);
 
         return redirect()->to('/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil diperbarui.');
@@ -232,11 +245,10 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
-        // Hapus detail terlebih dahulu (foreign key)
-        $this->rbeliDModel->hapusByIdRbeli_l1H((int) $id);
+        AuditLogger::catat('SOFT_DELETE', 'tbrbeli', (int) $id, ['before' => $rbeli]);
 
-        // Hapus header
-        $this->rbeliModel->delete((int) $id);
+        // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
+        $this->rbeliModel->softDelete_l1H((int) $id);
 
         return redirect()->to('/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil dihapus.');

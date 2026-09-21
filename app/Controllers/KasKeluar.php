@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\CoaModel;
+use App\Libraries\AuditLogger;
 
 class KasKeluar extends BaseController
 {
@@ -50,14 +51,18 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode COA sudah digunakan.');
         }
 
-        $this->coaModel->insert([
+        $dataCoa = [
             'kode_coa'    => $kodeCoa,
             'nama_coa'    => $namaCoa,
             'saldo_normal' => $saldoNormal,
             'is_header'   => $isHeader,
             'tipe'        => $tipe ?: null,
             'is_off'      => 0,
-        ]);
+        ];
+
+        $idCoa = $this->coaModel->insert($dataCoa);
+
+        AuditLogger::catat('TAMBAH', 'coa', (int) $idCoa, ['after' => $dataCoa]);
 
         return redirect()->to('/kas_keluar/coa')
             ->with('success', 'Akun COA berhasil ditambahkan.');
@@ -105,12 +110,20 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode COA sudah digunakan.');
         }
 
-        $this->coaModel->update($id, [
+        $dataBaru = [
             'kode_coa'    => $kodeCoa,
             'nama_coa'    => $namaCoa,
             'saldo_normal' => $saldoNormal,
             'is_header'   => $isHeader,
             'tipe'        => $tipe ?: null,
+        ];
+
+        $dataLama = $this->coaModel->find($id);
+        $this->coaModel->update($id, $dataBaru);
+
+        AuditLogger::catat('EDIT', 'coa', (int) $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
         ]);
 
         return redirect()->to('/kas_keluar/coa')
@@ -148,6 +161,11 @@ class KasKeluar extends BaseController
 
         $this->coaModel->nonaktifkan_l1H($id);
 
+        AuditLogger::catat('NONAKTIF', 'coa', (int) $id, [
+            'before' => $coa,
+            'after'  => ['is_off' => 1],
+        ]);
+
         return redirect()->to('/kas_keluar/coa')
             ->with('success', 'Akun COA berhasil dinonaktifkan.');
     }
@@ -156,6 +174,10 @@ class KasKeluar extends BaseController
     {
         if ($id) {
             $this->coaModel->aktifkan_l1H($id);
+
+            AuditLogger::catat('AKTIF', 'coa', (int) $id, [
+                'after' => ['is_off' => 0],
+            ]);
         }
 
         return redirect()->to('/kas_keluar/coa')
@@ -164,22 +186,10 @@ class KasKeluar extends BaseController
 
     public function hapus_permanen_coa_l1H($id = null)
     {
-        if (!$id) {
-            return redirect()->to('/kas_keluar/coa');
-        }
-
-        $coa = $this->coaModel->find($id);
-
-        if (!$coa) {
-            return redirect()->to('/kas_keluar/coa')
-                ->with('error', 'Data COA tidak ditemukan.');
-        }
-
-        $this->coaModel->delete($id);
-
-        return redirect()->to('/kas_keluar/coa')
-            ->with('success', 'Akun COA berhasil dihapus permanen.');
+        // Dialihkan ke soft delete (nonaktifkan) demi integritas data dan audit trail
+        return $this->hapus_coa_l1H($id);
     }
+
 
     // ═══════════════════════════════════════════
     //  SUPPLIER — CRUD
@@ -219,12 +229,16 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode Supplier sudah digunakan.');
         }
 
-        $supplierModel->insert([
+        $dataSupplier = [
             'kode_supplier' => $kodeSupplier,
             'nama_supplier' => $namaSupplier,
             'alamat'        => $alamat,
             'status'        => $status ?: 'Aktif',
-        ]);
+        ];
+
+        $idSupplier = $supplierModel->insert($dataSupplier);
+
+        AuditLogger::catat('TAMBAH', 'supplier', (int) $idSupplier, ['after' => $dataSupplier]);
 
         return redirect()->to('/kas_keluar/supplier')
             ->with('success', 'Supplier berhasil ditambahkan.');
@@ -274,11 +288,19 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'Kode Supplier sudah digunakan.');
         }
 
-        $supplierModel->update($id, [
+        $dataBaru = [
             'kode_supplier' => $kodeSupplier,
             'nama_supplier' => $namaSupplier,
             'alamat'        => $alamat,
             'status'        => $status,
+        ];
+
+        $dataLama = $supplierModel->find($id);
+        $supplierModel->update($id, $dataBaru);
+
+        AuditLogger::catat('EDIT', 'supplier', (int) $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
         ]);
 
         return redirect()->to('/kas_keluar/supplier')
@@ -301,6 +323,11 @@ class KasKeluar extends BaseController
 
         $supplierModel->nonaktifkan_l1H($id);
 
+        AuditLogger::catat('NONAKTIF', 'supplier', (int) $id, [
+            'before' => $supplier,
+            'after'  => ['status' => 'Tidak Aktif'],
+        ]);
+
         return redirect()->to('/kas_keluar/supplier')
             ->with('success', 'Supplier berhasil dinonaktifkan.');
     }
@@ -310,6 +337,10 @@ class KasKeluar extends BaseController
         if ($id) {
             $supplierModel = model('SupplierModel');
             $supplierModel->aktifkan_l1H($id);
+
+            AuditLogger::catat('AKTIF', 'supplier', (int) $id, [
+                'after' => ['status' => 'Aktif'],
+            ]);
         }
 
         return redirect()->to('/kas_keluar/supplier')
@@ -318,23 +349,10 @@ class KasKeluar extends BaseController
 
     public function hapus_permanen_supplier_l1H($id = null)
     {
-        if (!$id) {
-            return redirect()->to('/kas_keluar/supplier');
-        }
-
-        $supplierModel = model('SupplierModel');
-        $supplier      = $supplierModel->find($id);
-
-        if (!$supplier) {
-            return redirect()->to('/kas_keluar/supplier')
-                ->with('error', 'Data Supplier tidak ditemukan.');
-        }
-
-        $supplierModel->delete($id);
-
-        return redirect()->to('/kas_keluar/supplier')
-            ->with('success', 'Supplier berhasil dihapus permanen.');
+        // Dialihkan ke soft delete (nonaktifkan) demi integritas data dan audit trail
+        return $this->hapus_supplier_l1H($id);
     }
+
 
     public function lihat_supplier_l1H($id = null)
     {
@@ -392,12 +410,16 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'NIP sudah digunakan.');
         }
 
-        $karyawanModel->insert([
+        $dataKaryawan = [
             'nip'           => $nip,
             'nama_karyawan' => $namaKaryawan,
             'jabatan'       => $jabatan,
             'status'        => $status ?: 'Aktif',
-        ]);
+        ];
+
+        $idKaryawan = $karyawanModel->insert($dataKaryawan);
+
+        AuditLogger::catat('TAMBAH', 'karyawan', (int) $idKaryawan, ['after' => $dataKaryawan]);
 
         return redirect()->to('/kas_keluar/karyawan')
             ->with('success', 'Karyawan berhasil ditambahkan.');
@@ -446,11 +468,19 @@ class KasKeluar extends BaseController
             return redirect()->back()->with('error', 'NIP sudah digunakan.');
         }
 
-        $karyawanModel->update($id, [
+        $dataBaru = [
             'nip'           => $nip,
             'nama_karyawan' => $namaKaryawan,
             'jabatan'       => $jabatan,
             'status'        => $status,
+        ];
+
+        $dataLama = $karyawanModel->find($id);
+        $karyawanModel->update($id, $dataBaru);
+
+        AuditLogger::catat('EDIT', 'karyawan', (int) $id, [
+            'before' => $dataLama,
+            'after'  => $dataBaru,
         ]);
 
         return redirect()->to('/kas_keluar/karyawan')
@@ -490,6 +520,11 @@ class KasKeluar extends BaseController
 
         $karyawanModel->nonaktifkan_l1H($id);
 
+        AuditLogger::catat('NONAKTIF', 'karyawan', (int) $id, [
+            'before' => $karyawan,
+            'after'  => ['status' => 'Tidak Aktif'],
+        ]);
+
         return redirect()->to('/kas_keluar/karyawan')
             ->with('success', 'Karyawan berhasil dinonaktifkan.');
     }
@@ -498,6 +533,10 @@ class KasKeluar extends BaseController
     {
         if ($id) {
             model('KaryawanModel')->aktifkan_l1H($id);
+
+            AuditLogger::catat('AKTIF', 'karyawan', (int) $id, [
+                'after' => ['status' => 'Aktif'],
+            ]);
         }
 
         return redirect()->to('/kas_keluar/karyawan')
@@ -506,21 +545,7 @@ class KasKeluar extends BaseController
 
     public function hapus_permanen_karyawan_l1H($id = null)
     {
-        if (!$id) {
-            return redirect()->to('/kas_keluar/karyawan');
-        }
-
-        $karyawanModel = model('KaryawanModel');
-        $karyawan      = $karyawanModel->find($id);
-
-        if (!$karyawan) {
-            return redirect()->to('/kas_keluar/karyawan')
-                ->with('error', 'Data Karyawan tidak ditemukan.');
-        }
-
-        $karyawanModel->delete($id);
-
-        return redirect()->to('/kas_keluar/karyawan')
-            ->with('success', 'Karyawan berhasil dihapus permanen.');
+        // Dialihkan ke soft delete (nonaktifkan) demi integritas data dan audit trail
+        return $this->hapus_karyawan_l1H($id);
     }
 }
