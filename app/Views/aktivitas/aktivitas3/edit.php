@@ -76,18 +76,18 @@ function Icon({ name, size = 18, className = '' }) {
 const navItems = [
   { label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
   { label: 'Kas Keluar', icon: 'ArrowUpFromLine', children: [
-    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/kas_keluar/coa' },
-    { label: 'Supplier',          icon: 'Truck',    href: '/kas_keluar/supplier' },
-    { label: 'Karyawan',          icon: 'Users',    href: '/kas_keluar/karyawan' },
+    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa' },
+    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier' },
+    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan' },
   ]},
   { label: 'Kas Masuk', icon: 'ArrowDownToLine', children: [
     { label: 'Penerimaan', icon: 'Receipt',  href: '#' },
     { label: 'Piutang',    icon: 'FilePlus', href: '#' },
   ]},
   { label: 'Aktivitas', icon: 'ClipboardList', children: [
-    { label: 'Rencana Beli',     icon: 'ShoppingCart',  href: '/aktivitas/aktivitas1' },
-    { label: 'Bukti Kas Keluar', icon: 'Receipt',        href: '/aktivitas/aktivitas2' },
-    { label: 'Rekap BKK',        icon: 'ClipboardCheck', href: '/aktivitas/aktivitas3' },
+    { label: 'Rencana Beli',     icon: 'ShoppingCart',  href: '/46124026/aktivitas/aktivitas1' },
+    { label: 'Bukti Kas Keluar', icon: 'Receipt',        href: '/46124026/aktivitas/aktivitas2' },
+    { label: 'Rekap BKK',        icon: 'ClipboardCheck', href: '/46124026/aktivitas/aktivitas3' },
   ]},
   { label: 'Laporan', icon: 'BarChart3', children: [
     { label: 'Neraca',    icon: 'Scale',      href: '#' },
@@ -235,7 +235,7 @@ function EditPage() {
     <div className="max-w-2xl mx-auto space-y-6 fade-in">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <a href="/aktivitas/aktivitas3" className="p-2 rounded-lg hover:bg-slate-200 text-slate-500 transition-colors">
+        <a href="/46124026/aktivitas/aktivitas3" className="p-2 rounded-lg hover:bg-slate-200 text-slate-500 transition-colors">
           <Icon name="ArrowLeft" size={18}/>
         </a>
         <div>
@@ -259,7 +259,7 @@ function EditPage() {
       </div>
 
       {/* Form */}
-      <form method="POST" action="/aktivitas/aktivitas3/update" onSubmit={handleSubmit}
+      <form method="POST" action="/46124026/aktivitas/aktivitas3/update" onSubmit={handleSubmit}
         className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
         <input type="hidden" name={csrf.name} value={csrf.value}/>
         <input type="hidden" name="id" value={rekap.id}/>
@@ -295,7 +295,7 @@ function EditPage() {
               <Icon name="AlertCircle" size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium">Belum ada data Bukti Kas Keluar (BKK).</p>
-                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/aktivitas/aktivitas2/tambah" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu.</p>
+                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/46124026/aktivitas/aktivitas2/tambah" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu.</p>
               </div>
             </div>
           ) : (
@@ -333,7 +333,7 @@ function EditPage() {
             <Icon name="Eye" size={14}/>Lihat Detail
           </a>
           <div className="flex items-center gap-3">
-            <a href="/aktivitas/aktivitas3"
+            <a href="/46124026/aktivitas/aktivitas3"
               className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">
               Batal
             </a>
@@ -355,7 +355,7 @@ function App() {
   const breadcrumbs = [
     { label: 'Home', href: '/' },
     { label: 'Aktivitas', href: '#' },
-    { label: 'Rekap BKK', href: '/aktivitas/aktivitas3' },
+    { label: 'Rekap BKK', href: '/46124026/aktivitas/aktivitas3' },
     { label: 'Edit', href: '#' },
   ];
   return (

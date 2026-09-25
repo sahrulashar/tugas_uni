@@ -49,7 +49,7 @@ class Aktivitas2 extends BaseController
     public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $noBkk = trim($this->request->getPost('no_bkk'));
@@ -110,7 +110,7 @@ class Aktivitas2 extends BaseController
 
         AuditLogger::catat('TAMBAH', 'tbbkk', (int) $idBkk, ['after' => $dataHeader]);
 
-        return redirect()->to('/aktivitas/aktivitas2')
+        return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil disimpan.');
     }
 
@@ -121,13 +121,13 @@ class Aktivitas2 extends BaseController
     public function lihat_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $bkk = $this->bkkModel->getById_l1H((int) $id);
 
         if (!$bkk) {
-            return redirect()->to('/aktivitas/aktivitas2')
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
@@ -145,13 +145,13 @@ class Aktivitas2 extends BaseController
     public function edit_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $bkk = $this->bkkModel->getById_l1H((int) $id);
 
         if (!$bkk) {
-            return redirect()->to('/aktivitas/aktivitas2')
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
@@ -168,13 +168,13 @@ class Aktivitas2 extends BaseController
     public function update_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $id = (int) $this->request->getPost('id');
 
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $noBkk = trim($this->request->getPost('no_bkk'));
@@ -241,7 +241,7 @@ class Aktivitas2 extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/aktivitas/aktivitas2')
+        return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil diperbarui.');
     }
 
@@ -252,13 +252,13 @@ class Aktivitas2 extends BaseController
     public function hapus_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas2');
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
 
         $bkk = $this->bkkModel->find((int) $id);
 
         if (!$bkk) {
-            return redirect()->to('/aktivitas/aktivitas2')
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
@@ -267,7 +267,7 @@ class Aktivitas2 extends BaseController
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
         $this->bkkModel->softDelete_l1H((int) $id);
 
-        return redirect()->to('/aktivitas/aktivitas2')
+        return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil dihapus.');
     }
 

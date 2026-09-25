@@ -79,18 +79,18 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
     { label:'Piutang',    icon:'FilePlus', href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Laporan',    icon:'BarChart3', children:[
     { label:'Neraca',    icon:'Scale',      href:'#' },
@@ -219,7 +219,7 @@ function EditPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas2"/>
+      <Sidebar collapsed={collapsed} currentPath="/46124026/aktivitas/aktivitas2"/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -230,7 +230,7 @@ function EditPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/aktivitas/aktivitas2" className="text-slate-500 hover:text-brand-600">Bukti Kas Keluar</a>
+              <a href="/46124026/aktivitas/aktivitas2" className="text-slate-500 hover:text-brand-600">Bukti Kas Keluar</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Edit</span>
             </div>
@@ -242,7 +242,7 @@ function EditPage() {
 
             {/* Back + Title */}
             <div className="flex items-center gap-3">
-              <a href="/aktivitas/aktivitas2" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/46124026/aktivitas/aktivitas2" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
@@ -260,7 +260,7 @@ function EditPage() {
             )}
 
             {/* Form */}
-            <form action="/aktivitas/aktivitas2/update" method="POST">
+            <form action="/46124026/aktivitas/aktivitas2/update" method="POST">
               <input type="hidden" name={csrf.name} value={csrf.value}/>
               <input type="hidden" name="id" value={bkk.id}/>
 

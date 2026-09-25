@@ -44,7 +44,7 @@ class Aktivitas1 extends BaseController
     public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $noRbeli = trim($this->request->getPost('no_rbeli'));
@@ -100,7 +100,7 @@ class Aktivitas1 extends BaseController
 
         AuditLogger::catat('TAMBAH', 'tbrbeli', (int) $idRbeli, ['after' => $dataHeader]);
 
-        return redirect()->to('/aktivitas/aktivitas1')
+        return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil disimpan.');
     }
 
@@ -111,13 +111,13 @@ class Aktivitas1 extends BaseController
     public function lihat_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $rbeli = $this->rbeliModel->getById_l1H((int) $id);
 
         if (!$rbeli) {
-            return redirect()->to('/aktivitas/aktivitas1')
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
@@ -135,13 +135,13 @@ class Aktivitas1 extends BaseController
     public function edit_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $rbeli = $this->rbeliModel->getById_l1H((int) $id);
 
         if (!$rbeli) {
-            return redirect()->to('/aktivitas/aktivitas1')
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
@@ -156,13 +156,13 @@ class Aktivitas1 extends BaseController
     public function update_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $id = (int) $this->request->getPost('id');
 
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $noRbeli = trim($this->request->getPost('no_rbeli'));
@@ -224,7 +224,7 @@ class Aktivitas1 extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/aktivitas/aktivitas1')
+        return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil diperbarui.');
     }
 
@@ -235,13 +235,13 @@ class Aktivitas1 extends BaseController
     public function hapus_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas1');
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
 
         $rbeli = $this->rbeliModel->find((int) $id);
 
         if (!$rbeli) {
-            return redirect()->to('/aktivitas/aktivitas1')
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
@@ -250,7 +250,7 @@ class Aktivitas1 extends BaseController
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
         $this->rbeliModel->softDelete_l1H((int) $id);
 
-        return redirect()->to('/aktivitas/aktivitas1')
+        return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil dihapus.');
     }
 }

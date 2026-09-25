@@ -107,9 +107,9 @@ const navItems = [
     label: 'Kas Keluar',
     icon: 'ArrowUpFromLine',
     children: [
-      { label: 'Chart of Accounts', icon: 'BookOpen',    href: '/kas_keluar/coa' },
-      { label: 'Supplier',          icon: 'Truck',        href: '/kas_keluar/supplier' },
-      { label: 'Karyawan',          icon: 'Users',        href: '/kas_keluar/karyawan' },
+      { label: 'Chart of Accounts', icon: 'BookOpen',    href: '/46124026/kas_keluar/coa' },
+      { label: 'Supplier',          icon: 'Truck',        href: '/46124026/kas_keluar/supplier' },
+      { label: 'Karyawan',          icon: 'Users',        href: '/46124026/kas_keluar/karyawan' },
     ],
   },
   {
@@ -124,9 +124,9 @@ const navItems = [
     label: 'Aktivitas',
     icon: 'ClipboardList',
     children: [
-      { label: 'Rencana Beli',      icon: 'ShoppingCart', href: '/aktivitas/aktivitas1' },
-      { label: 'Bukti Kas Keluar',  icon: 'Receipt',      href: '/aktivitas/aktivitas2' },
-      { label: 'Rekap BKK',         icon: 'ClipboardCheck', href: '/aktivitas/aktivitas3' },
+      { label: 'Rencana Beli',      icon: 'ShoppingCart', href: '/46124026/aktivitas/aktivitas1' },
+      { label: 'Bukti Kas Keluar',  icon: 'Receipt',      href: '/46124026/aktivitas/aktivitas2' },
+      { label: 'Rekap BKK',         icon: 'ClipboardCheck', href: '/46124026/aktivitas/aktivitas3' },
     ],
   },
   {

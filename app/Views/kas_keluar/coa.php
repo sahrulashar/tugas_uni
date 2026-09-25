@@ -84,9 +84,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -98,9 +98,9 @@ const NAV = [
     { label:'Arus Kas', icon:'Activity',    href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -591,7 +591,7 @@ function CoaPage() {
                   <Icon name="Download" size={15}/>
                   <span className="hidden sm:inline">Export</span>
                 </button>
-                <a href="/kas_keluar/tambah_coa"
+                <a href="/46124026/kas_keluar/tambah_coa"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">
                   <Icon name="Plus" size={15}/>
                   Tambah COA

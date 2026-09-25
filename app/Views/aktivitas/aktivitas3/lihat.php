@@ -67,18 +67,18 @@ function Icon({ name, size = 18, className = '' }) {
 const navItems = [
   { label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
   { label: 'Kas Keluar', icon: 'ArrowUpFromLine', children: [
-    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/kas_keluar/coa' },
-    { label: 'Supplier',          icon: 'Truck',    href: '/kas_keluar/supplier' },
-    { label: 'Karyawan',          icon: 'Users',    href: '/kas_keluar/karyawan' },
+    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa' },
+    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier' },
+    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan' },
   ]},
   { label: 'Kas Masuk', icon: 'ArrowDownToLine', children: [
     { label: 'Penerimaan', icon: 'Receipt',  href: '#' },
     { label: 'Piutang',    icon: 'FilePlus', href: '#' },
   ]},
   { label: 'Aktivitas', icon: 'ClipboardList', children: [
-    { label: 'Rencana Beli',     icon: 'ShoppingCart',  href: '/aktivitas/aktivitas1' },
-    { label: 'Bukti Kas Keluar', icon: 'Receipt',        href: '/aktivitas/aktivitas2' },
-    { label: 'Rekap BKK',        icon: 'ClipboardCheck', href: '/aktivitas/aktivitas3' },
+    { label: 'Rencana Beli',     icon: 'ShoppingCart',  href: '/46124026/aktivitas/aktivitas1' },
+    { label: 'Bukti Kas Keluar', icon: 'Receipt',        href: '/46124026/aktivitas/aktivitas2' },
+    { label: 'Rekap BKK',        icon: 'ClipboardCheck', href: '/46124026/aktivitas/aktivitas3' },
   ]},
   { label: 'Laporan', icon: 'BarChart3', children: [
     { label: 'Neraca',    icon: 'Scale',      href: '#' },
@@ -213,7 +213,7 @@ function LihatPage() {
     <div className="max-w-2xl mx-auto space-y-6 fade-in">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <a href="/aktivitas/aktivitas3" className="p-2 rounded-lg hover:bg-slate-200 text-slate-500 transition-colors">
+        <a href="/46124026/aktivitas/aktivitas3" className="p-2 rounded-lg hover:bg-slate-200 text-slate-500 transition-colors">
           <Icon name="ArrowLeft" size={18}/>
         </a>
         <div>
@@ -262,7 +262,7 @@ function LihatPage() {
           className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
           <Icon name="Pencil" size={15}/>Edit Rekap
         </a>
-        <a href="/aktivitas/aktivitas3"
+        <a href="/46124026/aktivitas/aktivitas3"
           className="px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
           Kembali ke Daftar
         </a>
@@ -278,7 +278,7 @@ function App() {
   const breadcrumbs = [
     { label: 'Home', href: '/' },
     { label: 'Aktivitas', href: '#' },
-    { label: 'Rekap BKK', href: '/aktivitas/aktivitas3' },
+    { label: 'Rekap BKK', href: '/46124026/aktivitas/aktivitas3' },
     { label: rekap.no_rec || 'Detail', href: '#' },
   ];
   return (

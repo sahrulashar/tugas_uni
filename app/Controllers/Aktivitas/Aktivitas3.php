@@ -41,7 +41,7 @@ class Aktivitas3 extends BaseController
     public function simpan_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         $noRec = trim($this->request->getPost('no_rec'));
@@ -77,7 +77,7 @@ class Aktivitas3 extends BaseController
 
         AuditLogger::catat('TAMBAH', 'tbrecord', (int) $idRec, ['after' => $dataRekap]);
 
-        return redirect()->to('/aktivitas/aktivitas3')
+        return redirect()->to('/46124026/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil disimpan.');
     }
 
@@ -88,13 +88,13 @@ class Aktivitas3 extends BaseController
     public function lihat_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         $rekap = $this->recordModel->getById_l1H((int) $id);
 
         if (!$rekap) {
-            return redirect()->to('/aktivitas/aktivitas3')
+            return redirect()->to('/46124026/aktivitas/aktivitas3')
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
@@ -110,13 +110,13 @@ class Aktivitas3 extends BaseController
     public function edit_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         $rekap = $this->recordModel->getById_l1H((int) $id);
 
         if (!$rekap) {
-            return redirect()->to('/aktivitas/aktivitas3')
+            return redirect()->to('/46124026/aktivitas/aktivitas3')
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
@@ -130,7 +130,7 @@ class Aktivitas3 extends BaseController
     public function update_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         $id    = (int) $this->request->getPost('id');
@@ -140,7 +140,7 @@ class Aktivitas3 extends BaseController
         $ket   = trim($this->request->getPost('ket'));
 
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         // Validasi wajib
@@ -176,7 +176,7 @@ class Aktivitas3 extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/aktivitas/aktivitas3')
+        return redirect()->to('/46124026/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil diperbarui.');
     }
 
@@ -187,13 +187,13 @@ class Aktivitas3 extends BaseController
     public function hapus_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/aktivitas/aktivitas3');
+            return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
 
         $rekap = $this->recordModel->find((int) $id);
 
         if (!$rekap) {
-            return redirect()->to('/aktivitas/aktivitas3')
+            return redirect()->to('/46124026/aktivitas/aktivitas3')
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
@@ -202,11 +202,11 @@ class Aktivitas3 extends BaseController
         try {
             $this->recordModel->softDelete_l1H((int) $id);
         } catch (\Throwable $e) {
-            return redirect()->to('/aktivitas/aktivitas3')
+            return redirect()->to('/46124026/aktivitas/aktivitas3')
                 ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
 
-        return redirect()->to('/aktivitas/aktivitas3')
+        return redirect()->to('/46124026/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil dihapus.');
     }
 }

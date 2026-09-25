@@ -68,9 +68,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -82,9 +82,9 @@ const NAV = [
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -194,7 +194,7 @@ function LihatKaryawanPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/kas_keluar/karyawan"/>
+      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/karyawan"/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -205,7 +205,7 @@ function LihatKaryawanPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/kas_keluar/karyawan" className="text-slate-500 hover:text-brand-600">Karyawan</a>
+              <a href="/46124026/kas_keluar/karyawan" className="text-slate-500 hover:text-brand-600">Karyawan</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Detail Karyawan</span>
             </div>
@@ -217,7 +217,7 @@ function LihatKaryawanPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <a href="/kas_keluar/karyawan" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+                <a href="/46124026/kas_keluar/karyawan" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                   <Icon name="ArrowLeft" size={16}/>
                 </a>
                 <div>
@@ -303,7 +303,7 @@ function LihatKaryawanPage() {
                   <a href={`/kas_keluar/hapus_permanen_karyawan/${data.id_karyawan}`} onClick={e => !confirm('Yakin ingin menghapus karyawan ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors group">
                     <span className="p-1 rounded-lg bg-red-50 text-red-500 group-hover:bg-red-100"><Icon name="Trash2" size={14}/></span> Hapus Permanen
                   </a>
-                  <a href="/kas_keluar/karyawan" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors group">
+                  <a href="/46124026/kas_keluar/karyawan" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors group">
                     <span className="p-1 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200"><Icon name="List" size={14}/></span> Kembali ke Daftar
                   </a>
                 </div>

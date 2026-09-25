@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -18,10 +18,10 @@
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
         <div>
-            <h3 class="fw-bold text-primary mb-1">🧪 Panel Pengujian Database Transaction & Audit Trail</h3>
-            <p class="text-muted mb-0">CodeIgniter 4 — Tugas ERP: TransStart, TransComplete, Rollback, Soft Delete & Audit Log</p>
+            <h3 class="fw-bold text-primary mb-1">?? Panel Pengujian Database Transaction & Audit Trail</h3>
+            <p class="text-muted mb-0">CodeIgniter 4 � Tugas ERP: TransStart, TransComplete, Rollback, Soft Delete & Audit Log</p>
         </div>
-        <a href="/" class="btn btn-outline-secondary btn-sm">🏠 Beranda ERP</a>
+        <a href="/" class="btn btn-outline-secondary btn-sm">?? Beranda ERP</a>
     </div>
 
     <!-- NOTIFIKASI HASIL UJI -->
@@ -35,7 +35,7 @@
     <!-- PANEL TOMBOL SKENARIO UJI COBA -->
     <div class="card mb-4">
         <div class="card-header bg-white fw-bold py-3">
-            🎯 Jalankan Skenario Uji Coba:
+            ?? Jalankan Skenario Uji Coba:
         </div>
         <div class="card-body">
             <div class="row g-3">
@@ -44,7 +44,7 @@
                         <span class="badge bg-danger mb-2 w-auto">UJI COBA 1</span>
                         <h6 class="fw-bold">Rollback Harga Negatif</h6>
                         <p class="text-muted small">Input item dengan harga <code>-10,000</code>. Exception dilempar dan transaksi di-rollback secara utuh.</p>
-                        <a href="/test-transaksi/uji1" class="btn btn-danger btn-sm mt-auto">Uji Rollback (Negatif)</a>
+                        <a href="/46124026/test-transaksi/uji1" class="btn btn-danger btn-sm mt-auto">Uji Rollback (Negatif)</a>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                         <span class="badge bg-success mb-2 w-auto">TRANSAKSI NORMAL</span>
                         <h6 class="fw-bold">Simpan Sukses + Audit Log</h6>
                         <p class="text-muted small">Input master & detail dengan data valid. Transaksi di-commit dan otomatis tercatat di <code>audit_log</code>.</p>
-                        <a href="/test-transaksi/sukses" class="btn btn-success btn-sm mt-auto">Simpan Transaksi Valid</a>
+                        <a href="/46124026/test-transaksi/sukses" class="btn btn-success btn-sm mt-auto">Simpan Transaksi Valid</a>
                     </div>
                 </div>
 
@@ -62,7 +62,7 @@
                         <span class="badge bg-warning text-dark mb-2 w-auto">SOFT DELETE</span>
                         <h6 class="fw-bold">Uji Soft Delete</h6>
                         <p class="text-muted small">Update <code>is_deleted = 1</code> (tanpa query DELETE FROM) dan mencatat aksi ke <code>audit_log</code>.</p>
-                        <a href="/test-transaksi/soft-delete" class="btn btn-warning btn-sm mt-auto">Jalankan Soft Delete</a>
+                        <a href="/46124026/test-transaksi/soft-delete" class="btn btn-warning btn-sm mt-auto">Jalankan Soft Delete</a>
                     </div>
                 </div>
 
@@ -71,7 +71,7 @@
                         <span class="badge bg-dark mb-2 w-auto">UJI COBA 2</span>
                         <h6 class="fw-bold">Simulasi Server Crash</h6>
                         <p class="text-muted small">Simulasi script terputus mendadak via <code>die()</code> di tengah loop detail sebelum commit.</p>
-                        <a href="/test-transaksi/uji2" target="_blank" class="btn btn-outline-dark btn-sm mt-auto">Simulasi Crash (die) ↗</a>
+                        <a href="/46124026/test-transaksi/uji2" target="_blank" class="btn btn-outline-dark btn-sm mt-auto">Simulasi Crash (die) ?</a>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <span class="fw-bold">📦 Tabel Master (<code>tbbeli</code>)</span>
+                    <span class="fw-bold">?? Tabel Master (<code>tbbeli</code>)</span>
                     <span class="badge bg-primary"><?= count($semuaBeli) ?> Data</span>
                 </div>
                 <div class="card-body p-0 table-responsive" style="max-height: 350px;">
@@ -128,7 +128,7 @@
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <span class="fw-bold">📑 Tabel Detail (<code>tbbeli_d</code>)</span>
+                    <span class="fw-bold">?? Tabel Detail (<code>tbbeli_d</code>)</span>
                     <span class="badge bg-secondary"><?= count($semuaDetail) ?> Data</span>
                 </div>
                 <div class="card-body p-0 table-responsive" style="max-height: 350px;">
@@ -164,7 +164,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <span class="fw-bold">📋 Tabel Audit Trail (<code>audit_log</code>)</span>
+                    <span class="fw-bold">?? Tabel Audit Trail (<code>audit_log</code>)</span>
                     <span class="badge bg-info text-dark"><?= count($semuaAudit) ?> Log Aktivitas</span>
                 </div>
                 <div class="card-body p-0 table-responsive" style="max-height: 350px;">

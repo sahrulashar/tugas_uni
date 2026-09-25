@@ -76,9 +76,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -90,9 +90,9 @@ const NAV = [
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -199,7 +199,7 @@ function EditCoaPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/kas_keluar/coa" />
+      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/coa" />
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -210,7 +210,7 @@ function EditCoaPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/kas_keluar/coa" className="text-slate-500 hover:text-brand-600">Chart of Accounts</a>
+              <a href="/46124026/kas_keluar/coa" className="text-slate-500 hover:text-brand-600">Chart of Accounts</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Edit Akun</span>
             </div>
@@ -220,7 +220,7 @@ function EditCoaPage() {
         <main className="pt-16 min-h-screen">
           <div className="p-6 max-w-3xl mx-auto space-y-6 fade-in">
             <div className="flex items-center gap-3">
-              <a href="/kas_keluar/coa" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/46124026/kas_keluar/coa" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
@@ -237,7 +237,7 @@ function EditCoaPage() {
             )}
 
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <form action="/kas_keluar/update_coa" method="POST">
+              <form action="/46124026/kas_keluar/update_coa" method="POST">
                 <input type="hidden" name={csrf.name} value={csrf.value} />
                 <input type="hidden" name="id" defaultValue={coa.id} />
 
@@ -350,7 +350,7 @@ function EditCoaPage() {
                     </a>
                   </div>
                   <div className="flex items-center gap-3">
-                    <a href="/kas_keluar/coa" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
+                    <a href="/46124026/kas_keluar/coa" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                       Batal
                     </a>
                     <button

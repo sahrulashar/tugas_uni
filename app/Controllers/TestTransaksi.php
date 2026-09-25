@@ -72,10 +72,10 @@ class TestTransaksi extends BaseController
                  . "Transaksi dengan nomor <b>{$noBeli}</b> digagalkan karena terdapat harga negatif (-10,000).<br>"
                  . "Status database: <b>Master & Detail TIDAK ADA yang tersimpan</b> (Atomisitas terjaga).";
             
-            return redirect()->to('/test-transaksi')->with('pesan', $msg)->with('tipe', 'danger');
+            return redirect()->to('/46124026/test-transaksi')->with('pesan', $msg)->with('tipe', 'danger');
         }
 
-        return redirect()->to('/test-transaksi')->with('pesan', '⚠️ Transaksi malah tersimpan (seharusnya gagal)!')->with('tipe', 'warning');
+        return redirect()->to('/46124026/test-transaksi')->with('pesan', '⚠️ Transaksi malah tersimpan (seharusnya gagal)!')->with('tipe', 'warning');
     }
 
     /**
@@ -109,10 +109,10 @@ class TestTransaksi extends BaseController
                  . "Master No: <b>{$noBeli}</b> dan 3 item detail berhasil di-COMMIT.<br>"
                  . "Audit log juga berhasil dicatat dengan aksi <b>TAMBAH</b> untuk Record ID #{$idBeli}.";
 
-            return redirect()->to('/test-transaksi')->with('pesan', $msg)->with('tipe', 'success');
+            return redirect()->to('/46124026/test-transaksi')->with('pesan', $msg)->with('tipe', 'success');
         }
 
-        return redirect()->to('/test-transaksi')->with('pesan', '❌ Transaksi gagal disimpan.')->with('tipe', 'danger');
+        return redirect()->to('/46124026/test-transaksi')->with('pesan', '❌ Transaksi gagal disimpan.')->with('tipe', 'danger');
     }
 
     /**
@@ -124,7 +124,7 @@ class TestTransaksi extends BaseController
             // Ambil salah satu record aktif
             $record = $this->beliModel->where('is_deleted', 0)->orderBy('id', 'DESC')->first();
             if (!$record) {
-                return redirect()->to('/test-transaksi')->with('pesan', 'Tidak ada transaksi aktif untuk di-soft delete. Silakan klik "Simpan Transaksi Sukses" dulu.')->with('tipe', 'warning');
+                return redirect()->to('/46124026/test-transaksi')->with('pesan', 'Tidak ada transaksi aktif untuk di-soft delete. Silakan klik "Simpan Transaksi Sukses" dulu.')->with('tipe', 'warning');
             }
             $id = $record['id'];
         }
@@ -140,10 +140,10 @@ class TestTransaksi extends BaseController
                  . "Record tbbeli ID <b>#{$id}</b> diubah statusnya menjadi <code>is_deleted = 1</code>.<br>"
                  . "Perhatikan bahwa data fisik <b>TIDAK DIHAPUS</b> dari database dan Audit Log mencatat aksi <b>SOFT_DELETE</b>.";
 
-            return redirect()->to('/test-transaksi')->with('pesan', $msg)->with('tipe', 'warning');
+            return redirect()->to('/46124026/test-transaksi')->with('pesan', $msg)->with('tipe', 'warning');
         }
 
-        return redirect()->to('/test-transaksi')->with('pesan', 'Gagal melakukan soft delete.')->with('tipe', 'danger');
+        return redirect()->to('/46124026/test-transaksi')->with('pesan', 'Gagal melakukan soft delete.')->with('tipe', 'danger');
     }
 
     /**

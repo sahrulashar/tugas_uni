@@ -76,18 +76,18 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
     { label:'Piutang',    icon:'FilePlus', href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Laporan',    icon:'BarChart3', children:[
     { label:'Neraca',    icon:'Scale',      href:'#' },
@@ -200,7 +200,7 @@ function TambahPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/aktivitas/aktivitas1"/>
+      <Sidebar collapsed={collapsed} currentPath="/46124026/aktivitas/aktivitas1"/>
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -211,7 +211,7 @@ function TambahPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/aktivitas/aktivitas1" className="text-slate-500 hover:text-brand-600">Rencana Beli</a>
+              <a href="/46124026/aktivitas/aktivitas1" className="text-slate-500 hover:text-brand-600">Rencana Beli</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Tambah</span>
             </div>
@@ -223,7 +223,7 @@ function TambahPage() {
 
             {/* Back + Title */}
             <div className="flex items-center gap-3">
-              <a href="/aktivitas/aktivitas1" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/46124026/aktivitas/aktivitas1" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
@@ -241,7 +241,7 @@ function TambahPage() {
             )}
 
             {/* Form */}
-            <form action="/aktivitas/aktivitas1/simpan" method="POST">
+            <form action="/46124026/aktivitas/aktivitas1/simpan" method="POST">
               <input type="hidden" name={csrf.name} value={csrf.value}/>
 
               {/* Header Section */}
@@ -359,7 +359,7 @@ function TambahPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <a href="/aktivitas/aktivitas1"
+                <a href="/46124026/aktivitas/aktivitas1"
                   className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                   Batal
                 </a>

@@ -71,9 +71,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -85,9 +85,9 @@ const NAV = [
     { label:'Arus Kas',  icon:'Activity',   href:'#' },
   ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
-    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/aktivitas/aktivitas1' },
-    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/aktivitas/aktivitas2' },
-    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/aktivitas/aktivitas3' },
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
   { label:'Pengaturan', icon:'Settings', href:'#' },
 ];
@@ -258,7 +258,7 @@ function LihatCoaPage() {
           breadcrumbs={[
             { label:'Home',             href:'/' },
             { label:'Kas Keluar',       href:'#' },
-            { label:'Chart of Accounts',href:'/kas_keluar/coa' },
+            { label:'Chart of Accounts',href:'/46124026/kas_keluar/coa' },
             { label:'Detail Akun' },
           ]}
         />
@@ -269,7 +269,7 @@ function LihatCoaPage() {
             {/* -- Page Header -- */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <a href="/kas_keluar/coa"
+                <a href="/46124026/kas_keluar/coa"
                   className="p-2 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-brand-600 hover:border-brand-300 transition-colors shadow-sm">
                   <Icon name="ArrowLeft" size={16}/>
                 </a>
@@ -425,7 +425,7 @@ function LihatCoaPage() {
                       Hapus Permanen
                     </a>
 
-                    <a href="/kas_keluar/coa"
+                    <a href="/46124026/kas_keluar/coa"
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors group">
                       <span className="p-1 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200">
                         <Icon name="List" size={14}/>
