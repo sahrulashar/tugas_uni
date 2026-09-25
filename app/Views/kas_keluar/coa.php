@@ -364,7 +364,7 @@ function ConfirmModal({ coa, onConfirm, onCancel }) {
             className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={isAktif ? `/kas_keluar/hapus_coa/${coa.id}` : `/kas_keluar/aktifkan_coa/${coa.id}`}
+          <a href={isAktif ? `/46124026/kas_keluar/hapus_coa/${coa.id}` : `/46124026/kas_keluar/aktifkan_coa/${coa.id}`}
             className={`flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors
               ${isAktif ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'}`}>
             {isAktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
@@ -398,7 +398,7 @@ function DeleteModal({ coa, onCancel }) {
             className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={`/kas_keluar/hapus_permanen_coa/${coa.id}`}
+          <a href={`/46124026/kas_keluar/hapus_permanen_coa/${coa.id}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm">
             Ya, Hapus Permanen
           </a>
@@ -462,13 +462,13 @@ function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
               <td className="px-4 py-3.5">
                 <div className="flex items-center justify-center gap-1">
                   {/* Lihat */}
-                  <a href={`/kas_keluar/lihat_coa/${row.id}`}
+                  <a href={`/46124026/kas_keluar/lihat_coa/${row.id}`}
                     title="Detail"
                     className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                     <Icon name="Eye" size={15}/>
                   </a>
                   {/* Edit */}
-                  <a href={`/kas_keluar/edit_coa/${row.id}`}
+                  <a href={`/46124026/kas_keluar/edit_coa/${row.id}`}
                     title="Edit"
                     className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     <Icon name="Pencil" size={15}/>
@@ -515,7 +515,7 @@ function CoaPage() {
   const [deleteCoa,    setDeleteCoa]    = useState(null);
   const [showFlash,    setShowFlash]    = useState(true);
 
-  const currentPath = '/kas_keluar/coa';
+  const currentPath = '/46124026/kas_keluar/coa';
 
   /* Distinct tipe list dari data aktual */
   const tipeList = useMemo(() => {

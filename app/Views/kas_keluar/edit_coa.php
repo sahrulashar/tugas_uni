@@ -327,7 +327,7 @@ function EditCoaPage() {
                   <div className="flex items-center gap-4">
                     {isAktif ? (
                       <a
-                        href={`/kas_keluar/hapus_coa/${coa.id}`}
+                        href={`/46124026/kas_keluar/hapus_coa/${coa.id}`}
                         onClick={e => !confirm('Yakin ingin menonaktifkan akun ini?') && e.preventDefault()}
                         className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1.5"
                       >
@@ -335,14 +335,14 @@ function EditCoaPage() {
                       </a>
                     ) : (
                       <a
-                        href={`/kas_keluar/aktifkan_coa/${coa.id}`}
+                        href={`/46124026/kas_keluar/aktifkan_coa/${coa.id}`}
                         className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center gap-1.5"
                       >
                         <Icon name="Power" size={15}/> Aktifkan
                       </a>
                     )}
                     <a
-                      href={`/kas_keluar/hapus_permanen_coa/${coa.id}`}
+                      href={`/46124026/kas_keluar/hapus_permanen_coa/${coa.id}`}
                       onClick={e => !confirm('Yakin ingin menghapus akun ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()}
                       className="text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1.5"
                     >

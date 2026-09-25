@@ -225,7 +225,7 @@ function LihatKaryawanPage() {
                   <p className="text-sm text-slate-500">Informasi profil pegawai perusahaan</p>
                 </div>
               </div>
-              <a href={`/kas_keluar/edit_karyawan/${data.id_karyawan}`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
+              <a href={`/46124026/kas_keluar/edit_karyawan/${data.id_karyawan}`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
                 <Icon name="Pencil" size={15}/> Edit Data
               </a>
             </div>
@@ -288,19 +288,19 @@ function LihatKaryawanPage() {
                   <h3 className="font-semibold text-slate-800 text-sm">Aksi Cepat</h3>
                 </div>
                 <div className="p-3 space-y-2">
-                  <a href={`/kas_keluar/edit_karyawan/${data.id_karyawan}`} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
+                  <a href={`/46124026/kas_keluar/edit_karyawan/${data.id_karyawan}`} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
                     <span className="p-1 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100"><Icon name="Pencil" size={14}/></span> Edit Karyawan
                   </a>
                   {isAktif ? (
-                    <a href={`/kas_keluar/hapus_karyawan/${data.id_karyawan}`} onClick={e => !confirm('Yakin ingin menonaktifkan karyawan ini?') && e.preventDefault()} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
+                    <a href={`/46124026/kas_keluar/hapus_karyawan/${data.id_karyawan}`} onClick={e => !confirm('Yakin ingin menonaktifkan karyawan ini?') && e.preventDefault()} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
                       <span className="p-1 rounded-lg bg-amber-50 text-amber-500 group-hover:bg-amber-100"><Icon name="PowerOff" size={14}/></span> Nonaktifkan
                     </a>
                   ) : (
-                    <a href={`/kas_keluar/aktifkan_karyawan/${data.id_karyawan}`} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-colors group">
+                    <a href={`/46124026/kas_keluar/aktifkan_karyawan/${data.id_karyawan}`} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-colors group">
                       <span className="p-1 rounded-lg bg-green-50 text-green-600 group-hover:bg-green-100"><Icon name="Power" size={14}/></span> Aktifkan Kembali
                     </a>
                   )}
-                  <a href={`/kas_keluar/hapus_permanen_karyawan/${data.id_karyawan}`} onClick={e => !confirm('Yakin ingin menghapus karyawan ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors group">
+                  <a href={`/46124026/kas_keluar/hapus_permanen_karyawan/${data.id_karyawan}`} onClick={e => !confirm('Yakin ingin menghapus karyawan ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors group">
                     <span className="p-1 rounded-lg bg-red-50 text-red-500 group-hover:bg-red-100"><Icon name="Trash2" size={14}/></span> Hapus Permanen
                   </a>
                   <a href="/46124026/kas_keluar/karyawan" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors group">

@@ -238,7 +238,7 @@ const TIPE_CONFIG = {
 function LihatCoaPage() {
   const coa = window.__COA__ || {};
   const [collapsed, setCollapsed] = useState(false);
-  const currentPath = '/kas_keluar/coa';
+  const currentPath = '/46124026/kas_keluar/coa';
 
   const tipeConf = TIPE_CONFIG[coa.tipe] || {
     bg:'bg-slate-50', text:'text-slate-700', border:'border-slate-200',
@@ -279,7 +279,7 @@ function LihatCoaPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a href={`/kas_keluar/edit_coa/${coa.id}`}
+                <a href={`/46124026/kas_keluar/edit_coa/${coa.id}`}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">
                   <Icon name="Pencil" size={15}/>
                   Edit
@@ -389,7 +389,7 @@ function LihatCoaPage() {
                     <h3 className="font-semibold text-slate-800 text-sm">Aksi Cepat</h3>
                   </div>
                   <div className="p-3 space-y-2">
-                    <a href={`/kas_keluar/edit_coa/${coa.id}`}
+                    <a href={`/46124026/kas_keluar/edit_coa/${coa.id}`}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group">
                       <span className="p-1 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100">
                         <Icon name="Pencil" size={14}/>
@@ -398,7 +398,7 @@ function LihatCoaPage() {
                     </a>
 
                     {isAktif ? (
-                      <a href={`/kas_keluar/hapus_coa/${coa.id}`}
+                      <a href={`/46124026/kas_keluar/hapus_coa/${coa.id}`}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors group"
                         onClick={(e) => { if(!confirm('Nonaktifkan akun ini?')) e.preventDefault(); }}>
                         <span className="p-1 rounded-lg bg-amber-50 text-amber-500 group-hover:bg-amber-100">
@@ -407,7 +407,7 @@ function LihatCoaPage() {
                         Nonaktifkan Akun
                       </a>
                     ) : (
-                      <a href={`/kas_keluar/aktifkan_coa/${coa.id}`}
+                      <a href={`/46124026/kas_keluar/aktifkan_coa/${coa.id}`}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-colors group">
                         <span className="p-1 rounded-lg bg-green-50 text-green-600 group-hover:bg-green-100">
                           <Icon name="Power" size={14}/>
@@ -416,7 +416,7 @@ function LihatCoaPage() {
                       </a>
                     )}
 
-                    <a href={`/kas_keluar/hapus_permanen_coa/${coa.id}`}
+                    <a href={`/46124026/kas_keluar/hapus_permanen_coa/${coa.id}`}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors group"
                       onClick={(e) => { if(!confirm('Hapus akun COA ini secara permanen? Data tidak dapat dikembalikan!')) e.preventDefault(); }}>
                       <span className="p-1 rounded-lg bg-red-50 text-red-500 group-hover:bg-red-100">

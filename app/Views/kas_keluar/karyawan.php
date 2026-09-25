@@ -238,7 +238,7 @@ function ConfirmModal({ item, onCancel }) {
             Batal
           </button>
           <a
-            href={isAktif ? `/kas_keluar/hapus_karyawan/${item.id_karyawan}` : `/kas_keluar/aktifkan_karyawan/${item.id_karyawan}`}
+            href={isAktif ? `/46124026/kas_keluar/hapus_karyawan/${item.id_karyawan}` : `/46124026/kas_keluar/aktifkan_karyawan/${item.id_karyawan}`}
             className={`flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors ${isAktif ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'}`}
           >
             {isAktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
@@ -271,7 +271,7 @@ function DeleteModal({ item, onCancel }) {
             Batal
           </button>
           <a
-            href={`/kas_keluar/hapus_permanen_karyawan/${item.id_karyawan}`}
+            href={`/46124026/kas_keluar/hapus_permanen_karyawan/${item.id_karyawan}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm"
           >
             Ya, Hapus Permanen
@@ -295,7 +295,7 @@ function KaryawanPage() {
   const [deleteItem, setDeleteItem]     = useState(null);
   const [showFlash, setShowFlash]       = useState(true);
 
-  const currentPath = '/kas_keluar/karyawan';
+  const currentPath = '/46124026/kas_keluar/karyawan';
 
   const listJabatan = useMemo(() => {
     const list = [...new Set(rawKaryawan.map(r => r.jabatan || 'Lainnya'))];
@@ -466,10 +466,10 @@ function KaryawanPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-center gap-1">
-                            <a href={`/kas_keluar/lihat_karyawan/${row.id_karyawan}`} title="Detail" className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                            <a href={`/46124026/kas_keluar/lihat_karyawan/${row.id_karyawan}`} title="Detail" className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                               <Icon name="Eye" size={15}/>
                             </a>
-                            <a href={`/kas_keluar/edit_karyawan/${row.id_karyawan}`} title="Edit" className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                            <a href={`/46124026/kas_keluar/edit_karyawan/${row.id_karyawan}`} title="Edit" className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                               <Icon name="Pencil" size={15}/>
                             </a>
                             <button

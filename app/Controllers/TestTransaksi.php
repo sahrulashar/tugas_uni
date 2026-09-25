@@ -187,7 +187,7 @@ class TestTransaksi extends BaseController
                 echo "<p>Pesan simulasi: <b>die(\"Koneksi Terputus!\");</b></p>";
                 echo "<p>Script berhenti sebelum <code>transComplete()</code> dipanggil.</p>";
                 echo "<p>MySQL secara otomatis akan me-<b>ROLLBACK</b> transaksi yang belum di-commit.</p>";
-                echo "<p><a href='/test-transaksi'>⬅️ Kembali ke Dashboard Pengujian untuk membuktikan database tetap bersih</a></p>";
+                echo "<p><a href='/46124026/test-transaksi'>⬅️ Kembali ke Dashboard Pengujian untuk membuktikan database tetap bersih</a></p>";
                 echo "</div>";
                 die("Koneksi Terputus!");
             }

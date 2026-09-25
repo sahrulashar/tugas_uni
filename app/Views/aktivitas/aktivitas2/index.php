@@ -226,7 +226,7 @@ function DeleteModal({ item, onCancel }) {
           <button onClick={onCancel} className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={`/aktivitas/aktivitas2/hapus/${item.id}`}
+          <a href={`/46124026/aktivitas/aktivitas2/hapus/${item.id}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm">
             Ya, Hapus
           </a>
@@ -249,7 +249,7 @@ function BuktKasKeluar() {
   const [deleteItem, setDeleteItem] = useState(null);
   const [showFlash, setShowFlash]   = useState(true);
 
-  const currentPath = '/aktivitas/aktivitas2';
+  const currentPath = '/46124026/aktivitas/aktivitas2';
 
   const stats = useMemo(() => ({
     total    : data.length,
@@ -389,11 +389,11 @@ function BuktKasKeluar() {
                         <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">{row.kete || '-'}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-center gap-1">
-                            <a href={`/aktivitas/aktivitas2/lihat/${row.id}`} title="Detail"
+                            <a href={`/46124026/aktivitas/aktivitas2/lihat/${row.id}`} title="Detail"
                               className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                               <Icon name="Eye" size={15}/>
                             </a>
-                            <a href={`/aktivitas/aktivitas2/edit/${row.id}`} title="Edit"
+                            <a href={`/46124026/aktivitas/aktivitas2/edit/${row.id}`} title="Edit"
                               className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                               <Icon name="Pencil" size={15}/>
                             </a>

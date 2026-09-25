@@ -216,7 +216,7 @@ function LihatPage() {
               <Icon name="Printer" size={15}/>
               <span className="hidden sm:inline">Cetak</span>
             </button>
-            <a href={`/aktivitas/aktivitas1/edit/${rbeli.id}`}
+            <a href={`/46124026/aktivitas/aktivitas1/edit/${rbeli.id}`}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
               <Icon name="Pencil" size={15}/> Edit
             </a>
@@ -332,7 +332,7 @@ function LihatPage() {
                 <Icon name="ArrowLeft" size={15}/> Kembali ke Daftar
               </a>
               <div className="flex items-center gap-2">
-                <a href={`/aktivitas/aktivitas1/edit/${rbeli.id}`}
+                <a href={`/46124026/aktivitas/aktivitas1/edit/${rbeli.id}`}
                   className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-colors">
                   <Icon name="Pencil" size={15}/> Edit
                 </a>

@@ -258,7 +258,7 @@ function LihatPage() {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        <a href={`/aktivitas/aktivitas3/edit/${rekap.id}`}
+        <a href={`/46124026/aktivitas/aktivitas3/edit/${rekap.id}`}
           className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
           <Icon name="Pencil" size={15}/>Edit Rekap
         </a>

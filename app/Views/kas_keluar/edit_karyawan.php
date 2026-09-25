@@ -299,7 +299,7 @@ function EditKaryawanPage() {
                   <div className="flex items-center gap-4">
                     {data.status === 'Aktif' ? (
                       <a
-                        href={`/kas_keluar/hapus_karyawan/${data.id_karyawan}`}
+                        href={`/46124026/kas_keluar/hapus_karyawan/${data.id_karyawan}`}
                         onClick={e => !confirm('Yakin ingin menonaktifkan karyawan ini?') && e.preventDefault()}
                         className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1.5"
                       >
@@ -307,14 +307,14 @@ function EditKaryawanPage() {
                       </a>
                     ) : (
                       <a
-                        href={`/kas_keluar/aktifkan_karyawan/${data.id_karyawan}`}
+                        href={`/46124026/kas_keluar/aktifkan_karyawan/${data.id_karyawan}`}
                         className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center gap-1.5"
                       >
                         <Icon name="Power" size={15}/> Aktifkan
                       </a>
                     )}
                     <a
-                      href={`/kas_keluar/hapus_permanen_karyawan/${data.id_karyawan}`}
+                      href={`/46124026/kas_keluar/hapus_permanen_karyawan/${data.id_karyawan}`}
                       onClick={e => !confirm('Yakin ingin menghapus karyawan ini secara permanen? Data tidak dapat dikembalikan!') && e.preventDefault()}
                       className="text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1.5"
                     >

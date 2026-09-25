@@ -401,7 +401,7 @@ function EditPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <a href={`/aktivitas/aktivitas2/lihat/${bkk.id}`}
+                <a href={`/46124026/aktivitas/aktivitas2/lihat/${bkk.id}`}
                   className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                   Batal
                 </a>

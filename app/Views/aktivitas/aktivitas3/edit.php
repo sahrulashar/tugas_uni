@@ -328,7 +328,7 @@ function EditPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-          <a href={`/aktivitas/aktivitas3/lihat/${rekap.id}`}
+          <a href={`/46124026/aktivitas/aktivitas3/lihat/${rekap.id}`}
             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
             <Icon name="Eye" size={14}/>Lihat Detail
           </a>

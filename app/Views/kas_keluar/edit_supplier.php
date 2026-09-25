@@ -296,7 +296,7 @@ function EditSupplierPage() {
                   <div>
                     {data.status === 'Aktif' ? (
                       <a
-                        href={`/kas_keluar/hapus_supplier/${data.id_supplier}`}
+                        href={`/46124026/kas_keluar/hapus_supplier/${data.id_supplier}`}
                         onClick={e => !confirm('Yakin ingin menonaktifkan supplier ini?') && e.preventDefault()}
                         className="text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1.5"
                       >
@@ -304,7 +304,7 @@ function EditSupplierPage() {
                       </a>
                     ) : (
                       <a
-                        href={`/kas_keluar/aktifkan_supplier/${data.id_supplier}`}
+                        href={`/46124026/kas_keluar/aktifkan_supplier/${data.id_supplier}`}
                         className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center gap-1.5"
                       >
                         <Icon name="Power" size={15}/> Aktifkan Supplier
