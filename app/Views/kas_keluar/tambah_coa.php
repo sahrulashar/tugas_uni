@@ -75,9 +75,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -195,7 +195,7 @@ function TambahCoaPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/coa" />
+      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/coa_l1H" />
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -206,7 +206,7 @@ function TambahCoaPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/46124026/kas_keluar/coa" className="text-slate-500 hover:text-brand-600">Chart of Accounts</a>
+              <a href="/46124026/kas_keluar/coa_l1H" className="text-slate-500 hover:text-brand-600">Chart of Accounts</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Tambah Akun</span>
             </div>
@@ -216,7 +216,7 @@ function TambahCoaPage() {
         <main className="pt-16 min-h-screen">
           <div className="p-6 max-w-3xl mx-auto space-y-6 fade-in">
             <div className="flex items-center gap-3">
-              <a href="/46124026/kas_keluar/coa" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/46124026/kas_keluar/coa_l1H" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
@@ -233,7 +233,7 @@ function TambahCoaPage() {
             )}
 
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <form action="/46124026/kas_keluar/simpan_coa" method="POST">
+              <form action="/46124026/kas_keluar/simpan_coa_l1H" method="POST">
                 <input type="hidden" name={csrf.name} value={csrf.value} />
 
                 <div className="p-6 space-y-5">
@@ -320,7 +320,7 @@ function TambahCoaPage() {
                 </div>
 
                 <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
-                  <a href="/46124026/kas_keluar/coa" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
+                  <a href="/46124026/kas_keluar/coa_l1H" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                     Batal
                   </a>
                   <button

@@ -34,7 +34,7 @@ class KasKeluar extends BaseController
     public function simpan_coa_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $kodeCoa    = trim($this->request->getPost('kode_coa'));
@@ -64,20 +64,20 @@ class KasKeluar extends BaseController
 
         AuditLogger::catat('TAMBAH', 'coa', (int) $idCoa, ['after' => $dataCoa]);
 
-        return redirect()->to('/46124026/kas_keluar/coa')
+        return redirect()->to('/46124026/kas_keluar/coa_l1H')
             ->with('success', 'Akun COA berhasil ditambahkan.');
     }
 
     public function edit_coa_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $coa = $this->coaModel->find($id);
 
         if (!$coa) {
-            return redirect()->to('/46124026/kas_keluar/coa')
+            return redirect()->to('/46124026/kas_keluar/coa_l1H')
                 ->with('error', 'Data COA tidak ditemukan.');
         }
 
@@ -87,13 +87,13 @@ class KasKeluar extends BaseController
     public function update_coa_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $id = $this->request->getPost('id');
 
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $kodeCoa    = trim($this->request->getPost('kode_coa'));
@@ -126,20 +126,20 @@ class KasKeluar extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/coa')
+        return redirect()->to('/46124026/kas_keluar/coa_l1H')
             ->with('success', 'Akun COA berhasil diperbarui.');
     }
 
     public function lihat_coa_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $coa = $this->coaModel->find($id);
 
         if (!$coa) {
-            return redirect()->to('/46124026/kas_keluar/coa')
+            return redirect()->to('/46124026/kas_keluar/coa_l1H')
                 ->with('error', 'Data COA tidak ditemukan.');
         }
 
@@ -149,13 +149,13 @@ class KasKeluar extends BaseController
     public function hapus_coa_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/coa');
+            return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
         $coa = $this->coaModel->find($id);
 
         if (!$coa) {
-            return redirect()->to('/46124026/kas_keluar/coa')
+            return redirect()->to('/46124026/kas_keluar/coa_l1H')
                 ->with('error', 'Data COA tidak ditemukan.');
         }
 
@@ -166,7 +166,7 @@ class KasKeluar extends BaseController
             'after'  => ['is_off' => 1],
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/coa')
+        return redirect()->to('/46124026/kas_keluar/coa_l1H')
             ->with('success', 'Akun COA berhasil dinonaktifkan.');
     }
 
@@ -180,7 +180,7 @@ class KasKeluar extends BaseController
             ]);
         }
 
-        return redirect()->to('/46124026/kas_keluar/coa')
+        return redirect()->to('/46124026/kas_keluar/coa_l1H')
             ->with('success', 'Akun COA berhasil diaktifkan.');
     }
 
@@ -211,7 +211,7 @@ class KasKeluar extends BaseController
     public function simpan_supplier_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $supplierModel = model('SupplierModel');
@@ -240,21 +240,21 @@ class KasKeluar extends BaseController
 
         AuditLogger::catat('TAMBAH', 'supplier', (int) $idSupplier, ['after' => $dataSupplier]);
 
-        return redirect()->to('/46124026/kas_keluar/supplier')
+        return redirect()->to('/46124026/kas_keluar/supplier_l1H')
             ->with('success', 'Supplier berhasil ditambahkan.');
     }
 
     public function edit_supplier_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $supplierModel = model('SupplierModel');
         $supplier      = $supplierModel->find($id);
 
         if (!$supplier) {
-            return redirect()->to('/46124026/kas_keluar/supplier')
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H')
                 ->with('error', 'Data Supplier tidak ditemukan.');
         }
 
@@ -264,13 +264,13 @@ class KasKeluar extends BaseController
     public function update_supplier_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $id = $this->request->getPost('id_supplier');
 
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $supplierModel = model('SupplierModel');
@@ -303,21 +303,21 @@ class KasKeluar extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/supplier')
+        return redirect()->to('/46124026/kas_keluar/supplier_l1H')
             ->with('success', 'Supplier berhasil diperbarui.');
     }
 
     public function hapus_supplier_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $supplierModel = model('SupplierModel');
         $supplier      = $supplierModel->find($id);
 
         if (!$supplier) {
-            return redirect()->to('/46124026/kas_keluar/supplier')
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H')
                 ->with('error', 'Data Supplier tidak ditemukan.');
         }
 
@@ -328,7 +328,7 @@ class KasKeluar extends BaseController
             'after'  => ['status' => 'Tidak Aktif'],
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/supplier')
+        return redirect()->to('/46124026/kas_keluar/supplier_l1H')
             ->with('success', 'Supplier berhasil dinonaktifkan.');
     }
 
@@ -343,7 +343,7 @@ class KasKeluar extends BaseController
             ]);
         }
 
-        return redirect()->to('/46124026/kas_keluar/supplier')
+        return redirect()->to('/46124026/kas_keluar/supplier_l1H')
             ->with('success', 'Supplier berhasil diaktifkan.');
     }
 
@@ -357,14 +357,14 @@ class KasKeluar extends BaseController
     public function lihat_supplier_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/supplier');
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
 
         $supplierModel = model('SupplierModel');
         $supplier      = $supplierModel->find($id);
 
         if (!$supplier) {
-            return redirect()->to('/46124026/kas_keluar/supplier')
+            return redirect()->to('/46124026/kas_keluar/supplier_l1H')
                 ->with('error', 'Data Supplier tidak ditemukan.');
         }
 
@@ -392,7 +392,7 @@ class KasKeluar extends BaseController
     public function simpan_karyawan_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $karyawanModel = model('KaryawanModel');
@@ -421,21 +421,21 @@ class KasKeluar extends BaseController
 
         AuditLogger::catat('TAMBAH', 'karyawan', (int) $idKaryawan, ['after' => $dataKaryawan]);
 
-        return redirect()->to('/46124026/kas_keluar/karyawan')
+        return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
             ->with('success', 'Karyawan berhasil ditambahkan.');
     }
 
     public function edit_karyawan_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $karyawanModel = model('KaryawanModel');
         $karyawan      = $karyawanModel->find($id);
 
         if (!$karyawan) {
-            return redirect()->to('/46124026/kas_keluar/karyawan')
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
                 ->with('error', 'Data Karyawan tidak ditemukan.');
         }
 
@@ -445,12 +445,12 @@ class KasKeluar extends BaseController
     public function update_karyawan_l1H()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $id = $this->request->getPost('id_karyawan');
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $karyawanModel = model('KaryawanModel');
@@ -483,21 +483,21 @@ class KasKeluar extends BaseController
             'after'  => $dataBaru,
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/karyawan')
+        return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
             ->with('success', 'Karyawan berhasil diperbarui.');
     }
 
     public function lihat_karyawan_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $karyawanModel = model('KaryawanModel');
         $karyawan      = $karyawanModel->find($id);
 
         if (!$karyawan) {
-            return redirect()->to('/46124026/kas_keluar/karyawan')
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
                 ->with('error', 'Data Karyawan tidak ditemukan.');
         }
 
@@ -507,14 +507,14 @@ class KasKeluar extends BaseController
     public function hapus_karyawan_l1H($id = null)
     {
         if (!$id) {
-            return redirect()->to('/46124026/kas_keluar/karyawan');
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
 
         $karyawanModel = model('KaryawanModel');
         $karyawan      = $karyawanModel->find($id);
 
         if (!$karyawan) {
-            return redirect()->to('/46124026/kas_keluar/karyawan')
+            return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
                 ->with('error', 'Data Karyawan tidak ditemukan.');
         }
 
@@ -525,7 +525,7 @@ class KasKeluar extends BaseController
             'after'  => ['status' => 'Tidak Aktif'],
         ]);
 
-        return redirect()->to('/46124026/kas_keluar/karyawan')
+        return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
             ->with('success', 'Karyawan berhasil dinonaktifkan.');
     }
 
@@ -539,7 +539,7 @@ class KasKeluar extends BaseController
             ]);
         }
 
-        return redirect()->to('/46124026/kas_keluar/karyawan')
+        return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
             ->with('success', 'Karyawan berhasil diaktifkan.');
     }
 

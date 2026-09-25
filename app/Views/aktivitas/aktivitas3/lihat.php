@@ -67,9 +67,9 @@ function Icon({ name, size = 18, className = '' }) {
 const navItems = [
   { label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
   { label: 'Kas Keluar', icon: 'ArrowUpFromLine', children: [
-    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa' },
-    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier' },
-    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan' },
+    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa_l1H' },
+    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier_l1H' },
+    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label: 'Kas Masuk', icon: 'ArrowDownToLine', children: [
     { label: 'Penerimaan', icon: 'Receipt',  href: '#' },
@@ -258,7 +258,7 @@ function LihatPage() {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        <a href={`/46124026/aktivitas/aktivitas3/edit/${rekap.id}`}
+        <a href={`/46124026/aktivitas/aktivitas3/edit_l1H/${rekap.id}`}
           className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
           <Icon name="Pencil" size={15}/>Edit Rekap
         </a>

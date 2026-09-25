@@ -81,9 +81,9 @@ function Icon({ name, size = 18, className = '' }) {
 const navItems = [
   { label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
   { label: 'Kas Keluar', icon: 'ArrowUpFromLine', children: [
-    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa' },
-    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier' },
-    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan' },
+    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa_l1H' },
+    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier_l1H' },
+    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label: 'Kas Masuk', icon: 'ArrowDownToLine', children: [
     { label: 'Penerimaan', icon: 'Receipt',  href: '#' },
@@ -260,7 +260,7 @@ function TambahPage() {
       )}
 
       {/* Form Card */}
-      <form method="POST" action="/46124026/aktivitas/aktivitas3/simpan" onSubmit={handleSubmit}
+      <form method="POST" action="/46124026/aktivitas/aktivitas3/simpan_l1H" onSubmit={handleSubmit}
         className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
         <input type="hidden" name={csrf.name} value={csrf.value}/>
 
@@ -295,7 +295,7 @@ function TambahPage() {
               <Icon name="AlertCircle" size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium">Belum ada data Bukti Kas Keluar (BKK).</p>
-                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/46124026/aktivitas/aktivitas2/tambah" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu sebelum membuat rekap.</p>
+                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/46124026/aktivitas/aktivitas2/tambah_l1H" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu sebelum membuat rekap.</p>
               </div>
             </div>
           ) : (

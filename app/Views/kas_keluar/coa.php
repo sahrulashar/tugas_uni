@@ -84,9 +84,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -364,7 +364,7 @@ function ConfirmModal({ coa, onConfirm, onCancel }) {
             className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={isAktif ? `/46124026/kas_keluar/hapus_coa/${coa.id}` : `/46124026/kas_keluar/aktifkan_coa/${coa.id}`}
+          <a href={isAktif ? `/46124026/kas_keluar/hapus_coa_l1H/${coa.id}` : `/46124026/kas_keluar/aktifkan_coa_l1H/${coa.id}`}
             className={`flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors
               ${isAktif ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'}`}>
             {isAktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
@@ -398,7 +398,7 @@ function DeleteModal({ coa, onCancel }) {
             className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Batal
           </button>
-          <a href={`/46124026/kas_keluar/hapus_permanen_coa/${coa.id}`}
+          <a href={`/46124026/kas_keluar/hapus_permanen_coa_l1H/${coa.id}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm">
             Ya, Hapus Permanen
           </a>
@@ -462,13 +462,13 @@ function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
               <td className="px-4 py-3.5">
                 <div className="flex items-center justify-center gap-1">
                   {/* Lihat */}
-                  <a href={`/46124026/kas_keluar/lihat_coa/${row.id}`}
+                  <a href={`/46124026/kas_keluar/lihat_coa_l1H/${row.id}`}
                     title="Detail"
                     className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                     <Icon name="Eye" size={15}/>
                   </a>
                   {/* Edit */}
-                  <a href={`/46124026/kas_keluar/edit_coa/${row.id}`}
+                  <a href={`/46124026/kas_keluar/edit_coa_l1H/${row.id}`}
                     title="Edit"
                     className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     <Icon name="Pencil" size={15}/>
@@ -515,7 +515,7 @@ function CoaPage() {
   const [deleteCoa,    setDeleteCoa]    = useState(null);
   const [showFlash,    setShowFlash]    = useState(true);
 
-  const currentPath = '/46124026/kas_keluar/coa';
+  const currentPath = '/46124026/kas_keluar/coa_l1H';
 
   /* Distinct tipe list dari data aktual */
   const tipeList = useMemo(() => {
@@ -591,7 +591,7 @@ function CoaPage() {
                   <Icon name="Download" size={15}/>
                   <span className="hidden sm:inline">Export</span>
                 </button>
-                <a href="/46124026/kas_keluar/tambah_coa"
+                <a href="/46124026/kas_keluar/tambah_coa_l1H"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">
                   <Icon name="Plus" size={15}/>
                   Tambah COA

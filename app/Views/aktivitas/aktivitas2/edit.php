@@ -79,9 +79,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -260,7 +260,7 @@ function EditPage() {
             )}
 
             {/* Form */}
-            <form action="/46124026/aktivitas/aktivitas2/update" method="POST">
+            <form action="/46124026/aktivitas/aktivitas2/update_l1H" method="POST">
               <input type="hidden" name={csrf.name} value={csrf.value}/>
               <input type="hidden" name="id" value={bkk.id}/>
 
@@ -401,7 +401,7 @@ function EditPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <a href={`/46124026/aktivitas/aktivitas2/lihat/${bkk.id}`}
+                <a href={`/46124026/aktivitas/aktivitas2/lihat_l1H/${bkk.id}`}
                   className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                   Batal
                 </a>

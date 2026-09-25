@@ -107,9 +107,9 @@ const navItems = [
     label: 'Kas Keluar',
     icon: 'ArrowUpFromLine',
     children: [
-      { label: 'Chart of Accounts', icon: 'BookOpen',    href: '/46124026/kas_keluar/coa' },
-      { label: 'Supplier',          icon: 'Truck',        href: '/46124026/kas_keluar/supplier' },
-      { label: 'Karyawan',          icon: 'Users',        href: '/46124026/kas_keluar/karyawan' },
+      { label: 'Chart of Accounts', icon: 'BookOpen',    href: '/46124026/kas_keluar/coa_l1H' },
+      { label: 'Supplier',          icon: 'Truck',        href: '/46124026/kas_keluar/supplier_l1H' },
+      { label: 'Karyawan',          icon: 'Users',        href: '/46124026/kas_keluar/karyawan_l1H' },
     ],
   },
   {

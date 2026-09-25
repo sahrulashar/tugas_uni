@@ -76,9 +76,9 @@ function Icon({ name, size = 18, className = '' }) {
 const navItems = [
   { label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
   { label: 'Kas Keluar', icon: 'ArrowUpFromLine', children: [
-    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa' },
-    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier' },
-    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan' },
+    { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa_l1H' },
+    { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier_l1H' },
+    { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label: 'Kas Masuk', icon: 'ArrowDownToLine', children: [
     { label: 'Penerimaan', icon: 'Receipt',  href: '#' },
@@ -259,7 +259,7 @@ function EditPage() {
       </div>
 
       {/* Form */}
-      <form method="POST" action="/46124026/aktivitas/aktivitas3/update" onSubmit={handleSubmit}
+      <form method="POST" action="/46124026/aktivitas/aktivitas3/update_l1H" onSubmit={handleSubmit}
         className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
         <input type="hidden" name={csrf.name} value={csrf.value}/>
         <input type="hidden" name="id" value={rekap.id}/>
@@ -295,7 +295,7 @@ function EditPage() {
               <Icon name="AlertCircle" size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium">Belum ada data Bukti Kas Keluar (BKK).</p>
-                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/46124026/aktivitas/aktivitas2/tambah" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu.</p>
+                <p className="mt-0.5 text-slate-600">Silakan buat <a href="/46124026/aktivitas/aktivitas2/tambah_l1H" className="text-brand-600 font-semibold underline">Bukti Kas Keluar</a> terlebih dahulu.</p>
               </div>
             </div>
           ) : (
@@ -328,7 +328,7 @@ function EditPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-          <a href={`/46124026/aktivitas/aktivitas3/lihat/${rekap.id}`}
+          <a href={`/46124026/aktivitas/aktivitas3/lihat_l1H/${rekap.id}`}
             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
             <Icon name="Eye" size={14}/>Lihat Detail
           </a>

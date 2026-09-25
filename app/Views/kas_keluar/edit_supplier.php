@@ -76,9 +76,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -194,7 +194,7 @@ function EditSupplierPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/supplier" />
+      <Sidebar collapsed={collapsed} currentPath="/46124026/kas_keluar/supplier_l1H" />
 
       <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
         <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
@@ -205,7 +205,7 @@ function EditSupplierPage() {
             <div className="hidden sm:flex items-center gap-1.5 text-sm">
               <a href="/" className="text-slate-500 hover:text-brand-600">Home</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
-              <a href="/46124026/kas_keluar/supplier" className="text-slate-500 hover:text-brand-600">Supplier</a>
+              <a href="/46124026/kas_keluar/supplier_l1H" className="text-slate-500 hover:text-brand-600">Supplier</a>
               <Icon name="ChevronRight" size={13} className="text-slate-400"/>
               <span className="font-semibold text-slate-800">Edit Supplier</span>
             </div>
@@ -215,7 +215,7 @@ function EditSupplierPage() {
         <main className="pt-16 min-h-screen">
           <div className="p-6 max-w-3xl mx-auto space-y-6 fade-in">
             <div className="flex items-center gap-3">
-              <a href="/46124026/kas_keluar/supplier" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+              <a href="/46124026/kas_keluar/supplier_l1H" className="p-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
                 <Icon name="ArrowLeft" size={16}/>
               </a>
               <div>
@@ -232,7 +232,7 @@ function EditSupplierPage() {
             )}
 
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <form action="/46124026/kas_keluar/update_supplier" method="POST">
+              <form action="/46124026/kas_keluar/update_supplier_l1H" method="POST">
                 <input type="hidden" name={csrf.name} value={csrf.value} />
                 <input type="hidden" name="id_supplier" defaultValue={data.id_supplier} />
 
@@ -296,7 +296,7 @@ function EditSupplierPage() {
                   <div>
                     {data.status === 'Aktif' ? (
                       <a
-                        href={`/46124026/kas_keluar/hapus_supplier/${data.id_supplier}`}
+                        href={`/46124026/kas_keluar/hapus_supplier_l1H/${data.id_supplier}`}
                         onClick={e => !confirm('Yakin ingin menonaktifkan supplier ini?') && e.preventDefault()}
                         className="text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1.5"
                       >
@@ -304,7 +304,7 @@ function EditSupplierPage() {
                       </a>
                     ) : (
                       <a
-                        href={`/46124026/kas_keluar/aktifkan_supplier/${data.id_supplier}`}
+                        href={`/46124026/kas_keluar/aktifkan_supplier_l1H/${data.id_supplier}`}
                         className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center gap-1.5"
                       >
                         <Icon name="Power" size={15}/> Aktifkan Supplier
@@ -312,7 +312,7 @@ function EditSupplierPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <a href="/46124026/kas_keluar/supplier" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
+                    <a href="/46124026/kas_keluar/supplier_l1H" className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
                       Batal
                     </a>
                     <button

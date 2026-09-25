@@ -70,9 +70,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -209,7 +209,7 @@ function LihatPage() {
               <Icon name="Printer" size={15}/>
               <span className="hidden sm:inline">Cetak</span>
             </button>
-            <a href={`/46124026/aktivitas/aktivitas2/edit/${bkk.id}`}
+            <a href={`/46124026/aktivitas/aktivitas2/edit_l1H/${bkk.id}`}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
               <Icon name="Pencil" size={15}/>
               Edit
@@ -326,7 +326,7 @@ function LihatPage() {
                 className="px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm transition-colors">
                 Kembali ke Daftar
               </a>
-              <a href={`/46124026/aktivitas/aktivitas2/edit/${bkk.id}`}
+              <a href={`/46124026/aktivitas/aktivitas2/edit_l1H/${bkk.id}`}
                 className="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-sm transition-colors flex items-center gap-2">
                 <Icon name="Pencil" size={15}/> Edit BKK
               </a>

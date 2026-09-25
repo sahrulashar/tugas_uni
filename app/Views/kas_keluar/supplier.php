@@ -78,9 +78,9 @@ function Icon({ name, size = 18, className = '' }) {
 const NAV = [
   { label:'Dashboard',  icon:'LayoutDashboard', href:'/' },
   { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
-    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa' },
-    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier' },
-    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan' },
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
   { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
     { label:'Penerimaan', icon:'Receipt',  href:'#' },
@@ -237,7 +237,7 @@ function ConfirmModal({ item, onCancel }) {
             Batal
           </button>
           <a
-            href={isAktif ? `/46124026/kas_keluar/hapus_supplier/${item.id_supplier}` : `/46124026/kas_keluar/aktifkan_supplier/${item.id_supplier}`}
+            href={isAktif ? `/46124026/kas_keluar/hapus_supplier_l1H/${item.id_supplier}` : `/46124026/kas_keluar/aktifkan_supplier_l1H/${item.id_supplier}`}
             className={`flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors ${isAktif ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'}`}
           >
             {isAktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
@@ -270,7 +270,7 @@ function DeleteModal({ item, onCancel }) {
             Batal
           </button>
           <a
-            href={`/46124026/kas_keluar/hapus_permanen_supplier/${item.id_supplier}`}
+            href={`/46124026/kas_keluar/hapus_permanen_supplier_l1H/${item.id_supplier}`}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-white text-center rounded-lg transition-colors bg-red-600 hover:bg-red-700 shadow-sm"
           >
             Ya, Hapus Permanen
@@ -292,7 +292,7 @@ function SupplierPage() {
   const [deleteItem, setDeleteItem]     = useState(null);
   const [showFlash, setShowFlash]       = useState(true);
 
-  const currentPath = '/46124026/kas_keluar/supplier';
+  const currentPath = '/46124026/kas_keluar/supplier_l1H';
 
   const stats = useMemo(() => {
     const total = rawSupplier.length;
@@ -338,7 +338,7 @@ function SupplierPage() {
               <Icon name="Download" size={15}/>
               <span className="hidden sm:inline">Export</span>
             </button>
-            <a href="/46124026/kas_keluar/tambah_supplier" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
+            <a href="/46124026/kas_keluar/tambah_supplier_l1H" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors">
               <Icon name="Plus" size={15}/>
               Tambah Supplier
             </a>
@@ -459,10 +459,10 @@ function SupplierPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-center gap-1">
-                            <a href={`/46124026/kas_keluar/lihat_supplier/${row.id_supplier}`} title="Detail" className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                            <a href={`/46124026/kas_keluar/lihat_supplier_l1H/${row.id_supplier}`} title="Detail" className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                               <Icon name="Eye" size={15}/>
                             </a>
-                            <a href={`/46124026/kas_keluar/edit_supplier/${row.id_supplier}`} title="Edit" className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                            <a href={`/46124026/kas_keluar/edit_supplier_l1H/${row.id_supplier}`} title="Edit" className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                               <Icon name="Pencil" size={15}/>
                             </a>
                             <button
