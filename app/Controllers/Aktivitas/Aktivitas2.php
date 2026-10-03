@@ -27,6 +27,8 @@ class Aktivitas2 extends BaseController
 
     public function index()
     {
+        $this->cekAkses('ak2', 'daftar');
+
         $data['bkk'] = $this->bkkModel->getAll_l1H();
 
         return view('aktivitas/aktivitas2/index', $data);
@@ -38,6 +40,8 @@ class Aktivitas2 extends BaseController
 
     public function tambah_l1H()
     {
+        $this->cekAkses('ak2', 'tambah');
+
         $coaModel = model('CoaModel');
 
         $data['coa']     = $coaModel->getAll_l1H();
@@ -48,6 +52,8 @@ class Aktivitas2 extends BaseController
 
     public function simpan_l1H()
     {
+        $this->cekAkses('ak2', 'tambah');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
@@ -78,6 +84,19 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'Minimal satu baris detail wajib diisi.');
         }
 
+        $baris = $this->kumpulkanBaris($nilaiArr, $coaArr, $coaKbArr, $rbeliDArr);
+
+        if (empty($baris)) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Minimal satu baris detail yang lengkap wajib diisi.');
+        }
+
+        // Interaksi dengan saldo COA: saldo kas/bank harus mencukupi
+        $errSaldo = model('CoaModel')->cekSaldoKas_l1H($baris);
+        if ($errSaldo) {
+            return redirect()->back()->withInput()->with('error', $errSaldo);
+        }
+
         // Simpan header
         $dataHeader = [
             'no_bkk' => $noBkk,
@@ -85,29 +104,21 @@ class Aktivitas2 extends BaseController
             'kete'   => $kete ?: null,
         ];
 
+        $this->db->transStart();
+
         $idBkk = $this->bkkModel->insert($dataHeader);
 
         // Simpan detail
-        foreach ($nilaiArr as $i => $nilaiRaw) {
-            $nilai    = (float) str_replace(',', '', $nilaiRaw ?? 0);
-            $idCoa    = (int) ($coaArr[$i]   ?? 0);
-            $idCoaKb  = (int) ($coaKbArr[$i] ?? 0);
-
-            if ($nilai <= 0 || $idCoa <= 0 || $idCoaKb <= 0) {
-                continue; // skip baris tidak lengkap
-            }
-
-            $idRbeliD = (int) ($rbeliDArr[$i] ?? 0) ?: null;
-
-            $this->bkkDModel->insert([
-                'id_bkk'     => $idBkk,
-                'id_rbeli_d' => $idRbeliD,
-                'nilai'      => $nilai,
-                'id_coa'     => $idCoa,
-                'id_coa_kb'  => $idCoaKb,
-            ]);
+        foreach ($baris as $b) {
+            $this->bkkDModel->insert($b + ['id_bkk' => $idBkk]);
         }
 
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal menyimpan BKK. Tidak ada data yang tersimpan.');
+        }
         AuditLogger::catat('TAMBAH', 'tbbkk', (int) $idBkk, ['after' => $dataHeader]);
 
         return redirect()->to('/46124026/aktivitas/aktivitas2')
@@ -120,6 +131,8 @@ class Aktivitas2 extends BaseController
 
     public function lihat_l1H($id = null)
     {
+        $this->cekAkses('ak2', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
@@ -144,6 +157,8 @@ class Aktivitas2 extends BaseController
 
     public function edit_l1H($id = null)
     {
+        $this->cekAkses('ak2', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
@@ -167,6 +182,8 @@ class Aktivitas2 extends BaseController
 
     public function update_l1H()
     {
+        $this->cekAkses('ak2', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
@@ -209,33 +226,39 @@ class Aktivitas2 extends BaseController
             'kete'   => $kete ?: null,
         ];
 
-        // Update header
+        $baris = $this->kumpulkanBaris($nilaiArr, $coaArr, $coaKbArr, $rbeliDArr);
+
+        if (empty($baris)) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Minimal satu baris detail yang lengkap wajib diisi.');
+        }
+
+        // Interaksi dengan saldo COA: saldo kas/bank harus mencukupi (BKK ini dikecualikan)
+        $errSaldo = model('CoaModel')->cekSaldoKas_l1H($baris, $id);
+        if ($errSaldo) {
+            return redirect()->back()->withInput()->with('error', $errSaldo);
+        }
+
         $dataLama = $this->bkkModel->find($id);
+
+        $this->db->transStart();
+
+        // Update header
         $this->bkkModel->update($id, $dataBaru);
 
         // Hapus detail lama lalu insert ulang
         $this->bkkDModel->hapusByIdBkk_l1H($id);
 
-        foreach ($nilaiArr as $i => $nilaiRaw) {
-            $nilai   = (float) str_replace(',', '', $nilaiRaw ?? 0);
-            $idCoa   = (int) ($coaArr[$i]   ?? 0);
-            $idCoaKb = (int) ($coaKbArr[$i] ?? 0);
-
-            if ($nilai <= 0 || $idCoa <= 0 || $idCoaKb <= 0) {
-                continue;
-            }
-
-            $idRbeliD = (int) ($rbeliDArr[$i] ?? 0) ?: null;
-
-            $this->bkkDModel->insert([
-                'id_bkk'     => $id,
-                'id_rbeli_d' => $idRbeliD,
-                'nilai'      => $nilai,
-                'id_coa'     => $idCoa,
-                'id_coa_kb'  => $idCoaKb,
-            ]);
+        foreach ($baris as $b) {
+            $this->bkkDModel->insert($b + ['id_bkk' => $id]);
         }
 
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal memperbarui BKK. Perubahan dibatalkan.');
+        }
         AuditLogger::catat('EDIT', 'tbbkk', $id, [
             'before' => $dataLama,
             'after'  => $dataBaru,
@@ -251,6 +274,8 @@ class Aktivitas2 extends BaseController
 
     public function hapus_l1H($id = null)
     {
+        $this->cekAkses('ak2', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas2');
         }
@@ -275,6 +300,34 @@ class Aktivitas2 extends BaseController
     //  HELPER PRIVATE
     // ═══════════════════════════════════════════
 
+    /**
+     * Susun baris detail yang valid dari input form (baris tidak lengkap dilewati).
+     *
+     * @return array [['id_rbeli_d'=>?int,'nilai'=>float,'id_coa'=>int,'id_coa_kb'=>int], ...]
+     */
+    private function kumpulkanBaris(?array $nilaiArr, ?array $coaArr, ?array $coaKbArr, ?array $rbeliDArr): array
+    {
+        $baris = [];
+
+        foreach (($nilaiArr ?? []) as $i => $nilaiRaw) {
+            $nilai   = (float) str_replace(',', '', $nilaiRaw ?? 0);
+            $idCoa   = (int) ($coaArr[$i]   ?? 0);
+            $idCoaKb = (int) ($coaKbArr[$i] ?? 0);
+
+            if ($nilai <= 0 || $idCoa <= 0 || $idCoaKb <= 0) {
+                continue; // skip baris tidak lengkap
+            }
+
+            $baris[] = [
+                'id_rbeli_d' => (int) ($rbeliDArr[$i] ?? 0) ?: null,
+                'nilai'      => $nilai,
+                'id_coa'     => $idCoa,
+                'id_coa_kb'  => $idCoaKb,
+            ];
+        }
+
+        return $baris;
+    }
     /**
      * Ambil opsi dropdown Rencana Beli Detail (id, no_faktur, no_rbeli, nama_supplier)
      */

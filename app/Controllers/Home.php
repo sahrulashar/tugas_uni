@@ -2,10 +2,15 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController
+/**
+ * Home — Controller Gerbang Masuk Aplikasi (Login & Logout)
+ *
+ * Sesuai arahan praktikum: control home / c_rbac tugasnya hanya untuk masuk aplikasi.
+ */
+class Home extends Auth
 {
-    public function index(): string
+    public function index()
     {
-        return view('welcome_message');
+        return $this->login();
     }
 }

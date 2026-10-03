@@ -15,11 +15,22 @@ class KasKeluar extends BaseController
     }
 
     // ═══════════════════════════════════════════
+    //  DASHBOARD
+    // ═══════════════════════════════════════════
+
+    public function dashboard()
+    {
+        return view('kas_keluar/base');
+    }
+
+    // ═══════════════════════════════════════════
     //  COA — CRUD
     // ═══════════════════════════════════════════
 
     public function coa_l1H()
     {
+        $this->cekAkses('coa', 'daftar');
+
         $data['coa']   = $this->coaModel->getAll_l1H();
         $data['stats'] = $this->coaModel->getTotalPerTipe_l1H();
 
@@ -28,11 +39,15 @@ class KasKeluar extends BaseController
 
     public function tambah_coa_l1H()
     {
+        $this->cekAkses('coa', 'tambah');
+
         return view('kas_keluar/tambah_coa');
     }
 
     public function simpan_coa_l1H()
     {
+        $this->cekAkses('coa', 'tambah');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
@@ -42,6 +57,7 @@ class KasKeluar extends BaseController
         $saldoNormal = trim($this->request->getPost('saldo_normal'));
         $isHeader   = trim($this->request->getPost('is_header')) ?: 'D';
         $tipe       = trim($this->request->getPost('tipe'));
+        $saldoAwal  = (float) str_replace(',', '', trim((string) $this->request->getPost('saldo_awal')));
 
         if ($kodeCoa === '' || $namaCoa === '' || $saldoNormal === '') {
             return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
@@ -57,6 +73,7 @@ class KasKeluar extends BaseController
             'saldo_normal' => $saldoNormal,
             'is_header'   => $isHeader,
             'tipe'        => $tipe ?: null,
+            'saldo_awal'  => $saldoAwal,
             'is_off'      => 0,
         ];
 
@@ -70,6 +87,8 @@ class KasKeluar extends BaseController
 
     public function edit_coa_l1H($id = null)
     {
+        $this->cekAkses('coa', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
@@ -86,6 +105,8 @@ class KasKeluar extends BaseController
 
     public function update_coa_l1H()
     {
+        $this->cekAkses('coa', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
@@ -101,6 +122,7 @@ class KasKeluar extends BaseController
         $saldoNormal = trim($this->request->getPost('saldo_normal'));
         $isHeader   = trim($this->request->getPost('is_header')) ?: 'D';
         $tipe       = trim($this->request->getPost('tipe'));
+        $saldoAwal  = (float) str_replace(',', '', trim((string) $this->request->getPost('saldo_awal')));
 
         if ($kodeCoa === '' || $namaCoa === '' || $saldoNormal === '') {
             return redirect()->back()->with('error', 'Kode COA, Nama COA, dan Saldo Normal wajib diisi.');
@@ -116,6 +138,7 @@ class KasKeluar extends BaseController
             'saldo_normal' => $saldoNormal,
             'is_header'   => $isHeader,
             'tipe'        => $tipe ?: null,
+            'saldo_awal'  => $saldoAwal,
         ];
 
         $dataLama = $this->coaModel->find($id);
@@ -132,11 +155,13 @@ class KasKeluar extends BaseController
 
     public function lihat_coa_l1H($id = null)
     {
+        $this->cekAkses('coa', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
 
-        $coa = $this->coaModel->find($id);
+        $coa = $this->coaModel->getWithSaldo_l1H((int) $id);
 
         if (!$coa) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H')
@@ -148,6 +173,8 @@ class KasKeluar extends BaseController
 
     public function hapus_coa_l1H($id = null)
     {
+        $this->cekAkses('coa', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/coa_l1H');
         }
@@ -172,6 +199,8 @@ class KasKeluar extends BaseController
 
     public function aktifkan_coa_l1H($id = null)
     {
+        $this->cekAkses('coa', 'edit');
+
         if ($id) {
             $this->coaModel->aktifkan_l1H($id);
 
@@ -197,6 +226,8 @@ class KasKeluar extends BaseController
 
     public function supplier_l1H()
     {
+        $this->cekAkses('supp', 'daftar');
+
         $supplierModel = model('SupplierModel');
         $data['supplier'] = $supplierModel->findAll();
 
@@ -205,11 +236,15 @@ class KasKeluar extends BaseController
 
     public function tambah_supplier_l1H()
     {
+        $this->cekAkses('supp', 'tambah');
+
         return view('kas_keluar/tambah_supplier');
     }
 
     public function simpan_supplier_l1H()
     {
+        $this->cekAkses('supp', 'tambah');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
@@ -246,6 +281,8 @@ class KasKeluar extends BaseController
 
     public function edit_supplier_l1H($id = null)
     {
+        $this->cekAkses('supp', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
@@ -263,6 +300,8 @@ class KasKeluar extends BaseController
 
     public function update_supplier_l1H()
     {
+        $this->cekAkses('supp', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
@@ -309,6 +348,8 @@ class KasKeluar extends BaseController
 
     public function hapus_supplier_l1H($id = null)
     {
+        $this->cekAkses('supp', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
@@ -334,6 +375,8 @@ class KasKeluar extends BaseController
 
     public function aktifkan_supplier_l1H($id = null)
     {
+        $this->cekAkses('supp', 'edit');
+
         if ($id) {
             $supplierModel = model('SupplierModel');
             $supplierModel->aktifkan_l1H($id);
@@ -356,6 +399,8 @@ class KasKeluar extends BaseController
 
     public function lihat_supplier_l1H($id = null)
     {
+        $this->cekAkses('supp', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/supplier_l1H');
         }
@@ -377,6 +422,8 @@ class KasKeluar extends BaseController
 
     public function karyawan_l1H()
     {
+        $this->cekAkses('kary', 'daftar');
+
         $karyawanModel    = model('KaryawanModel');
         $data['karyawan'] = $karyawanModel->getAll_l1H();
         $data['stats']    = $karyawanModel->getTotalPerJabatan_l1H();
@@ -386,11 +433,15 @@ class KasKeluar extends BaseController
 
     public function tambah_karyawan_l1H()
     {
+        $this->cekAkses('kary', 'tambah');
+
         return view('kas_keluar/tambah_karyawan');
     }
 
     public function simpan_karyawan_l1H()
     {
+        $this->cekAkses('kary', 'tambah');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
@@ -427,6 +478,8 @@ class KasKeluar extends BaseController
 
     public function edit_karyawan_l1H($id = null)
     {
+        $this->cekAkses('kary', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
@@ -444,6 +497,8 @@ class KasKeluar extends BaseController
 
     public function update_karyawan_l1H()
     {
+        $this->cekAkses('kary', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
@@ -489,6 +544,8 @@ class KasKeluar extends BaseController
 
     public function lihat_karyawan_l1H($id = null)
     {
+        $this->cekAkses('kary', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
@@ -506,6 +563,8 @@ class KasKeluar extends BaseController
 
     public function hapus_karyawan_l1H($id = null)
     {
+        $this->cekAkses('kary', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/kas_keluar/karyawan_l1H');
         }
@@ -531,6 +590,8 @@ class KasKeluar extends BaseController
 
     public function aktifkan_karyawan_l1H($id = null)
     {
+        $this->cekAkses('kary', 'edit');
+
         if ($id) {
             model('KaryawanModel')->aktifkan_l1H($id);
 

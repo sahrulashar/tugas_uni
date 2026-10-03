@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manajemen User — FinanceOS</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand:   { 50:'#eff6ff', 100:'#dbeafe', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8', 800:'#1e40af', 900:'#1e3a8a' },
+            sidebar: '#0f172a',
+          },
+          fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .sidebar-transition { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+  </style>
+</head>
+<body class="h-full bg-slate-100 text-slate-800 antialiased">
+
+<script>
+  window.__USERS__ = <?= json_encode($users ?? []) ?>;
+  window.__FLASH__ = {
+    error:   "<?= addslashes(session()->getFlashdata('error')   ?? '') ?>",
+    success: "<?= addslashes(session()->getFlashdata('success') ?? '') ?>"
+  };
+  window.__CSRF__ = {
+    name:  "<?= csrf_token() ?>",
+    value: "<?= csrf_hash() ?>"
+  };
+  <?php include APPPATH . "Views/_session_inject.php"; ?>
+</script>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+function Icon({ name, size = 18, className = '' }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current && window.lucide) {
+      ref.current.innerHTML = '';
+      const svg = lucide.createElement(lucide[name] || lucide.HelpCircle);
+      svg.setAttribute('width', size);
+      svg.setAttribute('height', size);
+      ref.current.appendChild(svg);
+    }
+  }, [name, size]);
+  return <span ref={ref} className={`inline-flex items-center justify-center ${className}`} />;
+}
+
+const NAV = [
+  { label:'Dashboard',  icon:'LayoutDashboard', href:'/46124026' },
+  { label:'Kas Keluar', icon:'ArrowUpFromLine', children:[
+    { label:'Chart of Accounts', icon:'BookOpen', href:'/46124026/kas_keluar/coa_l1H' },
+    { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
+    { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
+  ]},
+  { label:'Aktivitas',  icon:'ClipboardList', children:[
+    { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
+    { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
+    { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
+  ]},
+  { label:'Pengaturan RBAC', icon:'Shield', children:[
+    { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
+    { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
+    { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+  ]},
+];
+
+function NavItem({ item, currentPath }) {
+  const hasChildren = item.children?.length > 0;
+  const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
+  const [open, setOpen] = useState(isParentActive || item.label === 'Pengaturan RBAC');
+
+  if (!hasChildren) {
+    const active = currentPath === item.href;
+    return (
+      <li>
+        <a href={item.href}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+            ${active ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+          <Icon name={item.icon} size={16}/>
+          <span>{item.label}</span>
+        </a>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <button onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+          ${isParentActive ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+        <span className="flex items-center gap-3">
+          <Icon name={item.icon} size={16}/>
+          {item.label}
+        </span>
+        <Icon name={open ? 'ChevronDown' : 'ChevronRight'} size={14}/>
+      </button>
+      {open && (
+        <ul className="mt-1 ml-4 pl-3 border-l border-slate-700/60 space-y-1">
+          {item.children.map(child => {
+            const active = currentPath === child.href;
+            return (
+              <li key={child.label}>
+                <a href={child.href}
+                  className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors
+                    ${active ? 'bg-brand-600 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                  <Icon name={child.icon} size={13}/>
+                  {child.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+function Sidebar({ collapsed, currentPath }) {
+  return (
+    <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-sidebar sidebar-transition ${collapsed ? 'w-16' : 'w-64'}`}>
+      <div className={`flex items-center gap-3 px-4 py-5 border-b border-slate-800 ${collapsed ? 'justify-center' : ''}`}>
+        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+          <Icon name="ShieldCheck" size={18} className="text-white"/>
+        </div>
+        {!collapsed && (
+          <div className="fade-in">
+            <p className="text-white font-bold text-sm leading-tight">FinanceOS</p>
+            <p className="text-slate-500 text-xs">Enterprise Suite</p>
+          </div>
+        )}
+      </div>
+
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {!collapsed && <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 px-1 mb-2">Menu Utama</p>}
+        <ul className="space-y-0.5">
+          {NAV.map(item => collapsed ? (
+            <li key={item.label} title={item.label}>
+              <a href={item.href || '#'}
+                className="flex items-center justify-center w-full py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+                <Icon name={item.icon} size={18}/>
+              </a>
+            </li>
+          ) : (
+            <NavItem key={item.label} item={item} currentPath={currentPath}/>
+          ))}
+        </ul>
+      </nav>
+
+      <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center' : ''}`}>
+        {collapsed ? (
+          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">
+            {window._erpUser ? window._erpUser.initial : "U"}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {window._erpUser ? window._erpUser.initial : "U"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p>
+              <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ""}</p>
+            </div>
+            <a href="/logout" className="ml-auto px-2.5 py-1 rounded bg-red-800 text-red-100 hover:bg-red-700 hover:text-white text-xs font-semibold no-underline inline-block" title="Logout">
+              ⏻ Keluar
+            </a>
+          </div>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+function Topbar({ collapsed, onToggle, breadcrumbs }) {
+  return (
+    <header className={`fixed top-0 right-0 z-20 flex items-center justify-between h-16 bg-white border-b border-slate-200 px-4 shadow-sm sidebar-transition ${collapsed ? 'left-16' : 'left-64'}`}>
+      <div className="flex items-center gap-3">
+        <button onClick={onToggle} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors">
+          <Icon name="PanelLeft" size={18}/>
+        </button>
+        <div className="hidden sm:flex items-center gap-1.5 text-sm">
+          {breadcrumbs.map((b, i) => (
+            <span key={i} className="flex items-center gap-1.5">
+              {i > 0 && <Icon name="ChevronRight" size={13} className="text-slate-400"/>}
+              {b.href ? (
+                <a href={b.href} className="text-slate-500 hover:text-brand-600 transition-colors">{b.label}</a>
+              ) : (
+                <span className="font-semibold text-slate-800">{b.label}</span>
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Toast({ flash, onClose }) {
+  useEffect(() => {
+    if (flash.success || flash.error) {
+      const t = setTimeout(onClose, 4000);
+      return () => clearTimeout(t);
+    }
+  }, [flash]);
+
+  if (!flash.success && !flash.error) return null;
+  const isSuccess = !!flash.success;
+
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-xl text-sm font-medium
+      ${isSuccess ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+      <Icon name={isSuccess ? 'CheckCircle' : 'AlertCircle'} size={18}/>
+      <span>{flash.success || flash.error}</span>
+      <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
+        <Icon name="X" size={15}/>
+      </button>
+    </div>
+  );
+}
+
+function UserPage() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('Semua');
+  const [showFlash, setShowFlash] = useState(true);
+
+  const users = window.__USERS__ || [];
+  const flash = window.__FLASH__ || {};
+  const currentPath = window.location.pathname;
+
+  const total = users.length;
+  const totalAktif = users.filter(u => u.is_off == 0).length;
+  const totalOff = users.filter(u => u.is_off == 1).length;
+
+  const filtered = useMemo(() => {
+    return users.filter(u => {
+      const matchSearch = u.nama.toLowerCase().includes(search.toLowerCase()) ||
+                          u.kode.toLowerCase().includes(search.toLowerCase());
+      const matchStatus = filterStatus === 'Semua' ? true :
+                          filterStatus === 'Aktif' ? u.is_off == 0 : u.is_off == 1;
+      return matchSearch && matchStatus;
+    });
+  }, [users, search, filterStatus]);
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <Sidebar collapsed={collapsed} currentPath={currentPath}/>
+
+      <div className={`sidebar-transition ${collapsed ? 'ml-16' : 'ml-64'}`}>
+        <Topbar
+          collapsed={collapsed}
+          onToggle={() => setCollapsed(c => !c)}
+          breadcrumbs={[
+            { label:'Dashboard', href:'/46124026' },
+            { label:'Pengaturan RBAC', href:'#' },
+            { label:'Manajemen User' },
+          ]}
+        />
+
+        <main className="pt-16 min-h-screen">
+          <div className="p-6 space-y-6 fade-in">
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <Icon name="Users" size={20} className="text-brand-600"/>
+                  Manajemen User
+                </h1>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  Kelola data akun pengguna, hak akses, dan status operasional sistem
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <a href="/46124026/rbac/user/tambah"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">
+                  <Icon name="UserPlus" size={15}/>
+                  Tambah User
+                </a>
+              </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Pengguna</p>
+                  <p className="text-2xl font-bold text-slate-800 mt-1">{total}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Icon name="Users" size={20}/>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">User Aktif</p>
+                  <p className="text-2xl font-bold text-green-600 mt-1">{totalAktif}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+                  <Icon name="CheckCircle" size={20}/>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">User Nonaktif</p>
+                  <p className="text-2xl font-bold text-slate-400 mt-1">{totalOff}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center">
+                  <Icon name="UserX" size={20}/>
+                </div>
+              </div>
+            </div>
+
+            {/* Table Card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
+                <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 flex-1 max-w-sm">
+                  <Icon name="Search" size={14} className="text-slate-400"/>
+                  <input
+                    type="text"
+                    placeholder="Cari kode atau nama pengguna..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none w-full"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch('')} className="text-slate-400 hover:text-slate-600">
+                      <Icon name="X" size={13}/>
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <select
+                    value={filterStatus}
+                    onChange={e => setFilterStatus(e.target.value)}
+                    className="text-sm border border-slate-200 rounded-lg px-3 py-2 text-slate-700 bg-white outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
+                    <option value="Semua">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Nonaktif">Nonaktif</option>
+                  </select>
+                  <span className="text-xs text-slate-400">
+                    Menampilkan <strong>{filtered.length}</strong> user
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-100 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      <th className="px-5 py-3 w-12">#</th>
+                      <th className="px-5 py-3">Kode User (Username)</th>
+                      <th className="px-5 py-3">Nama Lengkap</th>
+                      <th className="px-5 py-3">Status Akun</th>
+                      <th className="px-5 py-3 text-right">Tindakan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filtered.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" className="px-5 py-8 text-center text-slate-400">
+                          Tidak ditemukan pengguna yang sesuai pencarian.
+                        </td>
+                      </tr>
+                    ) : (
+                      filtered.map((u, i) => {
+                        const isAktif = u.is_off == 0;
+                        return (
+                          <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
+                            <td className="px-5 py-3.5 text-slate-400 text-xs font-mono">{i + 1}</td>
+                            <td className="px-5 py-3.5">
+                              <span className="font-mono text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-brand-700 border border-slate-200">
+                                {u.kode}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5 font-medium text-slate-800">
+                              {u.nama}
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
+                                ${isAktif ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${isAktif ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                {isAktif ? 'Aktif' : 'Nonaktif'}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5 text-right">
+                              <div className="inline-flex items-center gap-2">
+                                <a href={`/46124026/rbac/akses/atur/${u.id}`}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+                                  title="Atur Hak Akses">
+                                  <Icon name="Key" size={13} className="text-amber-500"/>
+                                  Hak Akses
+                                </a>
+                                <a href={`/46124026/rbac/user/edit/${u.id}`}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-colors"
+                                  title="Edit User">
+                                  <Icon name="Pencil" size={13}/>
+                                  Edit
+                                </a>
+                                <a href={`/46124026/rbac/user/toggle/${u.id}`}
+                                  onClick={e => { if(!confirm(`${isAktif ? 'Nonaktifkan' : 'Aktifkan'} user ${u.nama}?`)) e.preventDefault(); }}
+                                  className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors
+                                    ${isAktif ? 'text-slate-600 bg-slate-100 border-slate-200 hover:bg-red-50 hover:text-red-700' : 'text-green-700 bg-green-50 border-green-200 hover:bg-green-100'}`}
+                                  title="Toggle Status">
+                                  <Icon name={isAktif ? "UserX" : "UserCheck"} size={13}/>
+                                  {isAktif ? 'Nonaktifkan' : 'Aktifkan'}
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </main>
+      </div>
+
+      {showFlash && <Toast flash={flash} onClose={() => setShowFlash(false)}/>}
+
+      {!collapsed && (
+        <div className="fixed inset-0 bg-black/30 z-20 lg:hidden backdrop-blur-sm"
+          onClick={() => setCollapsed(true)}/>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<UserPage/>);
+</script>
+</body>
+</html>

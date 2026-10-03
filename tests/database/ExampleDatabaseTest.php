@@ -14,6 +14,15 @@ final class ExampleDatabaseTest extends CIUnitTestCase
 
     protected $seed = ExampleSeeder::class;
 
+    protected function setUp(): void
+    {
+        if (! extension_loaded('sqlite3')) {
+            $this->markTestSkipped('Ekstensi sqlite3 tidak tersedia; contoh test DB bawaan CI4 dilewati.');
+        }
+
+        parent::setUp();
+    }
+
     public function testModelFindAll(): void
     {
         $model = new ExampleModel();

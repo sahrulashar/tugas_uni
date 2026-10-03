@@ -45,8 +45,9 @@
 <!-- PHP ? JS Bridge -->
 <script>
   window.__COA__ = <?= json_encode($coa ?? []) ?>;
+<script>
+<?php include APPPATH . 'Views/_session_inject.php'; ?>
 </script>
-
 <div id="root"></div>
 
 <script type="text/babel">
@@ -89,7 +90,11 @@ const NAV = [
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
     { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
-  { label:'Pengaturan', icon:'Settings', href:'#' },
+  { label:'Pengaturan RBAC', icon:'Shield', children:[
+    { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
+    { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
+    { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+  ]},
 ];
 
 /* -- NavItem ---------------------------- */
@@ -167,13 +172,13 @@ function Sidebar({ collapsed, currentPath }) {
       </nav>
       <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center' : ''}`}>
         {collapsed ? (
-          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
         ) : (
           <div className="flex items-center gap-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{window._erpUser ? window._erpUser.initial : "U"}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">Admin User</p>
-              <p className="text-slate-500 text-xs truncate">admin@company.com</p>
+              <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p>
+              <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ""}</p>
             </div>
             <button className="text-slate-500 hover:text-white transition-colors"><Icon name="LogOut" size={15}/></button>
           </div>
@@ -209,7 +214,7 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
         </button>
         <div className="w-px h-6 bg-slate-200 mx-1"></div>
         <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
           <Icon name="ChevronDown" size={13} className="text-slate-400 hidden sm:block"/>
         </button>
       </div>
@@ -218,6 +223,8 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
 }
 
 /* -- Detail Row ------------------------- */
+const fmtRp = (v) => "Rp " + Number(v || 0).toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 function DetailRow({ label, children, last = false }) {
   return (
     <div className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-0 py-4 ${!last ? 'border-b border-slate-100' : ''}`}>
@@ -370,6 +377,18 @@ function LihatCoaPage() {
                       {coa.saldo_normal}
                     </span>
                   </DetailRow>
+                  <DetailRow label="Saldo Awal">
+                    <span className="font-mono text-slate-700">{fmtRp(coa.saldo_awal)}</span>
+                  </DetailRow>
+                  <DetailRow label="Mutasi Debit">
+                    <span className="font-mono text-slate-700">{fmtRp(coa.mutasi_debit)}</span>
+                  </DetailRow>
+                  <DetailRow label="Mutasi Kredit">
+                    <span className="font-mono text-slate-700">{fmtRp(coa.mutasi_kredit)}</span>
+                  </DetailRow>
+                  <DetailRow label="Saldo Akhir">
+                    <span className="font-mono font-bold text-brand-600">{fmtRp(coa.saldo_akhir)}</span>
+                  </DetailRow>
                   <DetailRow label="Status" last>
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
                       ${isAktif ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
@@ -454,3 +473,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(<LihatCoaPage/>);
 </script>
 </body>
 </html>
+
+
+

@@ -58,6 +58,7 @@
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>",
   };
+  <?php include APPPATH . "Views/_session_inject.php"; ?>
 </script>
 
 <div id="root"></div>
@@ -102,7 +103,11 @@ const NAV = [
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
     { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
-  { label:'Pengaturan', icon:'Settings', href:'#' },
+  { label:'Pengaturan RBAC', icon:'Shield', children:[
+    { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
+    { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
+    { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+  ]},
 ];
 
 /* -- Sidebar NavItem -------------------- */
@@ -187,17 +192,15 @@ function Sidebar({ collapsed, currentPath }) {
       {/* User */}
       <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center' : ''}`}>
         {collapsed ? (
-          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
         ) : (
           <div className="flex items-center gap-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{window._erpUser ? window._erpUser.initial : "U"}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">Admin User</p>
-              <p className="text-slate-500 text-xs truncate">admin@company.com</p>
+              <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p>
+              <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ""}</p>
             </div>
-            <button className="text-slate-500 hover:text-white transition-colors" title="Logout">
-              <Icon name="LogOut" size={15}/>
-            </button>
+            <a href="/logout" className="ml-auto px-2.5 py-1 rounded bg-red-800 text-red-100 hover:bg-red-700 hover:text-white text-xs font-semibold no-underline inline-block" title="Logout">⏻ Keluar</a>
           </div>
         )}
       </div>
@@ -236,7 +239,7 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
         </button>
         <div className="w-px h-6 bg-slate-200 mx-1"></div>
         <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
           <Icon name="ChevronDown" size={13} className="text-slate-400 hidden sm:block"/>
         </button>
       </div>
@@ -267,6 +270,9 @@ function Toast({ flash, onClose }) {
     </div>
   );
 }
+
+/* -- Format Rupiah ---------------------- */
+const fmtRp = (v) => "Rp " + Number(v || 0).toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /* -- Badge Status (is_off) --------------- */
 function StatusBadge({ isOff }) {
@@ -431,6 +437,8 @@ function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Saldo Normal</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Is Header</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Tipe</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Saldo Awal</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Saldo Akhir</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Is Off</th>
             <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">Aksi</th>
           </tr>
@@ -458,6 +466,8 @@ function CoaTable({ data, onToggleStatus, onDeletePermanen }) {
               </td>
               <td className="px-4 py-3.5"><HeaderBadge isHeader={row.is_header}/></td>
               <td className="px-4 py-3.5"><TipeBadge tipe={row.tipe}/></td>
+              <td className="px-4 py-3.5 text-right font-mono text-xs text-slate-600">{fmtRp(row.saldo_awal)}</td>
+              <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-slate-800">{fmtRp(row.saldo_akhir)}</td>
               <td className="px-4 py-3.5"><StatusBadge isOff={row.is_off}/></td>
               <td className="px-4 py-3.5">
                 <div className="flex items-center justify-center gap-1">
@@ -721,3 +731,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(<CoaPage/>);
 </script>
 </body>
 </html>
+
+
+

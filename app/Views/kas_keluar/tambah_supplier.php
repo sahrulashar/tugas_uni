@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
@@ -51,6 +51,7 @@
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>"
   };
+  <?php include APPPATH . "Views/_session_inject.php"; ?>
 </script>
 
 <div id="root"></div>
@@ -93,7 +94,11 @@ const NAV = [
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
     { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
-  { label:'Pengaturan', icon:'Settings', href:'#' },
+  { label:'Pengaturan RBAC', icon:'Shield', children:[
+    { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
+    { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
+    { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+  ]},
 ];
 
 function NavItem({ item, currentPath }) {
@@ -169,15 +174,15 @@ function Sidebar({ collapsed, currentPath }) {
       </nav>
       <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center' : ''}`}>
         {collapsed ? (
-          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
         ) : (
           <div className="flex items-center gap-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{window._erpUser ? window._erpUser.initial : "U"}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">Admin User</p>
-              <p className="text-slate-500 text-xs truncate">admin@company.com</p>
+              <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p>
+              <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ""}</p>
             </div>
-            <button className="text-slate-500 hover:text-white transition-colors" title="Logout"><Icon name="LogOut" size={15}/></button>
+            <a href="/logout" className="ml-auto px-2.5 py-1 rounded bg-red-800 text-red-100 hover:bg-red-700 hover:text-white text-xs font-semibold no-underline inline-block" title="Logout">⏻ Keluar</a>
           </div>
         )}
       </div>
@@ -313,3 +318,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(<TambahSupplierPage 
 </script>
 </body>
 </html>
+
+
+

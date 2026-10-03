@@ -69,6 +69,21 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease forwards; }
   </style>
+
+  <?php
+    // Inject data session PHP → JavaScript window object
+    $namaUser = session()->get('nama_user') ?? 'User';
+    $kodeUser = session()->get('kode_user') ?? '';
+    $initial  = strtoupper(substr($namaUser, 0, 1));
+  ?>
+  <script>
+    window._erpUser = {
+      nama:    "<?= esc($namaUser, 'js') ?>",
+      kode:    "<?= esc($kodeUser, 'js') ?>",
+      initial: "<?= esc($initial,  'js') ?>"
+    };
+  </script>
+
 </head>
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
 
@@ -139,9 +154,13 @@ const navItems = [
     ],
   },
   {
-    label: 'Pengaturan',
-    icon: 'Settings',
-    href: '#',
+    label: 'Pengaturan RBAC',
+    icon: 'Shield',
+    children: [
+      { label: 'Manajemen User',  icon: 'Users',      href: '/46124026/rbac/user' },
+      { label: 'Laman & Aksi',    icon: 'FileText',   href: '/46124026/rbac/laman' },
+      { label: 'Atur Hak Akses',  icon: 'Lock',       href: '/46124026/rbac/akses' },
+    ],
   },
 ];
 
@@ -256,23 +275,32 @@ function Sidebar({ collapsed, currentPath }) {
       </nav>
 
       {/* User Footer */}
-      <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center' : ''}`}>
+      <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex flex-col items-center gap-2' : ''}`}>
         {collapsed ? (
-          <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">
-            A
-          </div>
+          <>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">
+              {window._erpUser ? window._erpUser.initial : 'U'}
+            </div>
+            <a href="/logout" title="Logout"
+               className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-900/40 text-red-400 hover:bg-red-700 hover:text-white transition-colors">
+              ⏻
+            </a>
+          </>
         ) : (
-          <div className="flex items-center gap-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-              A
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 px-1">
+              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {window._erpUser ? window._erpUser.initial : 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : 'User'}</p>
+                <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ''}</p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">Admin User</p>
-              <p className="text-slate-500 text-xs truncate">admin@company.com</p>
-            </div>
-            <button className="text-slate-500 hover:text-white transition-colors" title="Logout">
-              <Icon name="LogOut" size={15} />
-            </button>
+            <a href="/logout"
+               className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-700 hover:text-white text-sm font-medium transition-colors">
+              ⏻ Keluar
+            </a>
           </div>
         )}
       </div>

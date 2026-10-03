@@ -21,6 +21,8 @@ class Aktivitas3 extends BaseController
 
     public function index()
     {
+        $this->cekAkses('ak3', 'daftar');
+
         $data['rekap'] = $this->recordModel->getAll_l1H();
 
         return view('aktivitas/aktivitas3/index', $data);
@@ -32,6 +34,8 @@ class Aktivitas3 extends BaseController
 
     public function tambah_l1H()
     {
+        $this->cekAkses('ak3', 'tambah');
+
         $bkkModel = model('TbBkkModel');
         $data['bkk'] = $bkkModel->getAll_l1H();
 
@@ -40,6 +44,8 @@ class Aktivitas3 extends BaseController
 
     public function simpan_l1H()
     {
+        $this->cekAkses('ak3', 'tambah');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
@@ -87,6 +93,8 @@ class Aktivitas3 extends BaseController
 
     public function lihat_l1H($id = null)
     {
+        $this->cekAkses('ak3', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
@@ -109,6 +117,8 @@ class Aktivitas3 extends BaseController
 
     public function edit_l1H($id = null)
     {
+        $this->cekAkses('ak3', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
@@ -129,6 +139,8 @@ class Aktivitas3 extends BaseController
 
     public function update_l1H()
     {
+        $this->cekAkses('ak3', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas3');
         }
@@ -186,6 +198,8 @@ class Aktivitas3 extends BaseController
 
     public function hapus_l1H($id = null)
     {
+        $this->cekAkses('ak3', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas3');
         }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
@@ -53,6 +53,7 @@
     name:  "<?= csrf_token() ?>",
     value: "<?= csrf_hash() ?>"
   };
+  <?php include APPPATH . "Views/_session_inject.php"; ?>
 </script>
 
 <div id="root"></div>
@@ -94,7 +95,11 @@ const navItems = [
     { label: 'Laba Rugi', icon: 'TrendingUp', href: '#' },
     { label: 'Arus Kas',  icon: 'Activity',   href: '#' },
   ]},
-  { label: 'Pengaturan', icon: 'Settings', href: '#' },
+  { label:'Pengaturan RBAC', icon:'Shield', children:[
+    { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
+    { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
+    { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+  ]},
 ];
 
 function NavItem({ item, currentPath }) {
@@ -161,10 +166,10 @@ function Sidebar({ collapsed, currentPath }) {
       </nav>
       <div className={`border-t border-slate-800 p-3 ${collapsed ? 'flex justify-center':''}`}>
         {collapsed
-          ? <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          ? <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
           : <div className="flex items-center gap-3 px-1">
-              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
-              <div className="flex-1 min-w-0"><p className="text-white text-sm font-medium truncate">Admin User</p><p className="text-slate-500 text-xs">admin@company.com</p></div>
+              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{window._erpUser ? window._erpUser.initial : "U"}</div>
+              <div className="flex-1 min-w-0"><p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p><p className="text-slate-500 text-xs">{window._erpUser ? window._erpUser.kode : ""}</p></div>
               <button className="text-slate-500 hover:text-white"><Icon name="LogOut" size={15}/></button>
             </div>
         }
@@ -193,7 +198,7 @@ function Topbar({ collapsed, onToggle, breadcrumbs }) {
         <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"><Icon name="Bell" size={18}/></button>
         <div className="w-px h-6 bg-slate-200 mx-1"></div>
         <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+          <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">{window._erpUser ? window._erpUser.initial : "U"}</div>
         </button>
       </div>
     </header>
@@ -376,3 +381,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
+
+

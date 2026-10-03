@@ -24,6 +24,8 @@ class Aktivitas1 extends BaseController
 
     public function index()
     {
+        $this->cekAkses('ak1', 'daftar'); // ← RBAC gate
+
         $data['rbeli'] = $this->rbeliModel->getAll_l1H();
 
         return view('aktivitas/aktivitas1/index', $data);
@@ -35,6 +37,8 @@ class Aktivitas1 extends BaseController
 
     public function tambah_l1H()
     {
+        $this->cekAkses('ak1', 'tambah'); // ← RBAC gate
+
         $supplierModel      = model('SupplierModel');
         $data['supplier']   = $supplierModel->getAktif_l1H();
 
@@ -43,6 +47,8 @@ class Aktivitas1 extends BaseController
 
     public function simpan_l1H()
     {
+        $this->cekAkses('ak1', 'tambah'); // ← RBAC gate
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
@@ -110,6 +116,8 @@ class Aktivitas1 extends BaseController
 
     public function lihat_l1H($id = null)
     {
+        $this->cekAkses('ak1', 'lihat');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
@@ -134,6 +142,8 @@ class Aktivitas1 extends BaseController
 
     public function edit_l1H($id = null)
     {
+        $this->cekAkses('ak1', 'edit');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
@@ -155,6 +165,8 @@ class Aktivitas1 extends BaseController
 
     public function update_l1H()
     {
+        $this->cekAkses('ak1', 'edit');
+
         if (!$this->request->is('post')) {
             return redirect()->to('/46124026/aktivitas/aktivitas1');
         }
@@ -234,6 +246,8 @@ class Aktivitas1 extends BaseController
 
     public function hapus_l1H($id = null)
     {
+        $this->cekAkses('ak1', 'hapus');
+
         if (!$id) {
             return redirect()->to('/46124026/aktivitas/aktivitas1');
         }

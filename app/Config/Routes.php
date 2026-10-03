@@ -1,12 +1,58 @@
-
 <?php
 
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
 
-$routes->group('46124026', function ($routes) {
+// ══════════════════════════════════════════════
+//  AUTH — Login & Logout (Gerbang Masuk Aplikasi)
+// ══════════════════════════════════════════════
+$routes->get('/',             'Home::index');
+$routes->get('home',          'Home::index');
+$routes->get('login',         'Auth::login');
+$routes->post('login/proses', 'Auth::prosesLogin');
+$routes->get('logout',        'Auth::logout');
+$routes->get('c_rbac',        'C_rbac::index');
+$routes->post('c_rbac/proses', 'C_rbac::prosesLogin');
+
+// ══════════════════════════════════════════════
+//  AREA TERPROTEKSI — Wajib Login (AuthFilter)
+// ══════════════════════════════════════════════
+$routes->group('46124026', ['filter' => 'auth'], function ($routes) {
+
+    // ── RBAC Management ───────────────────────────────────────────
+    $routes->group('rbac', function ($routes) {
+
+        // User
+        $routes->get('user',              'CRbac::daftarUser');
+        $routes->get('user/tambah',       'CRbac::tambahUser');
+        $routes->post('user/simpan',      'CRbac::simpanUser');
+        $routes->get('user/edit/(:num)',  'CRbac::editUser/$1');
+        $routes->post('user/update',      'CRbac::updateUser');
+        $routes->get('user/toggle/(:num)','CRbac::toggleUser/$1');
+
+        // Laman
+        $routes->get('laman',              'CRbac::daftarLaman');
+        $routes->get('laman/tambah',       'CRbac::tambahLaman');
+        $routes->post('laman/simpan',      'CRbac::simpanLaman');
+        $routes->get('laman/edit/(:num)',  'CRbac::editLaman/$1');
+        $routes->post('laman/update',      'CRbac::updateLaman');
+        $routes->get('laman/hapus/(:num)', 'CRbac::hapusLaman/$1');
+
+        // Akses
+        $routes->get('akses',              'CRbac::daftarAkses');
+        $routes->get('akses/atur/(:num)',  'CRbac::aturAkses/$1');
+        $routes->post('akses/simpan',      'CRbac::simpanAkses');
+    });
+
+    // ── Dashboard Index ────────────────────────────────────────────
+    $routes->get('/',       'KasKeluar::dashboard');
+
+    // ── Alias URL pendek (tanpa _l1H) → redirect ke route resmi ──
+    // Ini menangkap link lama di views yang tidak pakai suffix _l1H
+    $routes->get('kas_keluar/coa',      'KasKeluar::coa_l1H');
+    $routes->get('kas_keluar/supplier', 'KasKeluar::supplier_l1H');
+    $routes->get('kas_keluar/karyawan', 'KasKeluar::karyawan_l1H');
 
     $routes->group('kas_keluar', function ($routes) {
         $routes->get('coa_l1H', 'KasKeluar::coa_l1H');
