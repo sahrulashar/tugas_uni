@@ -108,4 +108,53 @@ class AuditLogModel extends Model
 
         return $limit > 0 ? $builder->findAll($limit) : $builder->findAll();
     }
+
+    /**
+     * Ambil statistik ringkasan audit log
+     */
+    public function getStats_l1H(): array
+    {
+        $today = date('Y-m-d');
+        $total = $this->countAllResults();
+        $hariIni = $this->where('DATE(waktu)', $today)->countAllResults();
+        $modifikasi = $this->whereIn('aksi', ['EDIT', 'HAPUS', 'SOFT_DELETE', 'NONAKTIF'])->countAllResults();
+        $userCount = $this->select('COUNT(DISTINCT user_id) as total_user', false)->first()['total_user'] ?? 0;
+
+        return [
+            'total'      => $total,
+            'hari_ini'   => $hariIni,
+            'modifikasi' => $modifikasi,
+            'total_user' => (int) $userCount,
+        ];
+    }
+
+    /**
+     * Ambil opsi filter (daftar tabel, modul, aksi yang ada di data)
+     */
+    public function getFilterOptions_l1H(): array
+    {
+        $tabel = $this->db->table($this->table)
+            ->distinct()
+            ->select('tabel_terdampak')
+            ->where('tabel_terdampak IS NOT NULL')
+            ->where('tabel_terdampak !=', '')
+            ->orderBy('tabel_terdampak', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $modul = $this->db->table($this->table)
+            ->distinct()
+            ->select('modul')
+            ->where('modul IS NOT NULL')
+            ->where('modul !=', '')
+            ->orderBy('modul', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        return [
+            'tabel' => array_column($tabel, 'tabel_terdampak'),
+            'modul' => array_column($modul, 'modul'),
+        ];
+    }
 }
+

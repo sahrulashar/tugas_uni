@@ -11,11 +11,13 @@ class Aktivitas1 extends BaseController
 {
     protected TbRbeliModel  $rbeliModel;
     protected TbRbeliDModel $rbeliDModel;
+    protected \CodeIgniter\Database\BaseConnection $db;
 
     public function __construct()
     {
         $this->rbeliModel  = new TbRbeliModel();
         $this->rbeliDModel = new TbRbeliDModel();
+        $this->db          = \Config\Database::connect();
     }
 
     // ═══════════════════════════════════════════
@@ -78,13 +80,15 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'Minimal satu baris detail wajib diisi.');
         }
 
-        // Simpan header
+        // Simpan header & detail dalam transaksi atomik
         $dataHeader = [
             'no_rbeli' => $noRbeli,
             'tgl'      => $tgl,
             'id_supp'  => $idSupp,
             'kete'     => $kete ?: null,
         ];
+
+        $this->db->transStart();
 
         $idRbeli = $this->rbeliModel->insert($dataHeader);
 
@@ -104,7 +108,14 @@ class Aktivitas1 extends BaseController
             ]);
         }
 
-        AuditLogger::catat('TAMBAH', 'tbrbeli', (int) $idRbeli, ['after' => $dataHeader]);
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal menyimpan Rencana Beli. Transaksi dibatalkan.');
+        }
+
+        AuditLogger::catat('TAMBAH', 'tbrbeli', (int) $idRbeli, ['after' => $dataHeader], 'Transaksi', "Tambah Rencana Beli: {$noRbeli}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil disimpan.');
@@ -194,12 +205,60 @@ class Aktivitas1 extends BaseController
         }
 
         // Ambil data detail baru
-        $noFakturArr = $this->request->getPost('no_faktur');
-        $nilaiArr    = $this->request->getPost('nilai');
+        $idDetailArr = $this->request->getPost('id_detail') ?? [];
+        $noFakturArr = $this->request->getPost('no_faktur') ?? [];
+        $nilaiArr    = $this->request->getPost('nilai') ?? [];
 
         if (empty($noFakturArr)) {
             return redirect()->back()->withInput()
                 ->with('error', 'Minimal satu baris detail wajib diisi.');
+        }
+
+        // Ambil detail eksisting untuk proteksi terhadap CASCADE deletion ke tbbkk_d
+        $existingRows = $this->rbeliDModel->where('id_rbeli', $id)->findAll();
+        $existingMap  = [];
+        foreach ($existingRows as $er) {
+            $existingMap[(int) $er['id']] = $er;
+        }
+
+        // Kumpulkan baris yang valid
+        $validItems   = [];
+        $submittedIds = [];
+
+        foreach ($noFakturArr as $i => $noFaktur) {
+            $noFaktur = trim($noFaktur);
+            $nilai    = (float) str_replace(',', '', $nilaiArr[$i] ?? 0);
+            $detId    = (int) ($idDetailArr[$i] ?? 0);
+
+            if ($noFaktur === '' || $nilai <= 0) {
+                continue;
+            }
+
+            $validItems[] = [
+                'id'        => $detId > 0 && isset($existingMap[$detId]) ? $detId : null,
+                'no_faktur' => $noFaktur,
+                'nilai'     => $nilai,
+            ];
+
+            if ($detId > 0 && isset($existingMap[$detId])) {
+                $submittedIds[] = $detId;
+            }
+        }
+
+        if (empty($validItems)) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Minimal satu baris detail dengan faktur dan nilai yang valid wajib diisi.');
+        }
+
+        // Cek baris yang dihapus oleh user: apakah sudah dipakai di Bukti Kas Keluar (tbbkk_d)?
+        foreach ($existingMap as $oldId => $oldRow) {
+            if (!in_array($oldId, $submittedIds, true)) {
+                $usedCount = $this->db->table('tbbkk_d')->where('id_rbeli_d', $oldId)->countAllResults();
+                if ($usedCount > 0) {
+                    return redirect()->back()->withInput()
+                        ->with('error', "Faktur '{$oldRow['no_faktur']}' tidak dapat dihapus karena sudah digunakan dalam transaksi Bukti Kas Keluar (BKK).");
+                }
+            }
         }
 
         $dataBaru = [
@@ -209,32 +268,47 @@ class Aktivitas1 extends BaseController
             'kete'     => $kete ?: null,
         ];
 
-        // Update header
         $dataLama = $this->rbeliModel->find($id);
+
+        $this->db->transStart();
+
+        // 1. Update header
         $this->rbeliModel->update($id, $dataBaru);
 
-        // Hapus detail lama lalu insert ulang
-        $this->rbeliDModel->hapusByIdRbeli_l1H($id);
-
-        foreach ($noFakturArr as $i => $noFaktur) {
-            $noFaktur = trim($noFaktur);
-            $nilai    = (float) str_replace(',', '', $nilaiArr[$i] ?? 0);
-
-            if ($noFaktur === '' || $nilai <= 0) {
-                continue;
+        // 2. Hapus hanya detail lama yang memang tidak disubmit dan TIDAK terkait BKK
+        foreach ($existingMap as $oldId => $oldRow) {
+            if (!in_array($oldId, $submittedIds, true)) {
+                $this->rbeliDModel->delete($oldId);
             }
+        }
 
-            $this->rbeliDModel->insert([
-                'id_rbeli'  => $id,
-                'no_faktur' => $noFaktur,
-                'nilai'     => $nilai,
-            ]);
+        // 3. Update in-place baris lama, atau insert baris baru
+        foreach ($validItems as $item) {
+            if (!empty($item['id'])) {
+                $this->rbeliDModel->update($item['id'], [
+                    'no_faktur' => $item['no_faktur'],
+                    'nilai'     => $item['nilai'],
+                ]);
+            } else {
+                $this->rbeliDModel->insert([
+                    'id_rbeli'  => $id,
+                    'no_faktur' => $item['no_faktur'],
+                    'nilai'     => $item['nilai'],
+                ]);
+            }
+        }
+
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal memperbarui Rencana Beli. Perubahan dibatalkan.');
         }
 
         AuditLogger::catat('EDIT', 'tbrbeli', $id, [
             'before' => $dataLama,
             'after'  => $dataBaru,
-        ]);
+        ], 'Transaksi', "Edit Rencana Beli: {$noRbeli}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil diperbarui.');
@@ -259,12 +333,15 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
-        AuditLogger::catat('SOFT_DELETE', 'tbrbeli', (int) $id, ['before' => $rbeli]);
-
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
-        $this->rbeliModel->softDelete_l1H((int) $id);
+        $sukses = $this->rbeliModel->softDelete_l1H((int) $id);
+
+        if ($sukses) {
+            AuditLogger::catat('SOFT_DELETE', 'tbrbeli', (int) $id, ['before' => $rbeli], 'Transaksi', "Soft Delete Rencana Beli: {$rbeli['no_rbeli']}");
+        }
 
         return redirect()->to('/46124026/aktivitas/aktivitas1')
             ->with('success', 'Rencana Beli berhasil dihapus.');
     }
 }
+

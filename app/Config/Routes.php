@@ -45,6 +45,10 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
         $routes->post('akses/simpan',      'CRbac::simpanAkses');
     });
 
+    // ── Audit Trail Log ───────────────────────────────────────────
+    $routes->get('audit',               'Audit::index');
+    $routes->get('audit/detail/(:num)', 'Audit::detail/$1');
+
     // ── Dashboard Index ────────────────────────────────────────────
     $routes->get('/',       'KasKeluar::dashboard');
 

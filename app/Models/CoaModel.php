@@ -89,8 +89,10 @@ class CoaModel extends Model
     public function getTipeList_l1H(): array
     {
         return $this->db->table($this->table)
-            ->select('DISTINCT tipe')
+            ->distinct()
+            ->select('tipe')
             ->where('tipe IS NOT NULL')
+            ->where('tipe !=', '')
             ->orderBy('tipe', 'ASC')
             ->get()
             ->getResultArray();

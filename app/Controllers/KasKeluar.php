@@ -79,7 +79,7 @@ class KasKeluar extends BaseController
 
         $idCoa = $this->coaModel->insert($dataCoa);
 
-        AuditLogger::catat('TAMBAH', 'coa', (int) $idCoa, ['after' => $dataCoa]);
+        AuditLogger::catat('TAMBAH', 'coa', (int) $idCoa, ['after' => $dataCoa], 'Master', "Tambah COA: {$kodeCoa} - {$namaCoa}");
 
         return redirect()->to('/46124026/kas_keluar/coa_l1H')
             ->with('success', 'Akun COA berhasil ditambahkan.');
@@ -273,7 +273,7 @@ class KasKeluar extends BaseController
 
         $idSupplier = $supplierModel->insert($dataSupplier);
 
-        AuditLogger::catat('TAMBAH', 'supplier', (int) $idSupplier, ['after' => $dataSupplier]);
+        AuditLogger::catat('TAMBAH', 'supplier', (int) $idSupplier, ['after' => $dataSupplier], 'Master', "Tambah Supplier: {$nama}");
 
         return redirect()->to('/46124026/kas_keluar/supplier_l1H')
             ->with('success', 'Supplier berhasil ditambahkan.');
@@ -470,7 +470,7 @@ class KasKeluar extends BaseController
 
         $idKaryawan = $karyawanModel->insert($dataKaryawan);
 
-        AuditLogger::catat('TAMBAH', 'karyawan', (int) $idKaryawan, ['after' => $dataKaryawan]);
+        AuditLogger::catat('TAMBAH', 'karyawan', (int) $idKaryawan, ['after' => $dataKaryawan], 'Master', "Tambah Karyawan: {$nama}");
 
         return redirect()->to('/46124026/kas_keluar/karyawan_l1H')
             ->with('success', 'Karyawan berhasil ditambahkan.');

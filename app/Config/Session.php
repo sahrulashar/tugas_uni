@@ -2,9 +2,9 @@
 
 namespace Config;
 
+use App\Libraries\Session\FileHandler;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Session\Handlers\BaseHandler;
-use CodeIgniter\Session\Handlers\FileHandler;
 
 class Session extends BaseConfig
 {
@@ -125,4 +125,21 @@ class Session extends BaseConfig
      * seconds.
      */
     public int $lockMaxRetries = 300;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Ensure session save directory exists and permissions are clear on Windows/OneDrive
+        if (! is_dir($this->savePath)) {
+            @mkdir($this->savePath, 0700, true);
+        }
+        if (! is_writable($this->savePath)) {
+            @chmod($this->savePath, 0777);
+            if (DIRECTORY_SEPARATOR === '\\' && realpath($this->savePath)) {
+                @exec('attrib -r "' . realpath($this->savePath) . '"');
+            }
+            clearstatcache(true, $this->savePath);
+        }
+    }
 }

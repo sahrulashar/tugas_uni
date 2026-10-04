@@ -27,6 +27,8 @@ class TestTransaksi extends BaseController
      */
     public function index()
     {
+        \App\Libraries\RbacChecker::gate('aks', 'daftar');
+
         $pesan = session()->getFlashdata('pesan');
         $tipe  = session()->getFlashdata('tipe') ?? 'info';
 
@@ -100,10 +102,10 @@ class TestTransaksi extends BaseController
 
         if ($hasil) {
             $idBeli = $this->beliModel->getInsertID();
-            $userId = 1; // Contoh ID user login (misal admin)
+            $userId = (int) (session()->get('user_id') ?? 1);
 
             // Catat ke Audit Trail
-            $this->beliModel->catatAuditLog_l1H($userId, 'TAMBAH', 'tbbeli', $idBeli);
+            $this->beliModel->catatAuditLog_l1H($userId, 'TAMBAH', 'tbbeli', $idBeli, [], 'Transaksi', "Uji Transaksi Pembelian Sukses: {$noBeli}");
 
             $msg = "✅ <b>TRANSAKSI SUKSES DISIMPAN!</b><br>"
                  . "Master No: <b>{$noBeli}</b> dan 3 item detail berhasil di-COMMIT.<br>"
@@ -132,9 +134,9 @@ class TestTransaksi extends BaseController
         $berhasil = $this->beliModel->softDeleteBeli_l1H((int) $id);
 
         if ($berhasil) {
-            $userId = 1;
+            $userId = (int) (session()->get('user_id') ?? 1);
             // Catat ke Audit Log
-            $this->beliModel->catatAuditLog_l1H($userId, 'SOFT_DELETE', 'tbbeli', (int) $id);
+            $this->beliModel->catatAuditLog_l1H($userId, 'SOFT_DELETE', 'tbbeli', (int) $id, [], 'Transaksi', "Uji Soft Delete Pembelian ID #{$id}");
 
             $msg = "✅ <b>SOFT DELETE BERHASIL!</b><br>"
                  . "Record tbbeli ID <b>#{$id}</b> diubah statusnya menjadi <code>is_deleted = 1</code>.<br>"

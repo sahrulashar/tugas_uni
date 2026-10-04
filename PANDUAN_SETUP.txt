@@ -110,26 +110,44 @@ modul Transaksi Pembelian & Audit Trail tanpa merusak data yang sudah ada:
    - Jika MySQL Anda tidak memakai password (default XAMPP), kosongkan saja.
 
 --------------------------------------------------------------------------------
-5. CARA MENJALANKAN APLIKASI
+5. CARA MENJALANKAN APLIKASI & DAFTAR URL
 --------------------------------------------------------------------------------
 1. Buka Terminal / CMD di dalam folder project ini.
 2. Jalankan server lokal CodeIgniter dengan perintah:
    php spark serve
 3. Server lokal akan aktif dan menampilkan pesan:
    CodeIgniter development server started on http://localhost:8080
-4. Buka browser (Chrome, Firefox, Edge, dll) dan akses alamat berikut:
+
+4. Kredensial Login Default:
+   - Superuser (Admin) : Username: admin | Password: admin123
+   - Finance / Staf    : Username: lisa  | Password: asil
+   - Manager / Spv     : Username: devi  | Password: ived
+
+5. Buka browser (Chrome, Firefox, Edge, dll) dan akses alamat berikut:
    
-   Halaman Utama COA (Chart of Accounts):
-   http://localhost:8080/kas_keluar/coa
+   A. Autentikasi:
+      - Halaman Login       : http://localhost:8080/login
+      - Dashboard Utama     : http://localhost:8080/46124026
 
-   Halaman Karyawan:
-   http://localhost:8080/kas_keluar/karyawan
+   B. Modul Master Data (Kas Keluar):
+      - Chart of Accounts   : http://localhost:8080/46124026/kas_keluar/coa_l1H
+      - Data Supplier       : http://localhost:8080/46124026/kas_keluar/supplier_l1H
+      - Data Karyawan       : http://localhost:8080/46124026/kas_keluar/karyawan_l1H
 
-   Halaman Supplier:
-   http://localhost:8080/kas_keluar/supplier
+   C. Modul Transaksi & Aktivitas:
+      - Aktivitas 1 (Rencana Beli)      : http://localhost:8080/46124026/aktivitas/aktivitas1
+      - Aktivitas 2 (Bukti Kas Keluar)  : http://localhost:8080/46124026/aktivitas/aktivitas2
+      - Aktivitas 3 (Rekap BKK)         : http://localhost:8080/46124026/aktivitas/aktivitas3
 
-   Panel Pengujian Transaksi & Audit Trail (Tugas Baru):
-   http://localhost:8080/test-transaksi
+   D. Modul Pengaturan RBAC & Keamanan:
+      - Manajemen User      : http://localhost:8080/46124026/rbac/user
+      - Laman & Aksi        : http://localhost:8080/46124026/rbac/laman
+      - Atur Hak Akses      : http://localhost:8080/46124026/rbac/akses
+      - Audit Trail Log     : http://localhost:8080/46124026/audit
+
+   E. Pengujian & Validasi Sistem:
+      - Panel Pengujian Transaksi       : http://localhost:8080/test-transaksi
+      - Menjalankan Unit Testing        : php vendor/bin/phpunit
 
 --------------------------------------------------------------------------------
 6. TROUBLESHOOTING (PEMECAHAN MASALAH)

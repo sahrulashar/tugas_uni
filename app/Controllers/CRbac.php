@@ -77,7 +77,7 @@ class CRbac extends BaseController
             'is_off'   => 0,
         ]);
 
-        AuditLogger::catat('TAMBAH', 'tbuser', (int) $id, ['after' => compact('kode', 'nama')]);
+        AuditLogger::catat('TAMBAH', 'tbuser', (int) $id, ['after' => compact('kode', 'nama')], 'RBAC', "Tambah User: {$nama} ({$kode})");
 
         return redirect()->to(base_url('46124026/rbac/user'))
             ->with('success', "User '{$nama}' berhasil ditambahkan.");
@@ -126,7 +126,7 @@ class CRbac extends BaseController
         AuditLogger::catat('EDIT', 'tbuser', $id, [
             'before' => ['kode' => $dataLama['kode'], 'nama' => $dataLama['nama']],
             'after'  => compact('kode', 'nama'),
-        ]);
+        ], 'RBAC', "Edit User: {$nama} ({$kode})");
 
         return redirect()->to(base_url('46124026/rbac/user'))
             ->with('success', "User '{$nama}' berhasil diperbarui.");
@@ -151,7 +151,7 @@ class CRbac extends BaseController
         $this->userModel->toggleStatus($id);
         $status = $user['is_off'] ? 'diaktifkan' : 'dinonaktifkan';
 
-        AuditLogger::catat('EDIT', 'tbuser', $id, ['aksi' => "toggle_status → {$status}"]);
+        AuditLogger::catat('EDIT', 'tbuser', $id, ['aksi' => "toggle_status → {$status}"], 'RBAC', "Ubah Status User: {$user['nama']} ({$status})");
 
         return redirect()->to(base_url('46124026/rbac/user'))
             ->with('success', "User '{$user['nama']}' berhasil {$status}.");
@@ -196,7 +196,7 @@ class CRbac extends BaseController
 
         $id = $this->lamanModel->insert(compact('kode', 'nama', 'aksi') + ['is_off' => 0]);
 
-        AuditLogger::catat('TAMBAH', 'tblaman', (int) $id, ['after' => compact('kode', 'nama', 'aksi')]);
+        AuditLogger::catat('TAMBAH', 'tblaman', (int) $id, ['after' => compact('kode', 'nama', 'aksi')], 'RBAC', "Tambah Laman: {$nama} - {$aksi} ({$kode})");
 
         return redirect()->to(base_url('46124026/rbac/laman'))
             ->with('success', "Laman '{$nama} – {$aksi}' berhasil ditambahkan.");
@@ -231,7 +231,7 @@ class CRbac extends BaseController
 
         $this->lamanModel->update($id, compact('kode', 'nama', 'aksi'));
 
-        AuditLogger::catat('EDIT', 'tblaman', $id, ['after' => compact('kode', 'nama', 'aksi')]);
+        AuditLogger::catat('EDIT', 'tblaman', $id, ['after' => compact('kode', 'nama', 'aksi')], 'RBAC', "Edit Laman: {$nama} - {$aksi} ({$kode})");
 
         return redirect()->to(base_url('46124026/rbac/laman'))
             ->with('success', 'Laman berhasil diperbarui.');
@@ -247,8 +247,8 @@ class CRbac extends BaseController
                 ->with('error', 'Laman tidak ditemukan.');
         }
 
-        AuditLogger::catat('HAPUS', 'tblaman', $id, ['before' => $laman]);
         $this->lamanModel->delete($id);
+        AuditLogger::catat('HAPUS', 'tblaman', $id, ['before' => $laman], 'RBAC', "Hapus Laman: {$laman['nama']} - {$laman['aksi']}");
 
         return redirect()->to(base_url('46124026/rbac/laman'))
             ->with('success', 'Laman berhasil dihapus.');
@@ -310,7 +310,7 @@ class CRbac extends BaseController
         AuditLogger::catat('EDIT', 'tbakses', $userId, [
             'aksi'     => 'atur_akses',
             'id_laman' => $lamanIds,
-        ]);
+        ], 'RBAC', "Atur Hak Akses User: {$user['nama']} (" . count($lamanIds) . " izin)");
 
         if (!$berhasil) {
             return redirect()->back()->with('error', 'Gagal menyimpan akses.');

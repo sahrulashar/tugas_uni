@@ -81,21 +81,31 @@ const NAV = [
     { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
     { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
+  { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
+    { label:'Penerimaan', icon:'Receipt',  href:'#' },
+    { label:'Piutang',    icon:'FilePlus', href:'#' },
+  ]},
   { label:'Aktivitas',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
     { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
   ]},
+  { label:'Laporan',    icon:'BarChart3', children:[
+    { label:'Neraca',    icon:'Scale',      href:'#' },
+    { label:'Laba Rugi', icon:'TrendingUp', href:'#' },
+    { label:'Arus Kas',  icon:'Activity',   href:'#' },
+  ]},
   { label:'Pengaturan RBAC', icon:'Shield', children:[
     { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
     { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
     { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+    { label:'Audit Trail Log', icon:'Activity', href:'/46124026/audit' },
   ]},
 ];
 
 function NavItem({ item, currentPath }) {
   const hasChildren = item.children?.length > 0;
-  const isParentActive = hasChildren && item.children.some(c => c.href === currentPath);
+  const isParentActive = hasChildren && item.children.some(c => c.href === currentPath || (c.href !== '/46124026' && currentPath.startsWith(c.href)));
   const [open, setOpen] = useState(isParentActive || item.label === 'Pengaturan RBAC');
 
   if (!hasChildren) {
@@ -103,7 +113,7 @@ function NavItem({ item, currentPath }) {
     return (
       <li>
         <a href={item.href}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
             ${active ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
           <Icon name={item.icon} size={16}/>
           <span>{item.label}</span>
@@ -115,25 +125,27 @@ function NavItem({ item, currentPath }) {
   return (
     <li>
       <button onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
           ${isParentActive ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
         <span className="flex items-center gap-3">
           <Icon name={item.icon} size={16}/>
           {item.label}
         </span>
-        <Icon name={open ? 'ChevronDown' : 'ChevronRight'} size={14}/>
+        <span className={`transition-transform duration-200 ${open ? 'rotate-90' : ''}`}>
+          <Icon name="ChevronRight" size={14}/>
+        </span>
       </button>
       {open && (
-        <ul className="mt-1 ml-4 pl-3 border-l border-slate-700/60 space-y-1">
+        <ul className="mt-1 ml-4 pl-3 border-l border-slate-700 space-y-0.5 fade-in">
           {item.children.map(child => {
-            const active = currentPath === child.href;
+            const active = currentPath === child.href || (child.href !== '/46124026' && currentPath.startsWith(child.href + '/'));
             return (
               <li key={child.label}>
                 <a href={child.href}
-                  className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors
-                    ${active ? 'bg-brand-600 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-                  <Icon name={child.icon} size={13}/>
-                  {child.label}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
+                    ${active ? 'bg-brand-600 text-white font-medium' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                  <Icon name={child.icon} size={14}/>
+                  <span>{child.label}</span>
                 </a>
               </li>
             );
@@ -149,7 +161,7 @@ function Sidebar({ collapsed, currentPath }) {
     <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-sidebar sidebar-transition ${collapsed ? 'w-16' : 'w-64'}`}>
       <div className={`flex items-center gap-3 px-4 py-5 border-b border-slate-800 ${collapsed ? 'justify-center' : ''}`}>
         <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
-          <Icon name="ShieldCheck" size={18} className="text-white"/>
+          <Icon name="Landmark" size={16} className="text-white"/>
         </div>
         {!collapsed && (
           <div className="fade-in">
@@ -241,11 +253,47 @@ function Toast({ flash, onClose }) {
   );
 }
 
+
+function DeleteModal({ laman, onCancel }) {
+  if (!laman) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="p-6">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-100 text-red-600">
+            <Icon name="Trash2" size={24}/>
+          </div>
+          <h3 className="text-lg font-bold text-slate-800">
+            Hapus Laman & Aksi?
+          </h3>
+          <p className="text-sm text-slate-500 mt-2">
+            Laman <strong>[{laman.kode}] {laman.nama} ({laman.aksi})</strong> akan dihapus permanen beserta seluruh hak akses pengguna terkait.
+          </p>
+        </div>
+        <div className="flex gap-3 px-6 pb-6">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+            Batal
+          </button>
+          <a
+            href={`/46124026/rbac/laman/hapus/${laman.id}`}
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white text-center rounded-lg bg-red-600 hover:bg-red-700 transition-colors">
+            Ya, Hapus
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 function LamanPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [search, setSearch] = useState('');
   const [filterAksi, setFilterAksi] = useState('Semua');
   const [showFlash, setShowFlash] = useState(true);
+  const [deleteLaman, setDeleteLaman] = useState(null);
 
   const lamanList = window.__LAMAN__ || [];
   const flash = window.__FLASH__ || {};
@@ -414,13 +462,14 @@ function LamanPage() {
                                 <Icon name="Pencil" size={13}/>
                                 Edit
                               </a>
-                              <a href={`/46124026/rbac/laman/hapus/${l.id}`}
-                                onClick={e => { if(!confirm(`Yakin ingin menghapus laman [${l.kode}] ${l.nama} (${l.aksi})?`)) e.preventDefault(); }}
+                              <button
+                                type="button"
+                                onClick={() => setDeleteLaman(l)}
                                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors"
                                 title="Hapus Laman">
                                 <Icon name="Trash2" size={13}/>
                                 Hapus
-                              </a>
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -436,6 +485,7 @@ function LamanPage() {
       </div>
 
       {showFlash && <Toast flash={flash} onClose={() => setShowFlash(false)}/>}
+      {deleteLaman && <DeleteModal laman={deleteLaman} onCancel={() => setDeleteLaman(null)}/>}
 
       {!collapsed && (
         <div className="fixed inset-0 bg-black/30 z-20 lg:hidden backdrop-blur-sm"

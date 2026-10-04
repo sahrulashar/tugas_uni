@@ -124,3 +124,7 @@ _modules/*
 
 /results/
 /phpunit.xml
+
+# Session and temp files
+ci_session*
+/public/C*

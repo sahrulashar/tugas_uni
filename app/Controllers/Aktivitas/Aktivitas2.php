@@ -119,7 +119,7 @@ class Aktivitas2 extends BaseController
             return redirect()->back()->withInput()
                 ->with('error', 'Gagal menyimpan BKK. Tidak ada data yang tersimpan.');
         }
-        AuditLogger::catat('TAMBAH', 'tbbkk', (int) $idBkk, ['after' => $dataHeader]);
+        AuditLogger::catat('TAMBAH', 'tbbkk', (int) $idBkk, ['after' => $dataHeader], 'Transaksi', "Tambah Bukti Kas Keluar: {$noBkk}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil disimpan.');
@@ -262,7 +262,7 @@ class Aktivitas2 extends BaseController
         AuditLogger::catat('EDIT', 'tbbkk', $id, [
             'before' => $dataLama,
             'after'  => $dataBaru,
-        ]);
+        ], 'Transaksi', "Edit Bukti Kas Keluar: {$noBkk}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil diperbarui.');
@@ -287,10 +287,11 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
-        AuditLogger::catat('SOFT_DELETE', 'tbbkk', (int) $id, ['before' => $bkk]);
-
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
-        $this->bkkModel->softDelete_l1H((int) $id);
+        $sukses = $this->bkkModel->softDelete_l1H((int) $id);
+        if ($sukses) {
+            AuditLogger::catat('SOFT_DELETE', 'tbbkk', (int) $id, ['before' => $bkk], 'Transaksi', "Soft Delete Bukti Kas Keluar: {$bkk['no_bkk']}");
+        }
 
         return redirect()->to('/46124026/aktivitas/aktivitas2')
             ->with('success', 'Bukti Kas Keluar berhasil dihapus.');
@@ -337,6 +338,7 @@ class Aktivitas2 extends BaseController
             ->select('rd.id, rd.no_faktur, rd.nilai, r.no_rbeli, s.nama_supplier')
             ->join('tbrbeli r',   'r.id = rd.id_rbeli', 'left')
             ->join('supplier s',  's.id_supplier = r.id_supp', 'left')
+            ->where('r.is_deleted', 0)
             ->orderBy('r.no_rbeli', 'ASC')
             ->get()
             ->getResultArray();

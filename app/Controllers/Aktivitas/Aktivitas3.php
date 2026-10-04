@@ -61,6 +61,13 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'No. Rekap, Tanggal, dan BKK wajib diisi.');
         }
 
+        // Pastikan BKK valid dan belum di-soft delete
+        $bkk = model('TbBkkModel')->getById_l1H($idBkk);
+        if (!$bkk) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Bukti Kas Keluar tidak valid atau telah dinonaktifkan.');
+        }
+
         // Cek duplikat nomor rekap
         if ($this->recordModel->cekNoRec_l1H($noRec)) {
             return redirect()->back()->withInput()
@@ -77,11 +84,12 @@ class Aktivitas3 extends BaseController
         try {
             $idRec = $this->recordModel->insert($dataRekap);
         } catch (\Throwable $e) {
+            log_message('error', '[Aktivitas3::simpan_l1H] ' . $e->getMessage());
             return redirect()->back()->withInput()
-                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+                ->with('error', 'Gagal menyimpan data rekap BKK.');
         }
 
-        AuditLogger::catat('TAMBAH', 'tbrecord', (int) $idRec, ['after' => $dataRekap]);
+        AuditLogger::catat('TAMBAH', 'tbrecord', (int) $idRec, ['after' => $dataRekap], 'Transaksi', "Tambah Rekap BKK: {$noRec}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil disimpan.');
@@ -161,6 +169,13 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'No. Rekap, Tanggal, dan BKK wajib diisi.');
         }
 
+        // Pastikan BKK valid dan belum di-soft delete
+        $bkk = model('TbBkkModel')->getById_l1H($idBkk);
+        if (!$bkk) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Bukti Kas Keluar tidak valid atau telah dinonaktifkan.');
+        }
+
         // Cek duplikat (kecuali milik sendiri)
         if ($this->recordModel->cekNoRec_l1H($noRec, $id)) {
             return redirect()->back()->withInput()
@@ -179,14 +194,15 @@ class Aktivitas3 extends BaseController
         try {
             $this->recordModel->update($id, $dataBaru);
         } catch (\Throwable $e) {
+            log_message('error', '[Aktivitas3::update_l1H] ' . $e->getMessage());
             return redirect()->back()->withInput()
-                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+                ->with('error', 'Gagal memperbarui data rekap BKK.');
         }
 
         AuditLogger::catat('EDIT', 'tbrecord', $id, [
             'before' => $dataLama,
             'after'  => $dataBaru,
-        ]);
+        ], 'Transaksi', "Edit Rekap BKK: {$noRec}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas3')
             ->with('success', 'Rekap BKK berhasil diperbarui.');
@@ -211,13 +227,15 @@ class Aktivitas3 extends BaseController
                 ->with('error', 'Data Rekap tidak ditemukan.');
         }
 
-        AuditLogger::catat('SOFT_DELETE', 'tbrecord', (int) $id, ['before' => $rekap]);
-
         try {
-            $this->recordModel->softDelete_l1H((int) $id);
+            $sukses = $this->recordModel->softDelete_l1H((int) $id);
+            if ($sukses) {
+                AuditLogger::catat('SOFT_DELETE', 'tbrecord', (int) $id, ['before' => $rekap], 'Transaksi', "Soft Delete Rekap BKK: {$rekap['no_rec']}");
+            }
         } catch (\Throwable $e) {
+            log_message('error', '[Aktivitas3::hapus_l1H] ' . $e->getMessage());
             return redirect()->to('/46124026/aktivitas/aktivitas3')
-                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+                ->with('error', 'Gagal menghapus data rekap BKK.');
         }
 
         return redirect()->to('/46124026/aktivitas/aktivitas3')

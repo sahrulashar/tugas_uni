@@ -79,7 +79,8 @@ class Auth extends BaseController
                 ->with('error', 'Kode atau password salah, atau akun tidak aktif.');
         }
 
-        // ─── Login berhasil: simpan ke session ───
+        // ─── Login berhasil: regenerasi session ID demi keamanan (anti session fixation) ───
+        session()->regenerate();
         session()->set([
             'is_logged_in' => true,
             'user_id'      => $user['id'],
@@ -87,6 +88,7 @@ class Auth extends BaseController
             'nama_user'    => $user['nama'],
         ]);
 
+        \App\Libraries\AuditLogger::catat('LOGIN', 'tbuser', (int) $user['id'], [], 'Auth', "User {$user['nama']} ({$user['kode']}) login berhasil.");
         log_message('info', "[Auth] Login berhasil: {$user['kode']} ({$user['nama']})");
 
         return redirect()->to(base_url('46124026'))
@@ -102,7 +104,13 @@ class Auth extends BaseController
      */
     public function logout()
     {
-        $nama = session()->get('nama_user') ?? 'User';
+        $userId = (int) (session()->get('user_id') ?? 0);
+        $nama   = session()->get('nama_user') ?? 'User';
+
+        if ($userId > 0) {
+            \App\Libraries\AuditLogger::catat('LOGOUT', 'tbuser', $userId, [], 'Auth', "User {$nama} logout.");
+        }
+
         log_message('info', "[Auth] Logout: {$nama}");
 
         session()->destroy();

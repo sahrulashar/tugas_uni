@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Rencana Beli — FinanceOS</title>
+  <title>Edit Rencana Beli � FinanceOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -101,6 +101,7 @@ const NAV = [
     { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
     { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
     { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
+    { label:'Audit Trail Log', icon:'Activity', href:'/46124026/audit' },
   ]},
 ];
 
@@ -182,7 +183,7 @@ function Sidebar({ collapsed, currentPath }) {
               <p className="text-white text-sm font-medium truncate">{window._erpUser ? window._erpUser.nama : "User"}</p>
               <p className="text-slate-500 text-xs truncate">{window._erpUser ? window._erpUser.kode : ""}</p>
             </div>
-            <a href="/logout" className="ml-auto px-2.5 py-1 rounded bg-red-800 text-red-100 hover:bg-red-700 hover:text-white text-xs font-semibold no-underline inline-block" title="Logout">⏻ Keluar</a>
+            <a href="/logout" className="ml-auto px-2.5 py-1 rounded bg-red-800 text-red-100 hover:bg-red-700 hover:text-white text-xs font-semibold no-underline inline-block" title="Logout">? Keluar</a>
           </div>
         )}
       </div>
@@ -192,15 +193,15 @@ function Sidebar({ collapsed, currentPath }) {
 
 function EditPage() {
   const rbeli    = window.__RBELI__    || {};
-  const initDetail = (window.__DETAIL__ || []).map(d => ({ no_faktur: d.no_faktur, nilai: d.nilai }));
+  const initDetail = (window.__DETAIL__ || []).map(d => ({ id: d.id || '', no_faktur: d.no_faktur, nilai: d.nilai }));
   const supplier = window.__SUPPLIER__ || [];
   const flash    = window.__FLASH__    || {};
   const csrf     = window.__CSRF__     || {};
   const [collapsed, setCollapsed] = useState(false);
 
-  const [rows, setRows] = useState(initDetail.length > 0 ? initDetail : [{ no_faktur: '', nilai: '' }]);
+  const [rows, setRows] = useState(initDetail.length > 0 ? initDetail : [{ id: '', no_faktur: '', nilai: '' }]);
 
-  const addRow    = () => setRows(r => [...r, { no_faktur: '', nilai: '' }]);
+  const addRow    = () => setRows(r => [...r, { id: '', no_faktur: '', nilai: '' }]);
   const removeRow = (i) => setRows(r => r.length > 1 ? r.filter((_, idx) => idx !== i) : r);
   const updateRow = (i, field, val) => setRows(r => r.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
@@ -329,7 +330,8 @@ function EditPage() {
                     <tbody className="divide-y divide-slate-100">
                       {rows.map((row, i) => (
                         <tr key={i} className="hover:bg-slate-50">
-                          <td className="px-4 py-3 text-slate-400 text-xs">{i + 1}</td>
+                          <td className="px-4 py-3 text-slate-400 text-xs">{i + 1}
+                            <input type="hidden" name="id_detail[]" value={row.id || ""} /></td>
                           <td className="px-4 py-3">
                             <input type="text" name="no_faktur[]"
                               value={row.no_faktur}
