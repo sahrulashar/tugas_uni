@@ -1,8 +1,16 @@
 .git
 .gitignore
 .env
+.env.*
+.idea
+.vscode
 vendor
 writable/cache/*
 writable/logs/*
+writable/session/*
+writable/debugbar/*
+build/
+.phpunit.cache/
+tests/
 docker-compose.yml
 Dockerfile

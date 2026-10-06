@@ -1,17 +1,43 @@
 services:
 
+  # -------------------------------------------------------------
+  # 1. Aplikasi CodeIgniter 4 (PHP 8.3 + Apache)
+  # -------------------------------------------------------------
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: sistem_erp_ci4
+    restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${APP_PORT:-8080}:80"
+    environment:
+      CI_ENVIRONMENT: development
+      DOCKER_CONTAINER: "true"
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: root
+      DB_NAME: kas_keluar
+      DB_PORT: 3306
+      app.baseURL: "http://localhost:${APP_PORT:-8080}/"
+      database.default.hostname: db
+      database.default.database: kas_keluar
+      database.default.username: root
+      database.default.password: root
+      database.default.DBDriver: MySQLi
+      database.default.port: 3306
     volumes:
       - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - erp_network
 
+  # -------------------------------------------------------------
+  # 2. Database Server (MySQL 8.0)
+  # -------------------------------------------------------------
   db:
     image: mysql:8.0
     container_name: sistem_erp_mysql
@@ -19,12 +45,45 @@ services:
     environment:
       MYSQL_DATABASE: kas_keluar
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: erp
-      MYSQL_PASSWORD: erp123
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - erp_network
+
+  # -------------------------------------------------------------
+  # 3. Database Web GUI (phpMyAdmin)
+  # -------------------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sistem_erp_pma
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - erp_network
 
 volumes:
   mysql_data:
+  vendor_data:
+
+networks:
+  erp_network:
+    driver: bridge

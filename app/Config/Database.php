@@ -194,6 +194,15 @@ class Database extends Config
     {
         parent::__construct();
 
+        // Otomatis konfigurasi koneksi jika berjalan di dalam container Docker
+        if (file_exists('/.dockerenv') || getenv('DOCKER_CONTAINER') === 'true') {
+            $this->default['hostname'] = getenv('DB_HOST') ?: 'db';
+            $this->default['username'] = getenv('DB_USER') ?: 'root';
+            $this->default['password'] = getenv('DB_PASS') !== false && getenv('DB_PASS') !== '' ? (string) getenv('DB_PASS') : 'root';
+            $this->default['database'] = getenv('DB_NAME') ?: 'kas_keluar';
+            $this->default['port']     = (int) (getenv('DB_PORT') ?: 3306);
+        }
+
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
