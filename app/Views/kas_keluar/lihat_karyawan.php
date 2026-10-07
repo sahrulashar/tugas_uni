@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
@@ -44,8 +44,7 @@
 
 <script>
   window.__KARYAWAN__ = <?= json_encode($karyawan ?? []) ?>;
-<script>
-<?php include APPPATH . 'Views/_session_inject.php'; ?>
+  <?php include APPPATH . 'Views/_session_inject.php'; ?>
 </script>
 <div id="root"></div>
 

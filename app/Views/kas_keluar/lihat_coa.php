@@ -45,8 +45,7 @@
 <!-- PHP ? JS Bridge -->
 <script>
   window.__COA__ = <?= json_encode($coa ?? []) ?>;
-<script>
-<?php include APPPATH . 'Views/_session_inject.php'; ?>
+  <?php include APPPATH . 'Views/_session_inject.php'; ?>
 </script>
 <div id="root"></div>
 

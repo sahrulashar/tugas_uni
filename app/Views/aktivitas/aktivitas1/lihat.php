@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8" />
@@ -51,8 +51,7 @@
   window.__RBELI__  = <?= json_encode($rbeli  ?? []) ?>;
   window.__DETAIL__ = <?= json_encode($detail ?? []) ?>;
   window.__TOTAL__  = <?= json_encode($total  ?? 0) ?>;
-<script>
-<?php include APPPATH . 'Views/_session_inject.php'; ?>
+  <?php include APPPATH . 'Views/_session_inject.php'; ?>
 </script>
 <div id="root"></div>
 
