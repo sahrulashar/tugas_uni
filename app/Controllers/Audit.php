@@ -30,7 +30,7 @@ class Audit extends BaseController
     {
         // Proteksi akses: Minimal memiliki hak akses ke manajemen user/akses, atau admin
         if (!RbacChecker::boleh('aks', 'daftar') && !RbacChecker::boleh('usr', 'daftar')) {
-            return redirect()->to(base_url('46124026'))
+            return redirect()->to('/46124026')
                 ->with('error', '⛔ Anda tidak memiliki izin untuk melihat Audit Trail Log.');
         }
 

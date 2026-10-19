@@ -128,15 +128,15 @@ const navItems = [
     ],
   },
   {
-    label: 'Kas Masuk',
+    label: 'Kas Masuk & Penjualan',
     icon: 'ArrowDownToLine',
     children: [
-      { label: 'Penerimaan',        icon: 'Receipt',      href: '#' },
-      { label: 'Piutang',           icon: 'FilePlus',     href: '#' },
+      { label: 'Kasir Penjualan (POS)', icon: 'ShoppingCart', href: '/46124026/penjualan/kasir_l1H' },
+      { label: 'Master Barang & Stok',  icon: 'Package',      href: '/46124026/penjualan/barang_l1H' },
     ],
   },
   {
-    label: 'Aktivitas',
+    label: 'Aktivitas Kas Keluar',
     icon: 'ClipboardList',
     children: [
       { label: 'Rencana Beli',      icon: 'ShoppingCart', href: '/46124026/aktivitas/aktivitas1' },
@@ -145,12 +145,12 @@ const navItems = [
     ],
   },
   {
-    label: 'Laporan',
+    label: 'Akuntansi & Laporan',
     icon: 'BarChart3',
     children: [
-      { label: 'Neraca',            icon: 'Scale',        href: '#' },
-      { label: 'Laba Rugi',         icon: 'TrendingUp',   href: '#' },
-      { label: 'Arus Kas',          icon: 'Activity',     href: '#' },
+      { label: 'Jurnal Umum (Automated)', icon: 'BookMarked',   href: '/46124026/akuntansi/jurnal_l1H' },
+      { label: 'Neraca Saldo',            icon: 'Scale',        href: '/46124026/akuntansi/neraca_saldo_l1H' },
+      { label: 'Praktikum Pertemuan 9',   icon: 'CheckCircle2', href: '/46124026/akuntansi/praktikum_l1H' },
     ],
   },
   {
@@ -161,6 +161,11 @@ const navItems = [
       { label: 'Laman & Aksi',    icon: 'FileText',   href: '/46124026/rbac/laman' },
       { label: 'Atur Hak Akses',  icon: 'Lock',       href: '/46124026/rbac/akses' },
     ],
+  },
+  {
+    label: 'Audit Trail Log',
+    icon: 'History',
+    href: '/46124026/audit',
   },
 ];
 

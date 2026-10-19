@@ -79,7 +79,7 @@ class CRbac extends BaseController
 
         AuditLogger::catat('TAMBAH', 'tbuser', (int) $id, ['after' => compact('kode', 'nama')], 'RBAC', "Tambah User: {$nama} ({$kode})");
 
-        return redirect()->to(base_url('46124026/rbac/user'))
+        return redirect()->to('/46124026/rbac/user')
             ->with('success', "User '{$nama}' berhasil ditambahkan.");
     }
 
@@ -89,7 +89,7 @@ class CRbac extends BaseController
 
         $user = $this->userModel->find($id);
         if (!$user) {
-            return redirect()->to(base_url('46124026/rbac/user'))
+            return redirect()->to('/46124026/rbac/user')
                 ->with('error', 'User tidak ditemukan.');
         }
 
@@ -128,7 +128,7 @@ class CRbac extends BaseController
             'after'  => compact('kode', 'nama'),
         ], 'RBAC', "Edit User: {$nama} ({$kode})");
 
-        return redirect()->to(base_url('46124026/rbac/user'))
+        return redirect()->to('/46124026/rbac/user')
             ->with('success', "User '{$nama}' berhasil diperbarui.");
     }
 
@@ -138,13 +138,13 @@ class CRbac extends BaseController
 
         $user = $this->userModel->find($id);
         if (!$user) {
-            return redirect()->to(base_url('46124026/rbac/user'))
+            return redirect()->to('/46124026/rbac/user')
                 ->with('error', 'User tidak ditemukan.');
         }
 
         // Cegah menonaktifkan diri sendiri
         if ($id === (int) session()->get('user_id')) {
-            return redirect()->to(base_url('46124026/rbac/user'))
+            return redirect()->to('/46124026/rbac/user')
                 ->with('error', 'Tidak bisa menonaktifkan akun sendiri.');
         }
 
@@ -153,7 +153,7 @@ class CRbac extends BaseController
 
         AuditLogger::catat('EDIT', 'tbuser', $id, ['aksi' => "toggle_status → {$status}"], 'RBAC', "Ubah Status User: {$user['nama']} ({$status})");
 
-        return redirect()->to(base_url('46124026/rbac/user'))
+        return redirect()->to('/46124026/rbac/user')
             ->with('success', "User '{$user['nama']}' berhasil {$status}.");
     }
 
@@ -198,7 +198,7 @@ class CRbac extends BaseController
 
         AuditLogger::catat('TAMBAH', 'tblaman', (int) $id, ['after' => compact('kode', 'nama', 'aksi')], 'RBAC', "Tambah Laman: {$nama} - {$aksi} ({$kode})");
 
-        return redirect()->to(base_url('46124026/rbac/laman'))
+        return redirect()->to('/46124026/rbac/laman')
             ->with('success', "Laman '{$nama} – {$aksi}' berhasil ditambahkan.");
     }
 
@@ -208,7 +208,7 @@ class CRbac extends BaseController
 
         $laman = $this->lamanModel->find($id);
         if (!$laman) {
-            return redirect()->to(base_url('46124026/rbac/laman'))
+            return redirect()->to('/46124026/rbac/laman')
                 ->with('error', 'Laman tidak ditemukan.');
         }
 
@@ -233,7 +233,7 @@ class CRbac extends BaseController
 
         AuditLogger::catat('EDIT', 'tblaman', $id, ['after' => compact('kode', 'nama', 'aksi')], 'RBAC', "Edit Laman: {$nama} - {$aksi} ({$kode})");
 
-        return redirect()->to(base_url('46124026/rbac/laman'))
+        return redirect()->to('/46124026/rbac/laman')
             ->with('success', 'Laman berhasil diperbarui.');
     }
 
@@ -243,14 +243,14 @@ class CRbac extends BaseController
 
         $laman = $this->lamanModel->find($id);
         if (!$laman) {
-            return redirect()->to(base_url('46124026/rbac/laman'))
+            return redirect()->to('/46124026/rbac/laman')
                 ->with('error', 'Laman tidak ditemukan.');
         }
 
         $this->lamanModel->delete($id);
         AuditLogger::catat('HAPUS', 'tblaman', $id, ['before' => $laman], 'RBAC', "Hapus Laman: {$laman['nama']} - {$laman['aksi']}");
 
-        return redirect()->to(base_url('46124026/rbac/laman'))
+        return redirect()->to('/46124026/rbac/laman')
             ->with('success', 'Laman berhasil dihapus.');
     }
 
@@ -279,7 +279,7 @@ class CRbac extends BaseController
 
         $user = $this->userModel->find($userId);
         if (!$user) {
-            return redirect()->to(base_url('46124026/rbac/akses'))
+            return redirect()->to('/46124026/rbac/akses')
                 ->with('error', 'User tidak ditemukan.');
         }
 
@@ -301,7 +301,7 @@ class CRbac extends BaseController
 
         $user = $this->userModel->find($userId);
         if (!$user) {
-            return redirect()->to(base_url('46124026/rbac/akses'))
+            return redirect()->to('/46124026/rbac/akses')
                 ->with('error', 'User tidak ditemukan.');
         }
 
@@ -316,7 +316,7 @@ class CRbac extends BaseController
             return redirect()->back()->with('error', 'Gagal menyimpan akses.');
         }
 
-        return redirect()->to(base_url('46124026/rbac/akses'))
+        return redirect()->to('/46124026/rbac/akses')
             ->with('success', "Akses user '{$user['nama']}' berhasil diperbarui.");
     }
 }

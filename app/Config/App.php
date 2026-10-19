@@ -25,11 +25,14 @@ class App extends BaseConfig
      * E.g.,
      * When your site URL ($baseURL) is 'http://example.com/', and your site
      * also accepts 'http://media.example.com/' and 'http://accounts.example.com/':
-     *     ['media.example.com', 'accounts.example.com']
      *
      * @var list<string>
      */
-    public array $allowedHostnames = [];
+    public array $allowedHostnames = [
+        '3bd4muti.site',
+        'erp.3bd4muti.site',
+        'localhost',
+    ];
 
     /**
      * --------------------------------------------------------------------------
@@ -176,11 +179,15 @@ class App extends BaseConfig
      *     [
      *         '10.0.1.200'     => 'X-Forwarded-For',
      *         '192.168.5.0/24' => 'X-Real-IP',
-     *     ]
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = [];
+    public array $proxyIPs = [
+        '10.0.0.0/8'     => 'X-Forwarded-For',
+        '172.16.0.0/12'  => 'X-Forwarded-For',
+        '192.168.0.0/16' => 'X-Forwarded-For',
+        '127.0.0.1'      => 'X-Forwarded-For',
+    ];
 
     /**
      * --------------------------------------------------------------------------
@@ -199,4 +206,18 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Deteksi baseURL secara dinamis berdasarkan host yang sedang diakses browser
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $isHttps = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on')
+                    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+                    || (isset($_SERVER['HTTP_CF_VISITOR']) && str_contains($_SERVER['HTTP_CF_VISITOR'], 'https'));
+            $scheme = $isHttps ? 'https' : 'http';
+            $this->baseURL = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/';
+        }
+    }
 }

@@ -124,7 +124,7 @@
         </div>
     <?php endif; ?>
 
-    <form action="<?= base_url('login/proses') ?>" method="POST">
+    <form action="/login/proses" method="POST">
         <?= csrf_field() ?>
 
         <div class="form-group">

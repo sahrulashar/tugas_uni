@@ -35,7 +35,7 @@ class Auth extends BaseController
     {
         // Sudah login? langsung ke dalam
         if (session()->get('is_logged_in')) {
-            return redirect()->to(base_url('46124026'));
+            return redirect()->to('/46124026');
         }
 
         return view('auth/login');
@@ -56,7 +56,7 @@ class Auth extends BaseController
     public function prosesLogin()
     {
         if (!$this->request->is('post')) {
-            return redirect()->to(base_url('login'));
+            return redirect()->to('/login');
         }
 
         $kode     = trim($this->request->getPost('kode'));
@@ -91,7 +91,7 @@ class Auth extends BaseController
         \App\Libraries\AuditLogger::catat('LOGIN', 'tbuser', (int) $user['id'], [], 'Auth', "User {$user['nama']} ({$user['kode']}) login berhasil.");
         log_message('info', "[Auth] Login berhasil: {$user['kode']} ({$user['nama']})");
 
-        return redirect()->to(base_url('46124026'))
+        return redirect()->to('/46124026')
             ->with('success', 'Selamat datang, ' . $user['nama'] . '!');
     }
 
@@ -115,7 +115,7 @@ class Auth extends BaseController
 
         session()->destroy();
 
-        return redirect()->to(base_url('login'))
+        return redirect()->to('/login')
             ->with('success', 'Anda berhasil keluar. Sampai jumpa!');
     }
 }

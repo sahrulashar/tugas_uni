@@ -89,25 +89,26 @@ const NAV = [
     { label:'Supplier',          icon:'Truck',    href:'/46124026/kas_keluar/supplier_l1H' },
     { label:'Karyawan',          icon:'Users',    href:'/46124026/kas_keluar/karyawan_l1H' },
   ]},
-  { label:'Kas Masuk',  icon:'ArrowDownToLine', children:[
-    { label:'Penerimaan', icon:'Receipt',  href:'#' },
-    { label:'Piutang',    icon:'FilePlus', href:'#' },
+  { label:'Kas Masuk & Penjualan', icon:'ArrowDownToLine', children:[
+    { label:'Kasir Penjualan (POS)', icon:'ShoppingCart', href:'/46124026/penjualan/kasir_l1H' },
+    { label:'Master Barang & Stok',  icon:'Package',      href:'/46124026/penjualan/barang_l1H' },
   ]},
-  { label:'Laporan',    icon:'BarChart3', children:[
-    { label:'Neraca',   icon:'Scale',       href:'#' },
-    { label:'Laba Rugi',icon:'TrendingUp',  href:'#' },
-    { label:'Arus Kas', icon:'Activity',    href:'#' },
-  ]},
-  { label:'Aktivitas',  icon:'ClipboardList', children:[
+  { label:'Aktivitas Kas Keluar',  icon:'ClipboardList', children:[
     { label:'Rencana Beli',     icon:'ShoppingCart', href:'/46124026/aktivitas/aktivitas1' },
     { label:'Bukti Kas Keluar', icon:'Receipt',      href:'/46124026/aktivitas/aktivitas2' },
     { label:'Rekap BKK',        icon:'ClipboardCheck', href:'/46124026/aktivitas/aktivitas3' },
+  ]},
+  { label:'Akuntansi & Laporan', icon:'BarChart3', children:[
+    { label:'Jurnal Umum (Automated)', icon:'BookMarked',   href:'/46124026/akuntansi/jurnal_l1H' },
+    { label:'Neraca Saldo',            icon:'Scale',        href:'/46124026/akuntansi/neraca_saldo_l1H' },
+    { label:'Praktikum Pertemuan 9',   icon:'CheckCircle2', href:'/46124026/akuntansi/praktikum_l1H' },
   ]},
   { label:'Pengaturan RBAC', icon:'Shield', children:[
     { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },
     { label:'Laman & Aksi',    icon:'FileText', href:'/46124026/rbac/laman' },
     { label:'Atur Hak Akses',  icon:'Lock',     href:'/46124026/rbac/akses' },
   ]},
+  { label:'Audit Trail Log', icon:'History', href:'/46124026/audit' },
 ];
 
 /* -- Sidebar NavItem -------------------- */

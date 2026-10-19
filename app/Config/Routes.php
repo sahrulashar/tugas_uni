@@ -50,6 +50,7 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
     $routes->get('audit/detail/(:num)', 'Audit::detail/$1');
 
     // ── Dashboard Index ────────────────────────────────────────────
+    $routes->get('',        'KasKeluar::dashboard');
     $routes->get('/',       'KasKeluar::dashboard');
 
     // ── Alias URL pendek (tanpa _l1H) → redirect ke route resmi ──
@@ -127,6 +128,27 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
         $routes->get('soft-delete', 'TestTransaksi::ujiSoftDelete');
         $routes->get('soft-delete/(:num)', 'TestTransaksi::ujiSoftDelete/$1');
         $routes->get('uji2', 'TestTransaksi::ujiSimulasiCrash');
+    });
+
+    // ── Pertemuan 9: Cross-Module Integration & Automated Journaling ──
+    $routes->group('penjualan', function ($routes) {
+        $routes->get('kasir_l1H',               'Penjualan::kasir_l1H');
+        $routes->post('proses_kasir_l1H',       'Penjualan::proses_kasir_l1H');
+        $routes->get('riwayat_l1H',             'Penjualan::riwayat_l1H');
+        $routes->get('detail_l1H/(:num)',       'Penjualan::detail_l1H/$1');
+
+        $routes->get('barang_l1H',              'Penjualan::barang_l1H');
+        $routes->post('simpan_barang_l1H',      'Penjualan::simpan_barang_l1H');
+        $routes->post('update_barang_l1H',      'Penjualan::update_barang_l1H');
+        $routes->get('hapus_barang_l1H/(:num)', 'Penjualan::hapus_barang_l1H/$1');
+    });
+
+    $routes->group('akuntansi', function ($routes) {
+        $routes->get('jurnal_l1H',        'Akuntansi::jurnal_l1H');
+        $routes->get('neraca_saldo_l1H',  'Akuntansi::neraca_saldo_l1H');
+        $routes->get('praktikum_l1H',     'Akuntansi::praktikum_l1H');
+        $routes->get('uji_sukses_l1H',    'Akuntansi::uji_sukses_p9_l1H');
+        $routes->get('uji_rollback_l1H',  'Akuntansi::uji_rollback_p9_l1H');
     });
 
 });

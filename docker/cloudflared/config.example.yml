@@ -1,0 +1,25 @@
+# ==============================================================================
+# Contoh Konfigurasi Lokal Cloudflare Tunnel (config.yml)
+# ==============================================================================
+# Gunakan file ini HANYA JIKA Anda memilih setup manual via CLI (Credentials JSON).
+# Jika menggunakan Cloudflare Zero Trust Dashboard (Metode Token / Direkomendasikan),
+# file ini TIDAK DIPERLUKAN karena routing diatur langsung dari dashboard web.
+
+tunnel: YOUR_TUNNEL_UUID_HERE
+credentials-file: /etc/cloudflared/YOUR_TUNNEL_UUID_HERE.json
+
+# Pengaturan ingress routing
+ingress:
+  # Hostname utama ERP diarahkan ke Nginx Reverse Proxy
+  - hostname: erp.yourdomain.com
+    service: http://nginx:80
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+
+  # Opsional: Hostname khusus phpMyAdmin
+  - hostname: pma.yourdomain.com
+    service: http://phpmyadmin:80
+
+  # Rule fallback (wajib ada di baris paling bawah)
+  - service: http_status:404

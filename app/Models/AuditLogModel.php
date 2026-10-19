@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class AuditLogModel extends Model
 {
+    protected $DBGroup       = 'default';
     protected $table         = 'audit_log';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';

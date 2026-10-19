@@ -16,10 +16,10 @@ Options -Indexes
 	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
 	# RewriteBase /
 
-	# Redirect Trailing Slashes...
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_URI} (.+)/$
-	RewriteRule ^ %1 [L,R=301]
+	# Redirect Trailing Slashes... (disabled to prevent proxy port stripping)
+	# RewriteCond %{REQUEST_FILENAME} !-d
+	# RewriteCond %{REQUEST_URI} (.+)/$
+	# RewriteRule ^ %1 [L,R=301]
 
 	# Rewrite "www.example.com -> example.com"
 	RewriteCond %{HTTPS} !=on
