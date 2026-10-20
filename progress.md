@@ -177,12 +177,12 @@ sistem_erp_ci4/
 |---|---|
 | Total file PHP di `app/` | **132 file** |
 | Total baris kode (app/) | **~22.926 baris** |
-| Controllers | **11** |
+| Controllers | **12** |
 | Models | **17** |
-| Views | **36** |
-| Migrations | **3** |
+| Views | **38** |
+| Migrations | **5** |
 | SQL Scripts | **7** |
-| Unit Tests | **6 test files** |
+| Unit Tests | **7 test files (114 tests)** |
 | Routes | **~70+ route** |
 | Git Commits | **29 commits** |
 
@@ -208,6 +208,7 @@ Sep 2026                                                    Okt 2026
  7 Okt    Final view fixes + URL routing cleanup
 19 Okt    Pertemuan 9: Cross-Module Integration (POS -> Stok -> Jurnal Otomatis -> Neraca Saldo)
 19 Okt    Docker Nginx Proxy port preservation fix + Auth sync
+21 Okt    Pertemuan 10-11: Advanced Data Aggregation & Executive Dashboard (Window Functions, Pivot, ApexCharts, Lab Playground)
 ```
 
 ### Fase Pengembangan:
@@ -220,6 +221,7 @@ Sep 2026                                                    Okt 2026
 | **Fase 4** — Routing & Polish | 26 Sep | Route prefix, URL harmonization |
 | **Fase 5** — Testing & DevOps | 3–7 Okt | Unit testing, saldo COA, Docker rebuild, bug fixes |
 | **Fase 6** — Cross-Module & Accounting | 19 Okt | Integrasi Penjualan, Stok, Automated Journaling, Neraca Saldo, Docker Nginx Proxy Fix |
+| **Fase 7** — Advanced Aggregation & Dashboard | 21 Okt | Pertemuan 10–11: MySQL 8.0 Window Functions, Dynamic Pivot Matrix, ApexCharts CDN, Executive Dashboard, Lab Sandbox |
 
 ### 9. Pertemuan 9: Cross-Module Integration & Automated Journaling (Status: Selesai 100%)
 - [x] **Master Barang & Stok** — CRUD master barang, kategori, harga beli (HPP), harga jual, dan stok gudang
@@ -245,12 +247,40 @@ Sep 2026                                                    Okt 2026
 
 ---
 
+
+### 10. Pertemuan 10–11: Advanced Data Aggregation & Executive Dashboard (Status: Selesai 100%)
+- [x] **Advanced SQL Query Engine (MySQL 8.0)**:
+  - *Query 1*: Tren Arus Kas Bulanan, Running Cash Balance via `SUM() OVER ()`, dan perbandingan MoM Growth via `LAG() OVER ()`.
+  - *Query 2*: Dynamic Pivot Table Pengeluaran Kas per COA kuartalan (Q1–Q4) via Conditional Aggregation `SUM(CASE WHEN ...)`.
+  - *Query 3*: Analisis Pareto Profitabilitas Produk terlaris via `DENSE_RANK() OVER (ORDER BY total_laba_kotor DESC)` & Cumulative Share %.
+  - *Query 4*: Matriks Konsentrasi Belanja Vendor/Supplier via Window Function `SUM() OVER ()` & Share Pengeluaran %.
+- [x] **Service Layer & API**:
+  - Library `DashboardAnalyticsService` (`app/Services/DashboardAnalyticsService.php`) dengan method suffix `_l1H`.
+  - Endpoint RESTful JSON `/46124026/dashboard/api_metrics_l1H` untuk dynamic filter tahun/bulan tanpa reload.
+- [x] **Integrasi Library Chart Modern**:
+  - Integrasi **ApexCharts CDN** ke dalam arsitektur React 18 CDN SPA tanpa build-step (Webpack/Vite).
+  - Area Spline Chart (Tren Arus Kas & Saldo Berjalan), Donut Chart (Komposisi Beban COA), Grouped Bar Chart (Pareto Produk), Horizontal Bar (Vendor Concentration).
+- [x] **Executive Dashboard UI/UX** (`/46124026/dashboard`):
+  - 4 Executive Stat Cards (Revenue, BKK Outflow, Net Operating Flow, Gross Margin %).
+  - Filter tahun & bulan interaktif.
+  - Actionable Audit Table: Threshold Alerts pengeluaran kas bernilai tinggi (&ge; Rp 500.000).
+- [x] **Laboratorium Praktikum Interaktif** (`/46124026/dashboard/praktikum_l1H`):
+  - *Interactive SQL Inspector* untuk 4 query dengan rincian query asli dan tabel hasil eksekusi.
+  - *Visual Sandbox Live Chart Switcher* (Area / Bar / Line).
+  - *1-Click Demo Dataset Simulator* (Suntik & Bersihkan Data Multi-Bulan Juli–Oktober).
+- [x] **Automated Testing & RBAC**:
+  - Migrasi `CreatePertemuan10Laman` untuk registrasi laman `dsh` dan `pkt10`.
+  - Unit Test `tests/unit/DashboardAnalyticsTest.php` (6 test cases, 66 assertions, 100% pass).
+  - Total unit test proyek meningkat menjadi **114 tests passing, 285 assertions**.
+
+---
+
 ## 🔮 Roadmap / Fitur yang Belum Diimplementasi
 
 Berikut fitur-fitur yang bisa dikembangkan selanjutnya:
 
 - [ ] **Laporan Keuangan Ekspor** — Cetak laporan kas keluar & neraca saldo ke PDF/Excel
-- [ ] **Dashboard Analitik** — Grafik/chart ringkasan transaksi (pie chart, line chart)
+- [x] **Dashboard Analitik** — Grafik/chart ringkasan transaksi (ApexCharts: area spline, donut, bar chart)
 - [x] **Kas Masuk & Penjualan** — Modul kasir dan penerimaan kas
 - [x] **Jurnal Umum** — Pencatatan jurnal otomatis dari transaksi
 - [ ] **Buku Besar** — Ledger per akun COA
@@ -309,6 +339,6 @@ docker compose up -d --build
 
 ---
 
-> **Status Proyek**: 🟢 **Aktif** — Pertemuan 9 Selesai 100% (Siap Lanjut Pertemuan 10)  
-> **Terakhir Diperbarui**: 19 Oktober 2026  
+> **Status Proyek**: 🟢 **Aktif** — Pertemuan 10–11 Selesai 100% (Advanced Aggregation & Executive Dashboard)  
+> **Terakhir Diperbarui**: 21 Oktober 2026  
 > **Laporan Dibuat**: 19 Oktober 2026

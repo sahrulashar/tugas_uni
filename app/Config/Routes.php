@@ -50,8 +50,17 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
     $routes->get('audit/detail/(:num)', 'Audit::detail/$1');
 
     // ── Dashboard Index ────────────────────────────────────────────
-    $routes->get('',        'KasKeluar::dashboard');
-    $routes->get('/',       'KasKeluar::dashboard');
+    $routes->get('',        'ExecutiveDashboard::index_l1H');
+    $routes->get('/',       'ExecutiveDashboard::index_l1H');
+
+    // ── Pertemuan 10-11: Advanced Data Aggregation & Executive Dashboard ──
+    $routes->group('dashboard', function ($routes) {
+        $routes->get('/',                 'ExecutiveDashboard::index_l1H');
+        $routes->get('api_metrics_l1H',   'ExecutiveDashboard::api_metrics_l1H');
+        $routes->get('praktikum_l1H',     'ExecutiveDashboard::praktikum_l1H');
+        $routes->post('inject_demo_l1H',  'ExecutiveDashboard::inject_demo_l1H');
+        $routes->post('reset_demo_l1H',   'ExecutiveDashboard::reset_demo_l1H');
+    });
 
     // ── Alias URL pendek (tanpa _l1H) → redirect ke route resmi ──
     // Ini menangkap link lama di views yang tidak pakai suffix _l1H

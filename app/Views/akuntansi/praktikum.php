@@ -97,6 +97,8 @@ const NAV = [
     { label:'Jurnal Umum (Automated)', icon:'BookMarked',   href:'/46124026/akuntansi/jurnal_l1H' },
     { label:'Neraca Saldo',            icon:'Scale',        href:'/46124026/akuntansi/neraca_saldo_l1H' },
     { label:'Praktikum Pertemuan 9',   icon:'CheckCircle2', href:'/46124026/akuntansi/praktikum_l1H' },
+      { label:'Executive Dashboard',      icon:'PieChart',     href:'/46124026/dashboard' },
+      { label:'Praktikum Pertemuan 10',   icon:'Sparkles',     href:'/46124026/dashboard/praktikum_l1H' },
   ]},
   { label:'Pengaturan RBAC', icon:'Shield', children:[
     { label:'Manajemen User',  icon:'Users',    href:'/46124026/rbac/user' },

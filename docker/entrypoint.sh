@@ -17,6 +17,8 @@ if [ ! -f "/var/www/html/vendor/autoload.php" ]; then
     echo "Composer vendor tidak ditemukan. Menjalankan composer install..."
     echo "=========================================================="
     composer install --no-interaction --prefer-dist --optimize-autoloader
+fi
+
 # Jalankan migrasi database otomatis jika DB sudah siap
 echo "=========================================================="
 echo "Memeriksa dan menjalankan database migration CodeIgniter..."
