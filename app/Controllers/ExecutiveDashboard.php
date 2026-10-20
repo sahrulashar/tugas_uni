@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\DashboardAnalyticsService;
+use App\Libraries\AuditLogger;
 
 /**
  * ExecutiveDashboard Controller
@@ -119,6 +120,18 @@ class ExecutiveDashboard extends BaseController
         $this->cekAkses('pkt10', 'tambah');
 
         $res = $this->analyticsService->injectDemoDataset_l1H();
+
+        if ($res['status']) {
+            AuditLogger::catat(
+                'TAMBAH',
+                'penjualan',
+                0,
+                ['after' => ['simulasi' => $res['message']]],
+                'Analitik',
+                'Suntik Dataset Demo Multi-Bulan (Pertemuan 10-11)'
+            );
+        }
+
         return $this->response->setJSON($res);
     }
 
@@ -130,6 +143,18 @@ class ExecutiveDashboard extends BaseController
         $this->cekAkses('pkt10', 'tambah');
 
         $res = $this->analyticsService->resetDemoDataset_l1H();
+
+        if ($res['status']) {
+            AuditLogger::catat(
+                'HAPUS',
+                'penjualan',
+                0,
+                ['before' => ['simulasi' => $res['message']]],
+                'Analitik',
+                'Reset/Pembersihan Dataset Demo Multi-Bulan (Pertemuan 10-11)'
+            );
+        }
+
         return $this->response->setJSON($res);
     }
 }
