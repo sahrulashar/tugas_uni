@@ -113,18 +113,14 @@ function Icon({ name, size = 18, className = '' }) {
    NAVIGATION DATA
 ───────────────────────────────────────── */
 const navItems = [
-  {
-    label: 'Dashboard',
-    icon: 'LayoutDashboard',
-    href: '/',
-  },
+  { label: 'Executive Dashboard', icon: 'LayoutDashboard', href: '/46124026/dashboard' },
   {
     label: 'Kas Keluar',
     icon: 'ArrowUpFromLine',
     children: [
-      { label: 'Chart of Accounts', icon: 'BookOpen',    href: '/46124026/kas_keluar/coa_l1H' },
-      { label: 'Supplier',          icon: 'Truck',        href: '/46124026/kas_keluar/supplier_l1H' },
-      { label: 'Karyawan',          icon: 'Users',        href: '/46124026/kas_keluar/karyawan_l1H' },
+      { label: 'Chart of Accounts', icon: 'BookOpen', href: '/46124026/kas_keluar/coa_l1H' },
+      { label: 'Supplier',          icon: 'Truck',    href: '/46124026/kas_keluar/supplier_l1H' },
+      { label: 'Karyawan',          icon: 'Users',    href: '/46124026/kas_keluar/karyawan_l1H' },
     ],
   },
   {
@@ -145,30 +141,26 @@ const navItems = [
     ],
   },
   {
-    label: 'Akuntansi & Laporan',
+    label: 'Akuntansi & Analitik',
     icon: 'BarChart3',
     children: [
-      { label: 'Jurnal Umum (Automated)', icon: 'BookMarked',   href: '/46124026/akuntansi/jurnal_l1H' },
-      { label: 'Neraca Saldo',            icon: 'Scale',        href: '/46124026/akuntansi/neraca_saldo_l1H' },
-      { label: 'Praktikum Pertemuan 9',   icon: 'CheckCircle2', href: '/46124026/akuntansi/praktikum_l1H' },
       { label: 'Executive Dashboard',      icon: 'PieChart',     href: '/46124026/dashboard' },
       { label: 'Praktikum Pertemuan 10',   icon: 'Sparkles',     href: '/46124026/dashboard/praktikum_l1H' },
+      { label: 'Jurnal Umum (Automated)',  icon: 'BookMarked',   href: '/46124026/akuntansi/jurnal_l1H' },
+      { label: 'Neraca Saldo',             icon: 'Scale',        href: '/46124026/akuntansi/neraca_saldo_l1H' },
+      { label: 'Praktikum Pertemuan 9',    icon: 'CheckCircle2', href: '/46124026/akuntansi/praktikum_l1H' },
     ],
   },
   {
     label: 'Pengaturan RBAC',
     icon: 'Shield',
     children: [
-      { label: 'Manajemen User',  icon: 'Users',      href: '/46124026/rbac/user' },
-      { label: 'Laman & Aksi',    icon: 'FileText',   href: '/46124026/rbac/laman' },
-      { label: 'Atur Hak Akses',  icon: 'Lock',       href: '/46124026/rbac/akses' },
+      { label: 'Manajemen User',  icon: 'Users',    href: '/46124026/rbac/user' },
+      { label: 'Laman & Aksi',    icon: 'FileText', href: '/46124026/rbac/laman' },
+      { label: 'Atur Hak Akses',  icon: 'Lock',     href: '/46124026/rbac/akses' },
     ],
   },
-  {
-    label: 'Audit Trail Log',
-    icon: 'History',
-    href: '/46124026/audit',
-  },
+  { label: 'Audit Trail Log', icon: 'History', href: '/46124026/audit' },
 ];
 
 /* ─────────────────────────────────────────
