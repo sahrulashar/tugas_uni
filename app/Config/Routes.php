@@ -118,6 +118,7 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
         $routes->get('aktivitas2/edit_l1H/(:num)', 'Aktivitas\Aktivitas2::edit_l1H/$1');
         $routes->post('aktivitas2/update_l1H', 'Aktivitas\Aktivitas2::update_l1H');
         $routes->get('aktivitas2/hapus_l1H/(:num)', 'Aktivitas\Aktivitas2::hapus_l1H/$1');
+        $routes->get('aktivitas2/restore_l1H/(:num)', 'Aktivitas\Aktivitas2::restore_l1H/$1');
 
         // ── Aktivitas 3: Rekap BKK ────────────────────────────────────
         $routes->get('aktivitas3', 'Aktivitas\Aktivitas3::index');

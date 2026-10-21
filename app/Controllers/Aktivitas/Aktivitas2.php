@@ -6,19 +6,22 @@ use App\Controllers\BaseController;
 use App\Models\TbBkkModel;
 use App\Models\TbBkkDModel;
 use App\Libraries\AuditLogger;
+use App\Services\JurnalService;
 use CodeIgniter\Database\BaseConnection;
 
 class Aktivitas2 extends BaseController
 {
     protected TbBkkModel     $bkkModel;
     protected TbBkkDModel    $bkkDModel;
+    protected JurnalService  $jurnalService;
     protected BaseConnection $db;
 
     public function __construct()
     {
-        $this->bkkModel  = new TbBkkModel();
-        $this->bkkDModel = new TbBkkDModel();
-        $this->db        = \Config\Database::connect();
+        $this->bkkModel      = new TbBkkModel();
+        $this->bkkDModel     = new TbBkkDModel();
+        $this->jurnalService = new JurnalService();
+        $this->db            = \Config\Database::connect();
     }
 
     // ═══════════════════════════════════════════
@@ -113,6 +116,9 @@ class Aktivitas2 extends BaseController
             $this->bkkDModel->insert($b + ['id_bkk' => $idBkk]);
         }
 
+        // Generate dan simpan entri jurnal umum kas keluar otomatis (ACID)
+        $this->jurnalService->generateDanSimpanJurnalBkk($dataHeader, $baris, $this->db);
+
         $this->db->transComplete();
 
         if (!$this->db->transStatus()) {
@@ -147,6 +153,10 @@ class Aktivitas2 extends BaseController
         $data['bkk']    = $bkk;
         $data['detail'] = $this->bkkDModel->getByIdBkk_l1H((int) $id);
         $data['total']  = $this->bkkDModel->getTotalNilai_l1H((int) $id);
+        $data['jurnal'] = $this->db->table('jurnal_umum')
+            ->where('sumber', 'BKK')
+            ->where('no_referensi', $bkk['no_bkk'])
+            ->get()->getRowArray();
 
         return view('aktivitas/aktivitas2/lihat', $data);
     }
@@ -253,6 +263,14 @@ class Aktivitas2 extends BaseController
             $this->bkkDModel->insert($b + ['id_bkk' => $id]);
         }
 
+        // Batalkan jurnal lama (menggunakan nomor BKK lama jika ada pergantian nomor)
+        if (!empty($dataLama['no_bkk'])) {
+            $this->jurnalService->batalkanJurnalByReferensi('BKK', $dataLama['no_bkk'], $this->db);
+        }
+
+        // Buat ulang jurnal kas keluar yang telah disesuaikan
+        $this->jurnalService->generateDanSimpanJurnalBkk($dataBaru, $baris, $this->db);
+
         $this->db->transComplete();
 
         if (!$this->db->transStatus()) {
@@ -265,11 +283,11 @@ class Aktivitas2 extends BaseController
         ], 'Transaksi', "Edit Bukti Kas Keluar: {$noBkk}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas2')
-            ->with('success', 'Bukti Kas Keluar berhasil diperbarui.');
+            ->with('success', 'Bukti Kas Keluar berhasil diperbarui dan jurnal umum disesuaikan.');
     }
 
     // ═══════════════════════════════════════════
-    //  HAPUS
+    //  HAPUS & RESTORE
     // ═══════════════════════════════════════════
 
     public function hapus_l1H($id = null)
@@ -287,14 +305,62 @@ class Aktivitas2 extends BaseController
                 ->with('error', 'Data BKK tidak ditemukan.');
         }
 
+        $this->db->transStart();
+
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
         $sukses = $this->bkkModel->softDelete_l1H((int) $id);
         if ($sukses) {
+            // Batalkan entri jurnal kas keluar agar tidak menjadi jurnal hantu di Neraca Saldo
+            $this->jurnalService->batalkanJurnalByReferensi('BKK', $bkk['no_bkk'], $this->db);
             AuditLogger::catat('SOFT_DELETE', 'tbbkk', (int) $id, ['before' => $bkk], 'Transaksi', "Soft Delete Bukti Kas Keluar: {$bkk['no_bkk']}");
         }
 
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
+                ->with('error', 'Gagal menghapus Bukti Kas Keluar.');
+        }
+
         return redirect()->to('/46124026/aktivitas/aktivitas2')
-            ->with('success', 'Bukti Kas Keluar berhasil dihapus.');
+            ->with('success', 'Bukti Kas Keluar berhasil dihapus dan jurnal umum dibatalkan.');
+    }
+
+    public function restore_l1H($id = null)
+    {
+        $this->cekAkses('ak2', 'edit');
+
+        if (!$id) {
+            return redirect()->to('/46124026/aktivitas/aktivitas2');
+        }
+
+        $bkk = $this->bkkModel->find((int) $id);
+
+        if (!$bkk || (int) ($bkk['is_deleted'] ?? 0) === 0) {
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
+                ->with('error', 'Data BKK tidak ditemukan atau tidak dalam status terhapus.');
+        }
+
+        $this->db->transStart();
+
+        $this->bkkModel->update((int) $id, ['is_deleted' => 0]);
+        $detail = $this->bkkDModel->getByIdBkk_l1H((int) $id);
+
+        if (!empty($detail)) {
+            $this->jurnalService->generateDanSimpanJurnalBkk($bkk, $detail, $this->db);
+        }
+
+        AuditLogger::catat('RESTORE', 'tbbkk', (int) $id, ['after' => $bkk], 'Transaksi', "Restore Bukti Kas Keluar: {$bkk['no_bkk']}");
+
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->to('/46124026/aktivitas/aktivitas2')
+                ->with('error', 'Gagal memulihkan Bukti Kas Keluar.');
+        }
+
+        return redirect()->to('/46124026/aktivitas/aktivitas2')
+            ->with('success', 'Bukti Kas Keluar berhasil dipulihkan dan jurnal umum dicatat kembali.');
     }
 
     // ═══════════════════════════════════════════

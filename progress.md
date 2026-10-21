@@ -332,13 +332,15 @@ docker compose up -d --build
 2. **Suffix Method `_l1H`**: Seluruh method controller dan model menggunakan suffix kode unik untuk membedakan dari boilerplate framework.
 3. **CDN-based Frontend**: Tidak ada build pipeline (Webpack/Vite). React, Tailwind, dan Babel dimuat langsung dari CDN untuk mempermudah deployment.
 4. **Views sebagai React SPA**: Setiap halaman merupakan komponen React independen yang menerima data dari PHP via `window.__DATA__`.
-5. **Kesiapan Menuju Pertemuan 10**:
-   - Fondasi tabel `jurnal_umum` dan `jurnal_umum_d` telah siap untuk agregasi Buku Besar (General Ledger).
-   - Seluruh mutasi kas masuk (Penjualan) dan kas keluar (BKK) telah memiliki COA yang seimbang untuk penyusunan Laporan Laba Rugi dan Neraca Lajur pada pertemuan berikutnya.
-   - Database Docker & Localhost telah sinkron 100% dan dilengkapi automated unit testing (108 tests passing).
+5. **Integrasi Penuh Siklus Kas Keluar ke Jurnal Umum (Pertemuan 10–11)**:
+   - Aktivitas 2 (Bukti Kas Keluar / BKK) terintegrasi penuh ke `jurnal_umum` & `jurnal_umum_d` secara ACID (`sumber = 'BKK'`).
+   - Setiap transaksi simpan, edit, soft-delete, dan restore BKK secara atomik memutakhirkan ayat jurnal kas keluar secara seimbang ($Debit \equiv Kredit$).
+   - Tersedia CLI command `php spark jurnal:sync-bkk` untuk sinkronisasi batch dokumen BKK.
+   - Tampilan detail BKK (`lihat_l1H`) dilengkapi badge integrasi jurnal real-time dan shortcut langsung ke Buku Jurnal.
+   - Automated unit tests meningkat menjadi **118 tests passing (314 assertions)** dengan validasi Neraca Saldo seimbang 100%.
 
 ---
 
-> **Status Proyek**: 🟢 **Aktif** — Pertemuan 10–11 Selesai 100% (Advanced Aggregation & Executive Dashboard)  
+> **Status Proyek**: 🟢 **Aktif** — Pertemuan 10–11 & Integrasi Siklus Jurnal Kas Keluar Selesai 100%  
 > **Terakhir Diperbarui**: 21 Oktober 2026  
 > **Laporan Dibuat**: 19 Oktober 2026

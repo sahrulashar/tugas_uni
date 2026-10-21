@@ -34,12 +34,14 @@ class NeracaSaldoService
         $totAkhirKredit = 0.0;
 
         foreach ($coaList as $c) {
-            // Hanya proses akun tipe Detail (bukan Header)
-            if (($c['is_header'] ?? 'D') === 'H') {
+            $kode        = $c['kode_coa'];
+            $hasMutasi   = !empty($mutasi[$kode]) && (($mutasi[$kode]['debit'] ?? 0) > 0 || ($mutasi[$kode]['kredit'] ?? 0) > 0);
+
+            // Lewati akun header HANYA JIKA tidak memiliki mutasi jurnal (jika ada mutasi, wajib dihitung agar trial balance balance)
+            if (($c['is_header'] ?? 'D') === 'H' && !$hasMutasi) {
                 continue;
             }
 
-            $kode        = $c['kode_coa'];
             $nama        = $c['nama_coa'];
             $saldoNormal = $c['saldo_normal'] ?? 'Debit';
             $saldoAwal   = (float) ($c['saldo_awal'] ?? 0);
@@ -120,15 +122,7 @@ class NeracaSaldoService
     {
         $db = $db ?? \Config\Database::connect('default');
 
-        // 1. Ambil akun COA aktif tipe Detail
-        $coaList = $db->table('coa')
-            ->where('is_off', 0)
-            ->where('is_header', 'D')
-            ->orderBy('kode_coa', 'ASC')
-            ->get()
-            ->getResultArray();
-
-        // 2. Ambil agregat mutasi debit/kredit dari tabel jurnal_umum_d
+        // 1. Ambil agregat mutasi debit/kredit dari tabel jurnal_umum_d
         $mutasiRows = $db->table('jurnal_umum_d')
             ->select('kode_coa, SUM(debit) AS total_debit, SUM(kredit) AS total_kredit')
             ->groupBy('kode_coa')
@@ -136,12 +130,27 @@ class NeracaSaldoService
             ->getResultArray();
 
         $mutasi = [];
+        $kodeMutasi = [];
         foreach ($mutasiRows as $m) {
             $mutasi[$m['kode_coa']] = [
                 'debit'  => (float) $m['total_debit'],
                 'kredit' => (float) $m['total_kredit'],
             ];
+            $kodeMutasi[] = $m['kode_coa'];
         }
+
+        // 2. Ambil akun COA aktif: Detail ('D') ATAU Header yang pernah termutasi
+        $builder = $db->table('coa')->where('is_off', 0);
+        if (!empty($kodeMutasi)) {
+            $builder->groupStart()
+                ->where('is_header', 'D')
+                ->orWhereIn('kode_coa', $kodeMutasi)
+                ->groupEnd();
+        } else {
+            $builder->where('is_header', 'D');
+        }
+
+        $coaList = $builder->orderBy('kode_coa', 'ASC')->get()->getResultArray();
 
         return $this->hitungNeracaSaldo($coaList, $mutasi);
     }

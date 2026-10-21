@@ -46,6 +46,7 @@
   window.__BKK__    = <?= json_encode($bkk    ?? []) ?>;
   window.__DETAIL__ = <?= json_encode($detail ?? []) ?>;
   window.__TOTAL__  = <?= json_encode($total  ?? 0)  ?>;
+  window.__JURNAL__ = <?= json_encode($jurnal ?? null) ?>;
   <?php include APPPATH . 'Views/_session_inject.php'; ?>
 </script>
 <div id="root"></div>
@@ -206,6 +207,7 @@ function LihatPage() {
   const bkk    = window.__BKK__    || {};
   const detail = window.__DETAIL__ || [];
   const total  = window.__TOTAL__  || 0;
+  const jurnal = window.__JURNAL__ || null;
   const [collapsed, setCollapsed] = useState(false);
 
   const fmtTgl = (tgl) => tgl
@@ -286,6 +288,35 @@ function LihatPage() {
                 </div>
               </div>
             </div>
+
+            {/* Jurnal Status Card */}
+            {jurnal ? (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <Icon name="CheckCircle2" size={20}/>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Otomatis Terjurnal</span>
+                      <code className="font-mono text-xs font-bold text-emerald-900 bg-white px-2 py-0.5 rounded border border-emerald-200">{jurnal.no_jurnal}</code>
+                    </div>
+                    <p className="text-xs text-emerald-700 mt-1">
+                      Transaksi kas keluar ini telah dibukukan otomatis ke Buku Jurnal Umum & Neraca Saldo (ACID).
+                    </p>
+                  </div>
+                </div>
+                <a href="/46124026/akuntansi/jurnal_l1H" className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-emerald-800 bg-white border border-emerald-300 rounded-lg hover:bg-emerald-100 transition-colors shadow-xs">
+                  <Icon name="BookOpen" size={14}/>
+                  Buka Buku Jurnal
+                </a>
+              </div>
+            ) : (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 text-amber-800 text-xs">
+                <Icon name="AlertCircle" size={18} className="shrink-0 text-amber-600"/>
+                <span>Dokumen BKK ini belum memiliki entri jurnal umum terkait.</span>
+              </div>
+            )}
 
             {/* Detail Table */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

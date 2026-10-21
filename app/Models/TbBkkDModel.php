@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class TbBkkDModel extends Model
 {
+    protected $DBGroup       = 'default';
     protected $table         = 'tbbkk_d';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
