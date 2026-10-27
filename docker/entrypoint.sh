@@ -19,10 +19,11 @@ if [ ! -f "/var/www/html/vendor/autoload.php" ]; then
     composer install --no-interaction --prefer-dist --optimize-autoloader
 fi
 
-# Jalankan migrasi database otomatis jika DB sudah siap
+# Jalankan sinkronisasi database otomatis jika ada init.sql baru
 echo "=========================================================="
-echo "Memeriksa dan menjalankan database migration CodeIgniter..."
+echo "Memeriksa dan menyinkronkan database dari init.sql..."
 echo "=========================================================="
+php spark db:sync-init || true
 php spark migrate --all || true
 php spark jurnal:sync-rbeli || true
 php spark jurnal:sync-bkk || true
