@@ -109,6 +109,7 @@ $routes->group('46124026', ['filter' => 'auth'], function ($routes) {
         $routes->get('aktivitas1/edit_l1H/(:num)', 'Aktivitas\Aktivitas1::edit_l1H/$1');
         $routes->post('aktivitas1/update_l1H', 'Aktivitas\Aktivitas1::update_l1H');
         $routes->get('aktivitas1/hapus_l1H/(:num)', 'Aktivitas\Aktivitas1::hapus_l1H/$1');
+        $routes->get('aktivitas1/restore_l1H/(:num)', 'Aktivitas\Aktivitas1::restore_l1H/$1');
 
         // ── Aktivitas 2: Bukti Kas Keluar (BKK) ───────────────────────
         $routes->get('aktivitas2', 'Aktivitas\Aktivitas2::index');

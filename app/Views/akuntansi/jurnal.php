@@ -346,8 +346,12 @@ function JurnalApp() {
                         <span className="text-xs text-slate-500 font-medium">
                           Ref: <b className="text-slate-800">{j.no_referensi}</b>
                         </span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                          {j.sumber}
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          j.sumber === 'RBELI' ? 'bg-blue-100 text-blue-700' :
+                          j.sumber === 'BKK' ? 'bg-amber-100 text-amber-700' :
+                          'bg-indigo-100 text-indigo-700'
+                        }`}>
+                          {j.sumber === 'RBELI' ? 'RENCANA BELI' : j.sumber}
                         </span>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-slate-500">

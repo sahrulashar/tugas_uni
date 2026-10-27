@@ -6,17 +6,20 @@ use App\Controllers\BaseController;
 use App\Models\TbRbeliModel;
 use App\Models\TbRbeliDModel;
 use App\Libraries\AuditLogger;
+use App\Services\JurnalService;
 
 class Aktivitas1 extends BaseController
 {
     protected TbRbeliModel  $rbeliModel;
     protected TbRbeliDModel $rbeliDModel;
+    protected JurnalService $jurnalService;
     protected \CodeIgniter\Database\BaseConnection $db;
 
     public function __construct()
     {
         $this->rbeliModel  = new TbRbeliModel();
-        $this->rbeliDModel = new TbRbeliDModel();
+        $this->rbeliDModel   = new TbRbeliDModel();
+        $this->jurnalService = new JurnalService();
         $this->db          = \Config\Database::connect();
     }
 
@@ -93,6 +96,7 @@ class Aktivitas1 extends BaseController
         $idRbeli = $this->rbeliModel->insert($dataHeader);
 
         // Simpan detail
+        $barisDetail = [];
         foreach ($noFakturArr as $i => $noFaktur) {
             $noFaktur = trim($noFaktur);
             $nilai    = (float) str_replace(',', '', $nilaiArr[$i] ?? 0);
@@ -101,12 +105,24 @@ class Aktivitas1 extends BaseController
                 continue; // skip baris kosong
             }
 
-            $this->rbeliDModel->insert([
+            $detailItem = [
                 'id_rbeli'  => $idRbeli,
                 'no_faktur' => $noFaktur,
                 'nilai'     => $nilai,
-            ]);
+            ];
+            $this->rbeliDModel->insert($detailItem);
+            $barisDetail[] = $detailItem;
         }
+
+        if (empty($barisDetail)) {
+            $this->db->transRollback();
+            return redirect()->back()->withInput()
+                ->with('error', 'Minimal satu baris detail dengan faktur dan nilai yang valid wajib diisi.');
+        }
+
+        // Generate dan simpan entri jurnal umum rencana beli otomatis (ACID):
+        // [D] Pembelian (5111) | [K] Utang Usaha (2111)
+        $this->jurnalService->generateDanSimpanJurnalRbeli($dataHeader, $barisDetail, $this->db);
 
         $this->db->transComplete();
 
@@ -143,6 +159,10 @@ class Aktivitas1 extends BaseController
         $data['rbeli']  = $rbeli;
         $data['detail'] = $this->rbeliDModel->getByIdRbeli_l1H((int) $id);
         $data['total']  = $this->rbeliDModel->getTotalNilai_l1H((int) $id);
+        $data['jurnal'] = $this->db->table('jurnal_umum')
+            ->where('sumber', 'RBELI')
+            ->where('no_referensi', $rbeli['no_rbeli'])
+            ->get()->getRowArray();
 
         return view('aktivitas/aktivitas1/lihat', $data);
     }
@@ -298,6 +318,16 @@ class Aktivitas1 extends BaseController
             }
         }
 
+        // Batalkan jurnal lama terlebih dahulu jika ada perubahan nomor atau nilai
+        if (!empty($dataLama['no_rbeli'])) {
+            $this->jurnalService->batalkanJurnalByReferensi('RBELI', $dataLama['no_rbeli'], $this->db);
+        }
+
+        // Buat ulang jurnal rencana beli yang telah disesuaikan
+        if (!empty($validItems)) {
+            $this->jurnalService->generateDanSimpanJurnalRbeli($dataBaru, $validItems, $this->db);
+        }
+
         $this->db->transComplete();
 
         if (!$this->db->transStatus()) {
@@ -311,11 +341,11 @@ class Aktivitas1 extends BaseController
         ], 'Transaksi', "Edit Rencana Beli: {$noRbeli}");
 
         return redirect()->to('/46124026/aktivitas/aktivitas1')
-            ->with('success', 'Rencana Beli berhasil diperbarui.');
+            ->with('success', 'Rencana Beli berhasil diperbarui dan jurnal umum disesuaikan.');
     }
 
     // ═══════════════════════════════════════════
-    //  HAPUS
+    //  HAPUS & RESTORE
     // ═══════════════════════════════════════════
 
     public function hapus_l1H($id = null)
@@ -333,15 +363,63 @@ class Aktivitas1 extends BaseController
                 ->with('error', 'Data Rencana Beli tidak ditemukan.');
         }
 
+        $this->db->transStart();
+
         // Soft delete: tandai is_deleted = 1, data TIDAK dihapus dari DB
         $sukses = $this->rbeliModel->softDelete_l1H((int) $id);
 
         if ($sukses) {
+            // Batalkan entri jurnal agar tidak menjadi jurnal hantu di Neraca Saldo
+            $this->jurnalService->batalkanJurnalByReferensi('RBELI', $rbeli['no_rbeli'], $this->db);
             AuditLogger::catat('SOFT_DELETE', 'tbrbeli', (int) $id, ['before' => $rbeli], 'Transaksi', "Soft Delete Rencana Beli: {$rbeli['no_rbeli']}");
         }
 
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
+                ->with('error', 'Gagal menghapus Rencana Beli.');
+        }
+
         return redirect()->to('/46124026/aktivitas/aktivitas1')
-            ->with('success', 'Rencana Beli berhasil dihapus.');
+            ->with('success', 'Rencana Beli berhasil dihapus dan jurnal umum dibatalkan.');
+    }
+
+    public function restore_l1H($id = null)
+    {
+        $this->cekAkses('ak1', 'edit');
+
+        if (!$id) {
+            return redirect()->to('/46124026/aktivitas/aktivitas1');
+        }
+
+        $rbeli = $this->rbeliModel->find((int) $id);
+
+        if (!$rbeli || (int) ($rbeli['is_deleted'] ?? 0) === 0) {
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
+                ->with('error', 'Data Rencana Beli tidak ditemukan atau tidak dalam status terhapus.');
+        }
+
+        $this->db->transStart();
+
+        $this->rbeliModel->update((int) $id, ['is_deleted' => 0]);
+        $detail = $this->rbeliDModel->getByIdRbeli_l1H((int) $id);
+
+        if (!empty($detail)) {
+            $this->jurnalService->generateDanSimpanJurnalRbeli($rbeli, $detail, $this->db);
+        }
+
+        $this->db->transComplete();
+
+        if (!$this->db->transStatus()) {
+            return redirect()->to('/46124026/aktivitas/aktivitas1')
+                ->with('error', 'Gagal memulihkan Rencana Beli.');
+        }
+
+        AuditLogger::catat('RESTORE', 'tbrbeli', (int) $id, ['after' => $rbeli], 'Transaksi', "Restore Rencana Beli: {$rbeli['no_rbeli']}");
+
+        return redirect()->to('/46124026/aktivitas/aktivitas1')
+            ->with('success', 'Rencana Beli berhasil dipulihkan dan jurnal umum dicatat kembali.');
     }
 }
 

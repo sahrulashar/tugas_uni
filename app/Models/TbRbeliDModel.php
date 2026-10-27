@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class TbRbeliDModel extends Model
 {
+    protected $DBGroup       = 'default';
     protected $table         = 'tbrbeli_d';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';

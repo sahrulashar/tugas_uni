@@ -24,6 +24,8 @@ echo "=========================================================="
 echo "Memeriksa dan menjalankan database migration CodeIgniter..."
 echo "=========================================================="
 php spark migrate --all || true
+php spark jurnal:sync-rbeli || true
+php spark jurnal:sync-bkk || true
 
 echo "=========================================================="
 echo "Sistem ERP CI4 Container siap dijalankan!"
