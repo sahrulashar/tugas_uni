@@ -26,7 +26,7 @@ class DbExport extends BaseCommand
         $targetRoot = ROOTPATH . 'kas_keluar.sql';
 
         $passArg = $password !== '' ? "-p\"{$password}\"" : '';
-        $cmd = "mysqldump -h {$hostname} -P {$port} -u {$username} {$passArg} {$database} --result-file=\"{$targetInit}\"";
+        $cmd = "mysqldump -h {$hostname} -P {$port} -u {$username} {$passArg} --databases {$database} --result-file=\"{$targetInit}\"";
 
         exec($cmd, $output, $returnCode);
 
