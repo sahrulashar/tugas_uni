@@ -234,12 +234,14 @@ function EditPage() {
   const removeRow = (i) => setRows(r => r.length > 1 ? r.filter((_, idx) => idx !== i) : r);
   const updateRow = (i, updates) => setRows(r => r.map((row, idx) => idx === i ? { ...row, ...updates } : row));
 
-  // Auto-fill nilai saat referensi rencana beli dipilih
+  // Auto-fill nilai & akun Utang Usaha (2111) saat referensi rencana beli dipilih
   const onChangeRbeliD = (i, val) => {
     const selected = rbeliD.find(r => String(r.id) === val);
+    const coaUtang = coa.find(c => c.kode_coa === '2111');
     updateRow(i, {
       id_rbeli_d: val,
       nilai: selected ? String(selected.nilai) : '',
+      ...(val && coaUtang ? { id_coa: String(coaUtang.id) } : {})
     });
   };
 
@@ -376,7 +378,7 @@ function EditPage() {
                               onChange={e => updateRow(i, { id_coa: e.target.value })}
                               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
                               <option value="">— Pilih COA —</option>
-                              {coa.map(c => (
+                              {coa.filter(c => c.is_header !== 'H').map(c => (
                                 <option key={c.id} value={c.id}>
                                   {c.kode_coa} — {c.nama_coa} (Saldo: Rp {Number(c.saldo_akhir || 0).toLocaleString('id-ID')})
                                 </option>
@@ -389,7 +391,7 @@ function EditPage() {
                               onChange={e => updateRow(i, { id_coa_kb: e.target.value })}
                               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
                               <option value="">— Pilih COA —</option>
-                              {coa.map(c => (
+                              {coa.filter(c => c.is_header !== 'H').map(c => (
                                 <option key={c.id} value={c.id}>
                                   {c.kode_coa} — {c.nama_coa} (Saldo: Rp {Number(c.saldo_akhir || 0).toLocaleString('id-ID')})
                                 </option>
