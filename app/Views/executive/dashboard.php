@@ -57,6 +57,99 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease-out forwards; }
     .apexcharts-tooltip { border-radius: 8px !important; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important; }
+
+    /* ── Helper cetak ───────────────────────────────────────────── */
+    .print-only { display: none; }
+
+    /* ── Gaya laporan cetak ─────────────────────────────────────── */
+    .rpt-block      { margin-top: 16px; }
+    .rpt-title      { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      letter-spacing: .07em; color: #0f172a; border-bottom: 1.5px solid #0f172a;
+                      padding-bottom: 4px; margin-bottom: 8px; }
+    .rpt-lead       { font-size: 10px; line-height: 1.6; color: #334155; }
+    .rpt-lead strong { color: #0f172a; }
+    .rpt-list       { font-size: 9.5px; line-height: 1.6; color: #334155; padding-left: 14px; }
+    .rpt-list li    { margin-bottom: 4px; }
+    .rpt-table      { width: 100%; border-collapse: collapse; font-size: 9.5px; color: #1e293b; }
+    .rpt-table th,
+    .rpt-table td   { border: 1px solid #cbd5e1; padding: 4.5px 6px; text-align: right;
+                      vertical-align: top; }
+    .rpt-table th   { background: #f1f5f9; font-weight: 700; text-align: center; color: #0f172a; }
+    .rpt-table td:first-child,
+    .rpt-table th:first-child { text-align: left; }
+    .rpt-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .rpt-num        { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .rpt-pos        { color: #047857; font-weight: 700; }
+    .rpt-neg        { color: #be123c; font-weight: 700; }
+    .rpt-muted      { color: #64748b; font-size: 8.5px; }
+    .rpt-kpi-row td:first-child { width: 38%; }
+    .rpt-appendix { break-before: page; page-break-before: always; margin-top: 0 !important; }
+    .rpt-chart-wrap { margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid; }
+    .rpt-chart-cap  { font-size: 9.5px; font-weight: 700; color: #0f172a; text-align: center; margin-bottom: 5px; }
+    .rpt-chart-img  { display: block; width: 100%; max-width: 680px; height: auto;
+                      margin: 0 auto; border: 1px solid #cbd5e1; background: #ffffff; }
+
+    /* ── Aturan cetak (window.print) ────────────────────────────── */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm 10mm; }
+
+      html, body {
+        height: auto !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
+      body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Sembunyikan sidebar, topbar, dan kontrol interaktif */
+      #root aside, #root header, .no-print { display: none !important; }
+
+      /* Lepaskan batas tinggi/overflow layout aplikasi agar seluruh
+         konten terbaca (tidak terpotong 1 viewport) */
+      #root > div,
+      #root > div > div {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        margin-left: 0 !important;
+      }
+      #root main {
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+
+      /* Judul laporan khusus cetak */
+      .print-only { display: block !important; }
+
+      /* Sembunyikan toolbar ApexCharts (ikon zoom / download) */
+      .apexcharts-toolbar,
+      .apexcharts-menu,
+      .apexcharts-zoom-icon { display: none !important; }
+
+      /* Skala grafik agar tidak meluber/meluap keluar halaman cetak */
+      .apexcharts-canvas {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .apexcharts-canvas svg {
+        max-width: 100% !important;
+        height: auto !important;
+      }
+      .overflow-x-auto { overflow: visible !important; }
+
+      /* Hindari elemen terpotong antar halaman */
+      .print-avoid-break {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      table thead { display: table-header-group; }
+      tr { break-inside: avoid; page-break-inside: avoid; }
+
+      /* Rapikan bayangan & border saat dicetak */
+      .shadow, .shadow-sm, .shadow-md { box-shadow: none !important; }
+    }
   </style>
 </head>
 <body class="h-full bg-slate-100 text-slate-800 antialiased">
@@ -109,7 +202,7 @@ function Icon({ name, size = 18, className = '' }) {
 // ─────────────────────────────────────────────────────────────────
 //  REUSABLE APEXCHART COMPONENT
 // ─────────────────────────────────────────────────────────────────
-function ApexChartWrapper({ options, series, type = 'line', height = 320 }) {
+function ApexChartWrapper({ options, series, type = 'line', height = 320, chartId = '' }) {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -127,6 +220,7 @@ function ApexChartWrapper({ options, series, type = 'line', height = 320 }) {
         type: type,
         height: height,
         toolbar: { show: true },
+        background: '#ffffff',
         fontFamily: 'Inter, system-ui, sans-serif',
       },
       series: series,
@@ -135,13 +229,20 @@ function ApexChartWrapper({ options, series, type = 'line', height = 320 }) {
     chartInstance.current = new window.ApexCharts(chartRef.current, config);
     chartInstance.current.render();
 
+    // Daftarkan instance agar bisa di-capture menjadi PNG saat pencetakan
+    if (chartId) {
+      window.__ERP_CHARTS__ = window.__ERP_CHARTS__ || {};
+      window.__ERP_CHARTS__[chartId] = chartInstance.current;
+    }
+
     return () => {
+      if (chartId && window.__ERP_CHARTS__) delete window.__ERP_CHARTS__[chartId];
       if (chartInstance.current) {
         chartInstance.current.destroy();
         chartInstance.current = null;
       }
     };
-  }, [options, series, type, height]);
+  }, [options, series, type, height, chartId]);
 
   return <div ref={chartRef} className="w-full" />;
 }
@@ -153,6 +254,12 @@ function formatRupiah(val) {
   if (val === null || val === undefined || isNaN(val)) return 'Rp 0';
   return 'Rp ' + Number(val).toLocaleString('id-ID');
 }
+
+// Nama bulan untuk label periode pada header cetak
+const NAMA_BULAN = {
+  1: 'Januari', 2: 'Februari', 3: 'Maret', 4: 'April', 5: 'Mei', 6: 'Juni',
+  7: 'Juli', 8: 'Agustus', 9: 'September', 10: 'Oktober', 11: 'November', 12: 'Desember',
+};
 
 // ─────────────────────────────────────────────────────────────────
 //  NAVIGATION DATA
@@ -333,7 +440,7 @@ function StatCard({ label, value, subtext, icon, color = 'blue', trend, badge })
   const theme = colorMap[color] || colorMap.blue;
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+    <div className="print-avoid-break bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</p>
@@ -366,6 +473,448 @@ function StatCard({ label, value, subtext, icon, color = 'blue', trend, badge })
 }
 
 // ─────────────────────────────────────────────────────────────────
+//  HEADER LAPORAN KHUSUS CETAK (hanya tampil saat print)
+// ─────────────────────────────────────────────────────────────────
+function PrintHeader({ year, month, timeRef }) {
+  const periode = month ? `${NAMA_BULAN[Number(month)] || month} ${year}` : `Tahunan ${year}`;
+  return (
+    <div className="print-only mb-5 pb-3 border-b-2 border-slate-800">
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <h1 className="text-lg font-extrabold text-slate-900 tracking-wide">
+            Laporan Executive Dashboard
+          </h1>
+          <p className="text-[11px] text-slate-600 mt-0.5">
+            C-Level Financial Performance Report &mdash; FinanceOS Enterprise
+          </p>
+          <p className="text-[10px] text-slate-500 mt-0.5">
+            Konsolidasi Arus Kas, Margin Penjualan, Pareto Produk, dan Pengeluaran Kas Terintegrasi.
+          </p>
+        </div>
+        <div className="text-right text-[11px] text-slate-700 leading-relaxed shrink-0">
+          <p><span className="font-semibold text-slate-900">Periode&nbsp;:</span> {periode}</p>
+          <p>
+            <span className="font-semibold text-slate-900">Dicetak&nbsp;:</span>{' '}
+            <span ref={timeRef}>-</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  LAPORAN LENGKAP (khusus cetak) — uraian + seluruh angka
+// ─────────────────────────────────────────────────────────────────
+function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, month }) {
+  const num = (v) => Number(v || 0);
+  const pct = (v, d = 2) =>
+    (v === null || v === undefined || v === '' || isNaN(Number(v))) ? '-' : Number(v).toFixed(d) + '%';
+  const signPct = (v) => {
+    if (v === null || v === undefined || v === '' || isNaN(Number(v))) return '-';
+    const n = Number(v);
+    return (n > 0 ? '+' : '') + n.toFixed(2) + '%';
+  };
+  const clsPct = (v) => (num(v) >= 0 ? 'rpt-pos' : 'rpt-neg');
+  const periodeLabel = (p) => {
+    const parts = String(p || '').split('-');
+    const m = Number(parts[1]);
+    return `${NAMA_BULAN[m] || parts[1] || '-'} ${parts[0] || ''}`.trim();
+  };
+  const emptyRow = (colspan, text) => (
+    <tr><td colSpan={colspan} style={{ textAlign: 'center' }} className="rpt-muted">{text}</td></tr>
+  );
+
+  const trendRows  = trends.raw  || [];
+  const coaRows    = pivotCoa.raw || [];
+  const paretoRows = pareto.raw  || [];
+  const supRows    = suppliers.raw || [];
+  const alertRows  = alerts || [];
+  const totalAll   = num(pivotCoa.total_all);
+
+  const topCoa      = coaRows[0];
+  const topPareto   = paretoRows[0];
+  const topSupplier = supRows[0];
+  const lastTrend   = trendRows.length ? trendRows[trendRows.length - 1] : null;
+  const scopeLabel  = month ? `${NAMA_BULAN[Number(month)] || month} ${year}` : `tahunan ${year}`;
+
+  return (
+    <div className="print-only">
+
+      {/* ── 1. RINGKASAN EKSEKUTIF ────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">1. Ringkasan Eksekutif</h2>
+
+        <p className="rpt-lead">
+          Pada periode <strong>{scopeLabel}</strong>, perusahaan mencatat total omset penjualan sebesar{' '}
+          <strong>{formatRupiah(kpis.total_revenue)}</strong> dari <strong>{kpis.total_sales_count || 0}</strong>{' '}
+          faktur penjualan. Setelah dikurangi harga pokok penjualan (HPP) sebesar{' '}
+          <strong>{formatRupiah(kpis.total_hpp)}</strong>, diperoleh <strong>laba kotor</strong> sebesar{' '}
+          <strong>{formatRupiah(kpis.gross_profit)}</strong> dengan gross margin{' '}
+          <strong>{pct(kpis.gross_margin_pct)}</strong>. Di sisi pengeluaran, tercatat total kas keluar dari{' '}
+          <strong>{kpis.total_bkk_count || 0}</strong> dokumen Bukti Kas Keluar (BKK) sebesar{' '}
+          <strong>{formatRupiah(kpis.total_bkk)}</strong>, sehingga <strong>arus kas operasional bersih</strong>{' '}
+          tercatat sebesar <strong>{formatRupiah(kpis.net_cashflow)}</strong>{' '}
+          {num(kpis.net_cashflow) >= 0
+            ? '(surplus kas — kas masuk lebih besar daripada kas keluar).'
+            : '(defisit kas — kas keluar lebih besar daripada kas masuk, perlu perhatian manajemen likuiditas).'}
+        </p>
+
+        <p className="rpt-lead" style={{ marginTop: '6px' }}>
+          {lastTrend ? (
+            <>
+              Pada bulan terakhir yang tercatat (<strong>{periodeLabel(lastTrend.periode)}</strong>), kas masuk
+              mencapai <strong>{formatRupiah(lastTrend.total_masuk)}</strong> dengan perubahan{' '}
+              <strong className={clsPct(lastTrend.revenue_mom_pct)}>{signPct(lastTrend.revenue_mom_pct)}</strong>{' '}
+              month-over-month, sedangkan kas keluar mencapai <strong>{formatRupiah(lastTrend.total_keluar)}</strong>{' '}
+              dengan perubahan <strong className={clsPct(lastTrend.outflow_mom_pct)}>{signPct(lastTrend.outflow_mom_pct)}</strong>{' '}
+              month-over-month. Net arus kas bulan tersebut sebesar{' '}
+              <strong>{formatRupiah(lastTrend.net_cashflow)}</strong>, dengan saldo kas kumulatif berjalan sebesar{' '}
+              <strong>{formatRupiah(lastTrend.running_cash_balance)}</strong> sampai akhir periode tersebut.
+            </>
+          ) : (
+            <>Belum ada transaksi arus kas yang tercatat pada periode ini.</>
+          )}
+        </p>
+
+        <ul className="rpt-list" style={{ marginTop: '6px' }}>
+          <li>
+            <strong>Komposisi pengeluaran:</strong>{' '}
+            {topCoa ? (
+              <>
+                akun COA <strong>{topCoa.kode_coa} — {topCoa.nama_coa}</strong> ({topCoa.tipe}) merupakan pos
+                pengeluaran terbesar dengan nilai <strong>{formatRupiah(topCoa.total_tahunan)}</strong> atau{' '}
+                <strong>{totalAll > 0 ? pct((topCoa.total_tahunan / totalAll) * 100) : '-'}</strong> dari total
+                pengeluaran kas tahunan. Total pengeluaran kas sepanjang tahun <strong>{year}</strong> mencapai{' '}
+                <strong>{formatRupiah(totalAll)}</strong> yang tersebar pada <strong>{coaRows.length}</strong> akun COA.
+              </>
+            ) : (
+              <>Belum ada pengeluaran kas yang tercatat pada periode ini.</>
+            )}
+          </li>
+          <li>
+            <strong>Konsentrasi belanja supplier:</strong>{' '}
+            {topSupplier ? (
+              <>
+                supplier <strong>{topSupplier.nama_supplier}</strong> ({topSupplier.kode_supplier}) menerima
+                alokasi belanja sebesar <strong>{formatRupiah(topSupplier.total_pengeluaran)}</strong> dari{' '}
+                <strong>{topSupplier.total_transaksi}</strong> transaksi, setara{' '}
+                <strong>{pct(topSupplier.share_pengeluaran_pct)}</strong> dari total belanja pada supplier teratas.
+              </>
+            ) : (
+              <>Belum ada transaksi pembelian ke supplier.</>
+            )}
+          </li>
+          <li>
+            <strong>Profitabilitas produk:</strong>{' '}
+            {topPareto ? (
+              <>
+                produk <strong>{topPareto.nama_barang}</strong> ({topPareto.kode_barang}) menyumbang laba kotor
+                terbesar sebesar <strong>{formatRupiah(topPareto.total_laba_kotor)}</strong> dari omset{' '}
+                <strong>{formatRupiah(topPareto.total_omset)}</strong> dengan kontribusi kumulatif{' '}
+                <strong>{pct(topPareto.cumulative_profit_pct)}</strong> terhadap total laba kotor seluruh produk.
+              </>
+            ) : (
+              <>Belum ada barang terjual yang dapat dianalisis.</>
+            )}
+          </li>
+          <li>
+            <strong>Pengawasan audit:</strong> terdapat <strong>{alertRows.length}</strong> transaksi pengeluaran kas
+            bernilai di atas ambang <strong>Rp 500.000</strong> yang seluruhnya sudah diverifikasi dan tercatat
+            pada Tabel 6 laporan ini.
+          </li>
+        </ul>
+      </section>
+
+      {/* ── 2. TABEL RINGKASAN KINERJA ────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">2. Ringkasan Kinerja Keuangan</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th style={{ width: '38%' }}>Indikator</th>
+              <th style={{ width: '30%' }}>Nilai</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody className="rpt-kpi-row">
+            <tr>
+              <td>Total Omset Penjualan (Net Revenue)</td>
+              <td className="rpt-num">{formatRupiah(kpis.total_revenue)}</td>
+              <td>{kpis.total_sales_count || 0} faktur penjualan (is_deleted = 0)</td>
+            </tr>
+            <tr>
+              <td>Total Harga Pokok Penjualan (HPP)</td>
+              <td className="rpt-num">{formatRupiah(kpis.total_hpp)}</td>
+              <td>Akumulasi HPP dari detail penjualan</td>
+            </tr>
+            <tr>
+              <td>Laba Kotor (Gross Profit)</td>
+              <td className="rpt-num">{formatRupiah(kpis.gross_profit)}</td>
+              <td>Omset dikurangi HPP</td>
+            </tr>
+            <tr>
+              <td>Gross Profit Margin</td>
+              <td className={`rpt-num ${clsPct(kpis.gross_margin_pct)}`}>{pct(kpis.gross_margin_pct)}</td>
+              <td>Laba kotor dibagi omset</td>
+            </tr>
+            <tr>
+              <td>Total Pengeluaran Kas (BKK)</td>
+              <td className="rpt-num">{formatRupiah(kpis.total_bkk)}</td>
+              <td>{kpis.total_bkk_count || 0} dokumen BKK</td>
+            </tr>
+            <tr>
+              <td>Arus Kas Operasional Bersih</td>
+              <td className={`rpt-num ${clsPct(kpis.net_cashflow)}`}>{formatRupiah(kpis.net_cashflow)}</td>
+              <td>Kas masuk (penjualan) dikurangi kas keluar (BKK)</td>
+            </tr>
+            <tr>
+              <td>Pertumbuhan Omset (MoM)</td>
+              <td className={`rpt-num ${clsPct(kpis.revenue_mom_growth)}`}>{signPct(kpis.revenue_mom_growth)}</td>
+              <td>Perbandingan bulan terakhir terhadap bulan sebelumnya</td>
+            </tr>
+            <tr>
+              <td>Pertumbuhan Kas Keluar (MoM)</td>
+              <td className={`rpt-num ${clsPct(kpis.outflow_mom_growth)}`}>{signPct(kpis.outflow_mom_growth)}</td>
+              <td>Perbandingan bulan terakhir terhadap bulan sebelumnya</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 3. ARUS KAS BULANAN ────────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">3. Arus Kas Bulanan &amp; Saldo Kas Kumulatif</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>Periode</th>
+              <th>Kas Masuk</th>
+              <th>Kas Keluar</th>
+              <th>Net Arus Kas</th>
+              <th>Saldo Kas Kumulatif</th>
+              <th>MoM Net</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trendRows.length ? trendRows.map((r, i) => (
+              <tr key={i}>
+                <td>{periodeLabel(r.periode)}</td>
+                <td className="rpt-num">{formatRupiah(r.total_masuk)}</td>
+                <td className="rpt-num">{formatRupiah(r.total_keluar)}</td>
+                <td className={`rpt-num ${clsPct(r.net_cashflow)}`}>{formatRupiah(r.net_cashflow)}</td>
+                <td className="rpt-num">{formatRupiah(r.running_cash_balance)}</td>
+                <td className={`rpt-num ${clsPct(r.mom_growth_pct)}`}>{signPct(r.mom_growth_pct)}</td>
+              </tr>
+            )) : emptyRow(6, 'Tidak ada data arus kas pada periode ini.')}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 4. PENGELUARAN PER COA ─────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">4. Rincian Pengeluaran Kas per Akun COA (Kuartalan — Tahun {year})</h2>
+        <p className="rpt-muted" style={{ marginBottom: '6px' }}>
+          Catatan: tabel ini bersifat tahunan (tahun {year}) dan tidak dipengaruhi filter bulan.
+        </p>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>Kode COA</th>
+              <th>Nama Akun</th>
+              <th>Tipe</th>
+              <th>Q1</th>
+              <th>Q2</th>
+              <th>Q3</th>
+              <th>Q4</th>
+              <th>Total</th>
+              <th>Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            {coaRows.length ? coaRows.map((r, i) => (
+              <tr key={i}>
+                <td className="rpt-num">{r.kode_coa}</td>
+                <td>{r.nama_coa}</td>
+                <td>{r.tipe}</td>
+                <td className="rpt-num">{formatRupiah(r.q1_expense)}</td>
+                <td className="rpt-num">{formatRupiah(r.q2_expense)}</td>
+                <td className="rpt-num">{formatRupiah(r.q3_expense)}</td>
+                <td className="rpt-num">{formatRupiah(r.q4_expense)}</td>
+                <td className="rpt-num">{formatRupiah(r.total_tahunan)}</td>
+                <td className="rpt-num">{totalAll > 0 ? pct((r.total_tahunan / totalAll) * 100) : '-'}</td>
+              </tr>
+            )) : emptyRow(9, 'Tidak ada pengeluaran kas yang tercatat.')}
+            {coaRows.length > 0 && (
+              <tr style={{ fontWeight: 700, background: '#e2e8f0' }}>
+                <td colSpan={7}>TOTAL PENGELUARAN KAS</td>
+                <td className="rpt-num">{formatRupiah(totalAll)}</td>
+                <td className="rpt-num">100.00%</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 5. PARETO PRODUK ───────────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">5. Pareto Profitabilitas Produk (Peringkat &amp; Kontribusi Kumulatif)</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Kode Barang</th>
+              <th>Nama Barang</th>
+              <th>Kategori</th>
+              <th>Unit Terjual</th>
+              <th>Omset</th>
+              <th>Laba Kotor</th>
+              <th>Margin</th>
+              <th>Kumulatif</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paretoRows.length ? paretoRows.map((r, i) => (
+              <tr key={i}>
+                <td className="rpt-num">{r.profit_rank}</td>
+                <td className="rpt-num">{r.kode_barang}</td>
+                <td>{r.nama_barang}</td>
+                <td>{r.kategori}</td>
+                <td className="rpt-num">{r.total_unit_terjual}</td>
+                <td className="rpt-num">{formatRupiah(r.total_omset)}</td>
+                <td className="rpt-num">{formatRupiah(r.total_laba_kotor)}</td>
+                <td className={`rpt-num ${clsPct(r.total_laba_kotor)}`}>
+                  {num(r.total_omset) > 0 ? pct((r.total_laba_kotor / r.total_omset) * 100) : '-'}
+                </td>
+                <td className="rpt-num">{pct(r.cumulative_profit_pct)}</td>
+              </tr>
+            )) : emptyRow(9, 'Belum ada barang terjual pada periode ini.')}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 6. KONSENTRASI SUPPLIER ────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">6. Konsentrasi Belanja Supplier / Vendor</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Kode Supplier</th>
+              <th>Nama Supplier</th>
+              <th>Jumlah Transaksi</th>
+              <th>Total Pengeluaran</th>
+              <th>Share Belanja</th>
+            </tr>
+          </thead>
+          <tbody>
+            {supRows.length ? supRows.map((r, i) => (
+              <tr key={i}>
+                <td className="rpt-num">{r.rank_supplier}</td>
+                <td className="rpt-num">{r.kode_supplier}</td>
+                <td>{r.nama_supplier}</td>
+                <td className="rpt-num">{r.total_transaksi}</td>
+                <td className="rpt-num">{formatRupiah(r.total_pengeluaran)}</td>
+                <td className="rpt-num">{pct(r.share_pengeluaran_pct)}</td>
+              </tr>
+            )) : emptyRow(6, 'Belum ada transaksi pembelian ke supplier.')}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 7. ALERT PENGELUARAN TINGGI ────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">7. Pengawasan Audit — Pengeluaran Kas Bernilai Tinggi (≥ Rp 500.000)</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>No. BKK</th>
+              <th>Tanggal</th>
+              <th>Kode COA</th>
+              <th>Nama COA</th>
+              <th>Keterangan</th>
+              <th>Nominal</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {alertRows.length ? alertRows.map((a, i) => (
+              <tr key={i}>
+                <td className="rpt-num">{a.no_bkk}</td>
+                <td>{a.tgl}</td>
+                <td className="rpt-num">{a.kode_coa}</td>
+                <td>{a.nama_coa}</td>
+                <td>{a.kete || 'Pengeluaran Kas'}</td>
+                <td className="rpt-num">{formatRupiah(a.nilai)}</td>
+                <td className="rpt-pos">Diverifikasi</td>
+              </tr>
+            )) : emptyRow(7, 'Tidak ada pengeluaran kas yang melebihi batas toleransi.')}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 8. METODOLOGI ──────────────────────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">8. Sumber Data &amp; Metodologi perhitungan</h2>
+        <ul className="rpt-list">
+          <li>
+            <strong>Kas Masuk</strong> diambil dari tabel <em>penjualan</em> (nilai <em>total_netto</em>) dengan
+            filter <em>is_deleted = 0</em>; <strong>Kas Keluar</strong> diambil dari tabel <em>tbbkk</em> dan
+            <em>tbbkk_d</em> (nilai <em>nilai</em>) dengan filter <em>is_deleted = 0</em>.
+          </li>
+          <li>
+            <strong>Arus kas bulanan &amp; saldo kumulatif</strong> dihitung dengan window function MySQL 8.0
+            (<em>LAG</em> untuk perbandingan MoM dan <em>SUM() OVER</em> untuk running balance).
+          </li>
+          <li>
+            <strong>Pengeluaran per COA</strong> menggunakan conditional aggregation per kuartal (Q1: Jan–Mar,
+            Q2: Apr–Jun, Q3: Jul–Sep, Q4: Okt–Des) dari tabel <em>tbbkk_d</em> yang di-join ke <em>coa</em>.
+          </li>
+          <li>
+            <strong>Pareto produk</strong> menggunakan <em>DENSE_RANK()</em> berdasarkan laba kotor per barang serta
+            akumulasi persentase kontribusi laba.
+          </li>
+          <li>
+            <strong>Konsentrasi supplier</strong> dihitung dari tabel <em>tbrbeli</em> dan <em>tbrbeli_d</em> yang
+            di-join ke <em>supplier</em>.
+          </li>
+          <li>
+            Laporan ini dihasilkan otomatis oleh sistem <strong>FinanceOS — Executive Dashboard</strong> dan
+            dapat dicetak langsung dari halaman dashboard.
+          </li>
+        </ul>
+      </section>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  LAMPIRAN GRAFIK (khusus cetak) — gambar PNG hasil capture chart
+// ─────────────────────────────────────────────────────────────────
+function PrintChartAppendix({ images }) {
+  const charts = [
+    { id: 'cashflow', title: 'Grafik 1 — Arus Kas Bulanan, Net Operating Flow & Running Cash Balance' },
+    { id: 'coa',      title: 'Grafik 2 — Komposisi Pengeluaran Kas per Akun COA' },
+    { id: 'pareto',   title: 'Grafik 3 — Pareto Profitabilitas Produk (Omset vs Laba Kotor)' },
+    { id: 'supplier', title: 'Grafik 4 — Konsentrasi Belanja Supplier/Vendor' },
+  ].filter((c) => images && images[c.id]);
+
+  if (!charts.length) return null;
+
+  return (
+    <div className="print-only rpt-appendix">
+      <h2 className="rpt-title">Lampiran A — Visualisasi Grafik Analitik</h2>
+      {charts.map((c) => (
+        <div key={c.id} className="rpt-chart-wrap">
+          <p className="rpt-chart-cap">{c.title}</p>
+          <img src={images[c.id]} alt={c.title} className="rpt-chart-img" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
 //  MAIN EXECUTIVE DASHBOARD APP
 // ─────────────────────────────────────────────────────────────────
 function ExecutiveDashboardApp() {
@@ -374,6 +923,66 @@ function ExecutiveDashboardApp() {
   const [selectedYear, setSelectedYear] = useState(window.__INITIAL_DATA__.year || 2026);
   const [selectedMonth, setSelectedMonth] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chartImages, setChartImages] = useState({});
+  const printTimeRef = useRef(null);
+  const printTriggeredRef = useRef(false);
+
+  // Trigger dialog cetak (dijaga agar tidak dobel)
+  const triggerPrint = () => {
+    if (printTriggeredRef.current) return;
+    printTriggeredRef.current = true;
+    window.print();
+    setTimeout(() => { printTriggeredRef.current = false; }, 1500);
+  };
+
+  // Tunggu seluruh <img> lampiran selesai dimuat sebelum mencetak
+  const waitImagesBeforePrint = (cb) => {
+    const imgs = Array.from(document.querySelectorAll('.rpt-chart-img'));
+    const pending = imgs.filter((im) => !im.complete);
+    if (!pending.length) { cb(); return; }
+    let left = pending.length;
+    const done = () => { left -= 1; if (left <= 0) cb(); };
+    pending.forEach((im) => {
+      im.addEventListener('load', done, { once: true });
+      im.addEventListener('error', done, { once: true });
+    });
+    setTimeout(cb, 2500); // jaring pengaman
+  };
+
+  // Capture grafik ApexCharts menjadi PNG (data URI) agar hasil cetak
+  // rapi & konsisten (SVG live sering berantakan di layout A4).
+  const captureCharts = async () => {
+    const registry = window.__ERP_CHARTS__ || {};
+    const ids = Object.keys(registry);
+    const result = {};
+    await Promise.all(ids.map(async (id) => {
+      try {
+        if (typeof registry[id].dataURI !== 'function') return;
+        const res = await registry[id].dataURI({ scale: 2 });
+        const img = res && res.img ? res.img : (typeof res === 'string' ? res : null);
+        if (img) result[id] = img;
+      } catch (err) {
+        console.warn('Gagal capture grafik', id, err);
+      }
+    }));
+    return result;
+  };
+
+  // Handler cetak: isi timestamp laporan, capture grafik menjadi gambar,
+  // lalu buka dialog cetak browser.
+  const handlePrint = async () => {
+    const now = new Date();
+    const label =
+      now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) +
+      ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    if (printTimeRef.current) printTimeRef.current.textContent = label;
+
+    const images = await captureCharts();
+    setChartImages(images);
+
+    // Tunggu gambar lampiran selesai di-decode agar PDF tidak ada kotak kosong
+    setTimeout(() => waitImagesBeforePrint(triggerPrint), 200);
+  };
 
   // Filter change handler
   const handleFilterChange = async (year, month) => {
@@ -527,8 +1136,8 @@ function ExecutiveDashboardApp() {
               <Icon name="Sparkles" size={14} /> Lab Praktikum P10
             </a>
             <button
-              onClick={() => window.print()}
-              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors"
+              onClick={handlePrint}
+              className="no-print px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               <Icon name="Printer" size={14} /> Cetak
             </button>
@@ -540,8 +1149,11 @@ function ExecutiveDashboardApp() {
 
         {/* Dashboard Content Container */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Header laporan khusus cetak */}
+          <PrintHeader year={selectedYear} month={selectedMonth} timeRef={printTimeRef} />
+
           {/* Dashboard Header Bar & Filters */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
@@ -634,10 +1246,25 @@ function ExecutiveDashboardApp() {
             />
           </div>
 
+          {/* Laporan lengkap (hanya saat cetak): uraian + seluruh angka */}
+          <PrintReport
+            kpis={kpis}
+            trends={trends}
+            pivotCoa={pivotCoa}
+            pareto={pareto}
+            suppliers={suppliers}
+            alerts={alerts}
+            year={selectedYear}
+            month={selectedMonth}
+          />
+
+          {/* Lampiran: visualisasi grafik hasil capture PNG (hanya saat cetak) */}
+          <PrintChartAppendix images={chartImages} />
+
           {/* Row 2: Charts Grid (Arus Kas Area & Komposisi Beban Donut) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="no-print grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Chart 1: Arus Kas Multi-Period (Span 2 Cols) */}
-            <div className="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="print-avoid-break lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-2">
@@ -653,7 +1280,7 @@ function ExecutiveDashboardApp() {
               </div>
 
               {trends.categories?.length > 0 ? (
-                <ApexChartWrapper options={cashFlowOptions} series={cashFlowSeries} type="area" height={310} />
+                <ApexChartWrapper chartId="cashflow" options={cashFlowOptions} series={cashFlowSeries} type="area" height={310} />
               ) : (
                 <div className="h-64 flex flex-col items-center justify-center text-slate-400 text-xs">
                   <Icon name="Inbox" size={32} className="mb-2 text-slate-300" />
@@ -663,7 +1290,7 @@ function ExecutiveDashboardApp() {
             </div>
 
             {/* Chart 2: Komposisi Beban COA (Donut) */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
+            <div className="print-avoid-break bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
               <div className="mb-3">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-slate-800 text-sm">Distribusi Kas Keluar per COA</h3>
@@ -676,7 +1303,7 @@ function ExecutiveDashboardApp() {
 
               <div className="flex-1 flex items-center justify-center">
                 {donutSeries.length > 0 ? (
-                  <ApexChartWrapper options={donutOptions} series={donutSeries} type="donut" height={300} />
+                  <ApexChartWrapper chartId="coa" options={donutOptions} series={donutSeries} type="donut" height={300} />
                 ) : (
                   <div className="text-center text-slate-400 text-xs py-10">
                     <Icon name="PieChart" size={32} className="mx-auto mb-2 text-slate-300" />
@@ -688,9 +1315,9 @@ function ExecutiveDashboardApp() {
           </div>
 
           {/* Row 3: Charts Grid (Pareto Produk & Vendor Concentration) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="no-print grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chart 3: Pareto Profitabilitas Produk */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="print-avoid-break bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-2">
@@ -704,7 +1331,7 @@ function ExecutiveDashboardApp() {
               </div>
 
               {pareto.labels?.length > 0 ? (
-                <ApexChartWrapper options={paretoOptions} series={paretoSeries} type="bar" height={290} />
+                <ApexChartWrapper chartId="pareto" options={paretoOptions} series={paretoSeries} type="bar" height={290} />
               ) : (
                 <div className="h-60 flex flex-col items-center justify-center text-slate-400 text-xs">
                   Belum ada data barang terjual.
@@ -713,7 +1340,7 @@ function ExecutiveDashboardApp() {
             </div>
 
             {/* Chart 4: Konsentrasi Belanja Vendor */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="print-avoid-break bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-2">
@@ -727,7 +1354,7 @@ function ExecutiveDashboardApp() {
               </div>
 
               {suppliers.labels?.length > 0 ? (
-                <ApexChartWrapper options={supplierOptions} series={supplierSeries} type="bar" height={290} />
+                <ApexChartWrapper chartId="supplier" options={supplierOptions} series={supplierSeries} type="bar" height={290} />
               ) : (
                 <div className="h-60 flex flex-col items-center justify-center text-slate-400 text-xs">
                   Belum ada transaksi pembelian ke supplier.
@@ -737,7 +1364,7 @@ function ExecutiveDashboardApp() {
           </div>
 
           {/* Row 4: Actionable High-Value Outflow Alerts */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="no-print bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
