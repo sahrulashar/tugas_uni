@@ -42,8 +42,9 @@ class ExecutiveDashboard extends BaseController
         $trends    = $this->analyticsService->getMonthlyCashFlowTrends_l1H($selectedYear);
         $pivotCoa  = $this->analyticsService->getPivotExpensePerCoa_l1H($selectedYear);
         $pareto    = $this->analyticsService->getParetoProducts_l1H(5);
-        $suppliers = $this->analyticsService->getSupplierConcentration_l1H(5);
+        $suppliers = $this->analyticsService->getSupplierConcentration_l1H(8, $selectedYear);
         $alerts    = $this->analyticsService->getHighValueOutflows_l1H(500000.00, 5);
+        $kasSaldo  = $this->analyticsService->getCashAccountBalanceComposition_l1H();
 
         return view('executive/dashboard', [
             'year'      => $selectedYear,
@@ -53,6 +54,7 @@ class ExecutiveDashboard extends BaseController
             'pareto'    => $pareto,
             'suppliers' => $suppliers,
             'alerts'    => $alerts,
+            'kasSaldo'  => $kasSaldo,
         ]);
     }
 
@@ -70,8 +72,9 @@ class ExecutiveDashboard extends BaseController
         $trends    = $this->analyticsService->getMonthlyCashFlowTrends_l1H($year);
         $pivotCoa  = $this->analyticsService->getPivotExpensePerCoa_l1H($year);
         $pareto    = $this->analyticsService->getParetoProducts_l1H(5);
-        $suppliers = $this->analyticsService->getSupplierConcentration_l1H(5);
+        $suppliers = $this->analyticsService->getSupplierConcentration_l1H(8, $year);
         $alerts    = $this->analyticsService->getHighValueOutflows_l1H(500000.00, 5);
+        $kasSaldo  = $this->analyticsService->getCashAccountBalanceComposition_l1H();
 
         return $this->response->setJSON([
             'status'    => 'success',
@@ -83,6 +86,7 @@ class ExecutiveDashboard extends BaseController
             'pareto'    => $pareto,
             'suppliers' => $suppliers,
             'alerts'    => $alerts,
+            'kasSaldo'  => $kasSaldo,
         ]);
     }
 

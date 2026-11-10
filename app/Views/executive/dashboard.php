@@ -163,7 +163,8 @@
     pivotCoa:  <?= json_encode($pivotCoa ?? []) ?>,
     pareto:    <?= json_encode($pareto ?? []) ?>,
     suppliers: <?= json_encode($suppliers ?? []) ?>,
-    alerts:    <?= json_encode($alerts ?? []) ?>
+    alerts:    <?= json_encode($alerts ?? []) ?>,
+    kasSaldo:  <?= json_encode($kasSaldo ?? []) ?>
   };
   window.__FLASH__ = {
     success: "<?= addslashes(session()->getFlashdata('success') ?? '') ?>",
@@ -506,7 +507,7 @@ function PrintHeader({ year, month, timeRef }) {
 // ─────────────────────────────────────────────────────────────────
 //  LAPORAN LENGKAP (khusus cetak) — uraian + seluruh angka
 // ─────────────────────────────────────────────────────────────────
-function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, month }) {
+function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, kasSaldo = {}, alerts, year, month }) {
   const num = (v) => Number(v || 0);
   const pct = (v, d = 2) =>
     (v === null || v === undefined || v === '' || isNaN(Number(v))) ? '-' : Number(v).toFixed(d) + '%';
@@ -529,6 +530,7 @@ function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, 
   const coaRows    = pivotCoa.raw || [];
   const paretoRows = pareto.raw  || [];
   const supRows    = suppliers.raw || [];
+  const kasRowsRpt = kasSaldo.raw || [];
   const alertRows  = alerts || [];
   const totalAll   = num(pivotCoa.total_all);
 
@@ -795,16 +797,16 @@ function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, 
 
       {/* ── 6. KONSENTRASI SUPPLIER ────────────────────────────── */}
       <section className="rpt-block">
-        <h2 className="rpt-title">6. Konsentrasi Belanja Supplier / Vendor</h2>
+        <h2 className="rpt-title">6. Top Supplier berdasarkan Total Pembayaran (BKK)</h2>
         <table className="rpt-table">
           <thead>
             <tr>
               <th>Rank</th>
               <th>Kode Supplier</th>
               <th>Nama Supplier</th>
-              <th>Jumlah Transaksi</th>
-              <th>Total Pengeluaran</th>
-              <th>Share Belanja</th>
+              <th>Jumlah BKK</th>
+              <th>Total Pembayaran</th>
+              <th>Share Pembayaran</th>
             </tr>
           </thead>
           <tbody>
@@ -817,7 +819,48 @@ function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, 
                 <td className="rpt-num">{formatRupiah(r.total_pengeluaran)}</td>
                 <td className="rpt-num">{pct(r.share_pengeluaran_pct)}</td>
               </tr>
-            )) : emptyRow(6, 'Belum ada transaksi pembelian ke supplier.')}
+            )) : emptyRow(6, 'Belum ada pembayaran ke supplier.')}
+            {supRows.length > 0 && suppliers.jumlah_lainnya > 0 && (
+              <tr>
+                <td className="rpt-num">—</td>
+                <td className="rpt-num">—</td>
+                <td>Lainnya ({suppliers.jumlah_lainnya} supplier)</td>
+                <td className="rpt-num">—</td>
+                <td className="rpt-num">{formatRupiah(suppliers.nilai_lainnya)}</td>
+                <td className="rpt-num">{pct(suppliers.share_lainnya_pct)}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ── 6b. KOMPOSISI SALDO AKUN KAS ───────────────────────── */}
+      <section className="rpt-block">
+        <h2 className="rpt-title">6b. Komposisi Saldo per Akun Kas &amp; Bank (Saldo Terkini)</h2>
+        <table className="rpt-table">
+          <thead>
+            <tr>
+              <th>Kode COA</th>
+              <th>Nama Akun</th>
+              <th>Saldo Awal</th>
+              <th>Mutasi Debit</th>
+              <th>Mutasi Kredit</th>
+              <th>Saldo Akhir</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {kasRowsRpt.length ? kasRowsRpt.map((r, i) => (
+              <tr key={i}>
+                <td className="rpt-num">{r.kode_coa}</td>
+                <td>{r.nama_coa}</td>
+                <td className="rpt-num">{formatRupiah(r.saldo_awal)}</td>
+                <td className="rpt-num">{formatRupiah(r.mutasi_debit)}</td>
+                <td className="rpt-num">{formatRupiah(r.mutasi_kredit)}</td>
+                <td className="rpt-num">{formatRupiah(r.saldo_akhir)}</td>
+                <td className={Number(r.saldo_akhir) > 0 ? 'rpt-pos' : 'rpt-neg'}>{r.status}</td>
+              </tr>
+            )) : emptyRow(7, 'Belum ada akun kas/bank aktif.')}
           </tbody>
         </table>
       </section>
@@ -875,8 +918,12 @@ function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, 
             akumulasi persentase kontribusi laba.
           </li>
           <li>
-            <strong>Konsentrasi supplier</strong> dihitung dari tabel <em>tbrbeli</em> dan <em>tbrbeli_d</em> yang
-            di-join ke <em>supplier</em>.
+            <strong>Top supplier</strong> dihitung dari pembayaran riil pada <em>tbbkk_d</em> yang di-join ke
+            <em>tbrbeli_d</em> → <em>tbrbeli</em> → <em>supplier</em>; supplier di luar Top-N digabung menjadi “Lainnya”.
+          </li>
+          <li>
+            <strong>Saldo akun kas &amp; bank</strong> = saldo awal + mutasi debit − mutasi kredit dari
+            <em>jurnal_umum_d</em>. Akun bersaldo ≤ 0 tidak dapat menjadi sumber dana BKK (aturan <em>cekSaldoCukup</em>).
           </li>
           <li>
             Laporan ini dihasilkan otomatis oleh sistem <strong>FinanceOS — Executive Dashboard</strong> dan
@@ -893,10 +940,11 @@ function PrintReport({ kpis, trends, pivotCoa, pareto, suppliers, alerts, year, 
 // ─────────────────────────────────────────────────────────────────
 function PrintChartAppendix({ images }) {
   const charts = [
-    { id: 'cashflow', title: 'Grafik 1 — Arus Kas Bulanan, Net Operating Flow & Running Cash Balance' },
-    { id: 'coa',      title: 'Grafik 2 — Komposisi Pengeluaran Kas per Akun COA' },
+    { id: 'cashflow', title: 'Grafik 1 — Arus Kas Bulanan: Kas Masuk vs Kas Keluar & Net Cash Flow' },
+    { id: 'coa',      title: 'Grafik 2 — Pengeluaran per Kategori Akun (COA)' },
     { id: 'pareto',   title: 'Grafik 3 — Pareto Profitabilitas Produk (Omset vs Laba Kotor)' },
-    { id: 'supplier', title: 'Grafik 4 — Konsentrasi Belanja Supplier/Vendor' },
+    { id: 'supplier', title: 'Grafik 4 — Top Supplier berdasarkan Total Pembayaran (BKK)' },
+    { id: 'kassaldo', title: 'Grafik 5 — Komposisi Saldo per Akun Kas & Bank' },
   ].filter((c) => images && images[c.id]);
 
   if (!charts.length) return null;
@@ -1008,13 +1056,19 @@ function ExecutiveDashboardApp() {
   const pareto = data.pareto || {};
   const suppliers = data.suppliers || {};
   const alerts = data.alerts || [];
+  const kasSaldo = data.kasSaldo || {};
 
-  // 1. Config Chart 1: Cash Flow Trends & Running Balance
+  // 1. Config Chart 1: Arus Kas Bulanan — Bar (Masuk vs Keluar) + Line (Net & Saldo)
   const cashFlowOptions = {
-    chart: { type: 'area', height: 320, toolbar: { show: true } },
-    colors: ['#10b981', '#f43f5e', '#3b82f6', '#8b5cf6'],
+    chart: { type: 'line', height: 320, toolbar: { show: true }, stacked: false },
+    colors: ['#10b981', '#f43f5e', '#2563eb', '#8b5cf6'],
     dataLabels: { enabled: false },
-    stroke: { curve: 'smooth', width: [2.5, 2.5, 2, 2.5], dashArray: [0, 0, 0, 4] },
+    stroke: { curve: 'smooth', width: [0, 0, 3, 2], dashArray: [0, 0, 0, 5] },
+    markers: { size: [0, 0, 4, 0], strokeWidth: 2, hover: { size: 6 } },
+    plotOptions: {
+      bar: { horizontal: false, columnWidth: '60%', borderRadius: 3 },
+    },
+    fill: { opacity: [0.9, 0.9, 1, 1] },
     xaxis: {
       categories: trends.categories || [],
       labels: { style: { colors: '#64748b', fontSize: '11px', fontWeight: 500 } },
@@ -1026,16 +1080,28 @@ function ExecutiveDashboardApp() {
       },
     },
     tooltip: {
+      shared: true,
+      intersect: false,
       y: { formatter: (val) => formatRupiah(val) },
     },
     legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
+    annotations: {
+      yaxis: [
+        {
+          y: 0,
+          strokeDashArray: 3,
+          stroke: '#94a3b8',
+          label: { borderColor: '#94a3b8', style: { color: '#fff', background: '#94a3b8' }, text: 'Rp 0' },
+        },
+      ],
+    },
   };
 
   const cashFlowSeries = [
-    { name: 'Kas Masuk (Penjualan)', data: trends.seriesInflow || [] },
-    { name: 'Kas Keluar (BKK)',      data: trends.seriesOutflow || [] },
-    { name: 'Net Operating Flow',    data: trends.seriesNet || [] },
-    { name: 'Running Cash Balance',  data: trends.seriesCumulative || [] },
+    { name: 'Kas Masuk (Penjualan)',    data: trends.seriesInflow || [],    type: 'column' },
+    { name: 'Kas Keluar (BKK)',         data: trends.seriesOutflow || [],   type: 'column' },
+    { name: 'Net Cash Flow (Selisih)', data: trends.seriesNet || [],       type: 'line' },
+    { name: 'Saldo Kas Kumulatif',     data: trends.seriesCumulative || [], type: 'line' },
   ];
 
   // 2. Config Chart 2: Komposisi Pengeluaran COA (Donut)
@@ -1088,24 +1154,91 @@ function ExecutiveDashboardApp() {
     { name: 'Laba Kotor',     data: pareto.profit || [] },
   ];
 
-  // 4. Config Chart 4: Supplier Concentration (Horizontal Bar)
+  // 4. Config Chart 4: Top Supplier berdasarkan Total Pembayaran (Horizontal Bar)
+  //    Bar "Lainnya" diberi warna abu-abu agar terbedakan dari Top-N.
+  const supplierLabels = suppliers.labels || [];
+  const supplierShares = suppliers.shares || [];
+  const supplierColors = supplierLabels.map((l) => (String(l).startsWith('Lainnya') ? '#94a3b8' : '#f59e0b'));
   const supplierOptions = {
     chart: { type: 'bar', height: 320, toolbar: { show: false } },
-    colors: ['#f59e0b'],
-    plotOptions: { bar: { horizontal: true, barHeight: '55%', borderRadius: 4 } },
+    colors: supplierColors.length ? supplierColors : ['#f59e0b'],
+    plotOptions: {
+      bar: { horizontal: true, distributed: true, barHeight: '60%', borderRadius: 4, dataLabels: { position: 'top' } },
+    },
+    legend: { show: false },
+    dataLabels: {
+      enabled: true,
+      textAnchor: 'start',
+      offsetX: 6,
+      style: { fontSize: '10px', fontWeight: 700, colors: ['#334155'] },
+      formatter: (val, opt) => `${(supplierShares[opt.dataPointIndex] ?? 0).toFixed(1)}%`,
+    },
     xaxis: {
+      categories: supplierLabels,
       labels: {
         formatter: (val) => 'Rp ' + (val / 1000000).toFixed(1) + 'Jt',
         style: { colors: '#64748b', fontSize: '11px' },
       },
     },
-    yaxis: { labels: { style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
-    tooltip: { y: { formatter: (val) => formatRupiah(val) } },
+    yaxis: { labels: { maxWidth: 180, style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
+    grid: { padding: { right: 30 } },
+    tooltip: {
+      y: {
+        formatter: (val, opt) =>
+          `${formatRupiah(val)} (${(supplierShares[opt.dataPointIndex] ?? 0).toFixed(2)}%)`,
+      },
+    },
   };
 
   const supplierSeries = [
-    { name: 'Total Belanja BKK', data: suppliers.series || [] },
+    { name: 'Total Pembayaran (BKK)', data: suppliers.series || [] },
   ];
+
+  // 5. Config Chart 5: Komposisi Saldo per Akun Kas & Bank (Horizontal Bar)
+  //    Saldo <= 0 diberi warna merah: akun tsb tidak bisa menjadi sumber
+  //    dana BKK karena business rule cekSaldoCukup (SaldoService).
+  const kasRows    = kasSaldo.raw || [];
+  const kasLabels  = kasRows.map((r) => `${r.kode_coa} - ${r.nama_coa}`);
+  const kasValues  = kasRows.map((r) => Number(r.saldo_akhir) || 0);
+  const kasColors  = kasValues.map((v) => (v > 0 ? '#0ea5e9' : '#f43f5e'));
+  const kasTotalPositif = kasValues.reduce((a, v) => a + (v > 0 ? v : 0), 0);
+  const kasPerluTopUp   = kasRows.filter((r) => Number(r.saldo_akhir) <= 0).length;
+  const kasSaldoOptions = {
+    chart: { type: 'bar', height: 320, toolbar: { show: false } },
+    colors: kasColors.length ? kasColors : ['#0ea5e9'],
+    plotOptions: { bar: { horizontal: true, distributed: true, barHeight: '60%', borderRadius: 4 } },
+    legend: { show: false },
+    dataLabels: { enabled: false },
+    xaxis: {
+      categories: kasLabels,
+      labels: {
+        formatter: (val) => 'Rp ' + (val / 1000000).toFixed(1) + 'Jt',
+        style: { colors: '#64748b', fontSize: '11px' },
+      },
+    },
+    yaxis: { labels: { maxWidth: 180, style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
+    annotations: { xaxis: [{ x: 0, strokeDashArray: 3, borderColor: '#94a3b8' }] },
+    tooltip: {
+      y: {
+        formatter: (val) => {
+          const pct = kasTotalPositif > 0 && val > 0 ? ` (${((val / kasTotalPositif) * 100).toFixed(1)}%)` : '';
+          return formatRupiah(val) + pct + (val <= 0 ? ' — Perlu Topping Up' : '');
+        },
+      },
+    },
+  };
+
+  const kasSaldoSeries = [
+    { name: 'Saldo Akhir', data: kasValues },
+  ];
+
+  // Ringkasan kesehatan kas tahunan untuk header Grafik 1
+  const cfSummary = trends.summary || {};
+
+  // Pilihan tahun: tahun berjalan s.d. 3 tahun ke belakang
+  const nowYear = new Date().getFullYear();
+  const yearOptions = Array.from(new Set([nowYear, nowYear - 1, nowYear - 2, nowYear - 3, Number(selectedYear)]))
+    .sort((a, b) => b - a);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -1180,8 +1313,9 @@ function ExecutiveDashboardApp() {
                   }}
                   className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
                 >
-                  <option value={2026}>Tahun 2026</option>
-                  <option value={2025}>Tahun 2025</option>
+                  {yearOptions.map((y) => (
+                    <option key={y} value={y}>Tahun {y}</option>
+                  ))}
                 </select>
               </div>
 
@@ -1197,10 +1331,9 @@ function ExecutiveDashboardApp() {
                   className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
                 >
                   <option value="">Semua Bulan (Tahunan)</option>
-                  <option value="7">Juli</option>
-                  <option value="8">Agustus</option>
-                  <option value="9">September</option>
-                  <option value="10">Oktober</option>
+                  {['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].map((nm, i) => (
+                    <option key={i + 1} value={String(i + 1)}>{nm}</option>
+                  ))}
                 </select>
               </div>
 
@@ -1253,6 +1386,7 @@ function ExecutiveDashboardApp() {
             pivotCoa={pivotCoa}
             pareto={pareto}
             suppliers={suppliers}
+            kasSaldo={kasSaldo}
             alerts={alerts}
             year={selectedYear}
             month={selectedMonth}
@@ -1265,26 +1399,40 @@ function ExecutiveDashboardApp() {
           <div className="no-print grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Chart 1: Arus Kas Multi-Period (Span 2 Cols) */}
             <div className="print-avoid-break lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-slate-800 text-sm">Tren Arus Kas & Saldo Kumulatif (Running Balance)</h3>
+                    <h3 className="font-bold text-slate-800 text-sm">Arus Kas Bulanan: Kas Masuk vs Kas Keluar ({selectedYear})</h3>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                      MySQL 8 Window Function LAG & SUM() OVER()
+                      Net Cash Flow
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Membandingkan Arus Masuk, Arus Keluar, dan Pertumbuhan Arus Kas Kumulatif.
+                    Batang hijau/merah = kas masuk/keluar; garis biru = selisih (net). Garis di bawah Rp 0 berarti bulan defisit.
                   </p>
                 </div>
+                {cfSummary.bulan_aktif > 0 && (
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                      (cfSummary.total_net || 0) >= 0
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                      Net {selectedYear}: {formatRupiah(cfSummary.total_net)}
+                    </span>
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
+                      {cfSummary.bulan_surplus} bln surplus · {cfSummary.bulan_defisit} bln defisit
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {trends.categories?.length > 0 ? (
-                <ApexChartWrapper chartId="cashflow" options={cashFlowOptions} series={cashFlowSeries} type="area" height={310} />
+              {cfSummary.bulan_aktif > 0 ? (
+                <ApexChartWrapper chartId="cashflow" options={cashFlowOptions} series={cashFlowSeries} type="line" height={310} />
               ) : (
                 <div className="h-64 flex flex-col items-center justify-center text-slate-400 text-xs">
                   <Icon name="Inbox" size={32} className="mb-2 text-slate-300" />
-                  Belum ada transaksi kas pada filter periode ini.
+                  Belum ada transaksi kas pada tahun {selectedYear}.
                 </div>
               )}
             </div>
@@ -1293,12 +1441,12 @@ function ExecutiveDashboardApp() {
             <div className="print-avoid-break bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
               <div className="mb-3">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-800 text-sm">Distribusi Kas Keluar per COA</h3>
+                  <h3 className="font-bold text-slate-800 text-sm">Pengeluaran per Kategori Akun (COA)</h3>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                    Pivot Matrix
+                    {selectedYear}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">Proporsi pengeluaran per pos akun biaya</p>
+                <p className="text-xs text-slate-400 mt-0.5">Uang paling banyak keluar untuk apa (dari akun debit BKK)</p>
               </div>
 
               <div className="flex-1 flex items-center justify-center">
@@ -1344,23 +1492,74 @@ function ExecutiveDashboardApp() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-slate-800 text-sm">Konsentrasi Belanja Vendor/Supplier Terbesar</h3>
+                    <h3 className="font-bold text-slate-800 text-sm">Top {suppliers.limit || 8} Supplier berdasarkan Total Pembayaran</h3>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200">
-                      Share Ratio %
+                      {selectedYear}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">Pangsa alokasi kas keluar kepada supplier utama</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Pembayaran riil via BKK · {suppliers.total_supplier || 0} supplier dibayar · total {formatRupiah(suppliers.total_all)}
+                  </p>
                 </div>
               </div>
 
-              {suppliers.labels?.length > 0 ? (
-                <ApexChartWrapper chartId="supplier" options={supplierOptions} series={supplierSeries} type="bar" height={290} />
+              {supplierLabels.length > 0 ? (
+                <ApexChartWrapper
+                  chartId="supplier"
+                  options={supplierOptions}
+                  series={supplierSeries}
+                  type="bar"
+                  height={Math.max(220, supplierLabels.length * 38 + 60)}
+                />
               ) : (
                 <div className="h-60 flex flex-col items-center justify-center text-slate-400 text-xs">
-                  Belum ada transaksi pembelian ke supplier.
+                  Belum ada pembayaran ke supplier pada tahun {selectedYear}.
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Row 3b: Komposisi Saldo per Akun Kas & Bank */}
+          <div className="no-print bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-slate-800 text-sm">Komposisi Saldo per Akun Kas & Bank</h3>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200">
+                    Saldo Terkini
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Saldo akhir = saldo awal + debit − kredit (jurnal umum). Akun bersaldo ≤ 0 (merah) tidak bisa dipakai sebagai sumber dana BKK.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200">
+                  Total: {formatRupiah(kasSaldo.total_saldo)}
+                </span>
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border ${
+                  kasPerluTopUp > 0
+                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                }`}>
+                  {kasPerluTopUp > 0 ? `${kasPerluTopUp} akun perlu topping up` : 'Semua akun siap digunakan'}
+                </span>
+              </div>
+            </div>
+
+            {kasRows.length > 0 ? (
+              <ApexChartWrapper
+                chartId="kassaldo"
+                options={kasSaldoOptions}
+                series={kasSaldoSeries}
+                type="bar"
+                height={Math.max(220, kasRows.length * 32 + 60)}
+              />
+            ) : (
+              <div className="h-40 flex flex-col items-center justify-center text-slate-400 text-xs">
+                Belum ada akun kas/bank aktif di COA.
+              </div>
+            )}
           </div>
 
           {/* Row 4: Actionable High-Value Outflow Alerts */}

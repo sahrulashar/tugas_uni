@@ -22,6 +22,9 @@ class DashboardAnalyticsService
 {
     protected BaseConnection $db;
 
+    /** Maksimum irisan pada donut komposisi COA (sisanya digabung "Lainnya") */
+    protected const DONUT_MAX_SLICE = 8;
+
     public function __construct(?BaseConnection $db = null)
     {
         $this->db = $db ?? Database::connect('default');
@@ -196,13 +199,36 @@ class DashboardAnalyticsService
             $seriesCumulative[] = (float) $r['running_cash_balance'];
         }
 
+        // Ringkasan kesehatan kas (hanya bulan yang memiliki transaksi)
+        $bulanSurplus = 0;
+        $bulanDefisit = 0;
+        foreach ($rows as $r) {
+            if ((float) $r['net_cashflow'] >= 0) {
+                $bulanSurplus++;
+            } else {
+                $bulanDefisit++;
+            }
+        }
+
+        $totalMasuk  = (float) array_sum(array_column($rows, 'total_masuk'));
+        $totalKeluar = (float) array_sum(array_column($rows, 'total_keluar'));
+
         return [
             'raw'              => $rows,
+            'year'             => $year,
             'categories'       => $categories,
             'seriesInflow'     => $seriesInflow,
             'seriesOutflow'    => $seriesOutflow,
             'seriesNet'        => $seriesNet,
             'seriesCumulative' => $seriesCumulative,
+            'summary'          => [
+                'total_masuk'   => $totalMasuk,
+                'total_keluar'  => $totalKeluar,
+                'total_net'     => $totalMasuk - $totalKeluar,
+                'bulan_aktif'   => count($rows),
+                'bulan_surplus' => $bulanSurplus,
+                'bulan_defisit' => $bulanDefisit,
+            ],
             'sql'              => trim($sql),
         ];
     }
@@ -241,22 +267,34 @@ class DashboardAnalyticsService
         $rows = $this->db->query($sql, [$targetYear])->getResultArray();
 
         // Data untuk Donut Chart: Komposisi Biaya per Akun / Tipe
+        // Donut dengan irisan terlalu banyak sulit dibaca, sehingga akun
+        // di luar Top-N digabung menjadi satu irisan "Lainnya".
         $donutLabels = [];
         $donutSeries = [];
         $totalAll    = array_sum(array_column($rows, 'total_tahunan'));
 
-        foreach ($rows as $r) {
+        $topDonut = array_slice($rows, 0, self::DONUT_MAX_SLICE);
+        $sisaRows = array_slice($rows, self::DONUT_MAX_SLICE);
+
+        foreach ($topDonut as $r) {
             $donutLabels[] = $r['kode_coa'] . ' - ' . $r['nama_coa'];
             $donutSeries[] = (float) $r['total_tahunan'];
         }
 
+        if (!empty($sisaRows)) {
+            $donutLabels[] = 'Lainnya (' . count($sisaRows) . ' akun)';
+            $donutSeries[] = (float) array_sum(array_column($sisaRows, 'total_tahunan'));
+        }
+
         return [
-            'raw'         => $rows,
-            'year'        => $targetYear,
-            'total_all'   => (float) $totalAll,
-            'donutLabels' => $donutLabels,
-            'donutSeries' => $donutSeries,
-            'sql'         => trim($sql),
+            'raw'          => $rows,
+            'year'         => $targetYear,
+            'total_all'    => (float) $totalAll,
+            'donutLabels'  => $donutLabels,
+            'donutSeries'  => $donutSeries,
+            'jumlah_akun'  => count($rows),
+            'ada_lainnya'  => !empty($sisaRows),
+            'sql'          => trim($sql),
         ];
     }
 
@@ -330,21 +368,32 @@ class DashboardAnalyticsService
     // ─────────────────────────────────────────────────────────────────
 
     /**
-     * Query 4: Analisis Konsentrasi Belanja Vendor/Supplier
+     * Query 4: Analisis Konsentrasi Pembayaran ke Vendor/Supplier
+     *
+     * Sumber data = PEMBAYARAN RIIL (BKK), bukan rencana beli:
+     *   tbbkk_d -> tbrbeli_d (id_rbeli_d) -> tbrbeli (id_supp) -> supplier
+     * Hanya Top-N supplier yang ditampilkan; sisanya digabung "Lainnya"
+     * agar grafik bar horizontal tetap mudah dibaca.
      */
-    public function getSupplierConcentration_l1H(int $limit = 5): array
+    public function getSupplierConcentration_l1H(int $limit = 8, ?int $year = null): array
     {
+        $limit      = max(1, $limit);
+        $yearFilter = $year ? 'AND YEAR(b.tgl) = ' . (int) $year : '';
+
         $sql = "
-            WITH SupplierExpense AS (
+            WITH SupplierPayment AS (
                 SELECT 
                     s.id_supplier,
                     s.kode_supplier,
                     s.nama_supplier,
-                    COUNT(DISTINCT rb.id) AS total_transaksi,
-                    COALESCE(SUM(rbd.nilai), 0) AS total_pengeluaran
-                FROM supplier s
-                JOIN tbrbeli rb ON rb.id_supp = s.id_supplier AND rb.is_deleted = 0
-                JOIN tbrbeli_d rbd ON rbd.id_rbeli = rb.id
+                    COUNT(DISTINCT b.id) AS total_transaksi,
+                    COALESCE(SUM(d.nilai), 0) AS total_pengeluaran
+                FROM tbbkk_d d
+                JOIN tbbkk b      ON b.id = d.id_bkk AND b.is_deleted = 0
+                JOIN tbrbeli_d rd ON rd.id = d.id_rbeli_d
+                JOIN tbrbeli rb   ON rb.id = rd.id_rbeli
+                JOIN supplier s   ON s.id_supplier = rb.id_supp
+                WHERE 1 = 1 {$yearFilter}
                 GROUP BY s.id_supplier, s.kode_supplier, s.nama_supplier
             )
             SELECT 
@@ -352,37 +401,123 @@ class DashboardAnalyticsService
                 nama_supplier,
                 total_transaksi,
                 total_pengeluaran,
-                -- Window Function 1: Peringkat Belanja Supplier
+                -- Window Function 1: Peringkat Pembayaran Supplier
                 DENSE_RANK() OVER (ORDER BY total_pengeluaran DESC) AS rank_supplier,
-                -- Window Function 2: Pangsa Belanja terhadap Total Belanja Perusahaan (%)
+                -- Window Function 2: Pangsa Pembayaran terhadap Total (%)
                 ROUND(
                     total_pengeluaran / NULLIF(SUM(total_pengeluaran) OVER (), 0) * 100, 2
                 ) AS share_pengeluaran_pct
-            FROM SupplierExpense
-            ORDER BY rank_supplier ASC
-            LIMIT {$limit}
+            FROM SupplierPayment
+            ORDER BY total_pengeluaran DESC, nama_supplier ASC
+        ";
+
+        $allRows = $this->db->query($sql)->getResultArray();
+
+        $totalAll      = (float) array_sum(array_column($allRows, 'total_pengeluaran'));
+        $totalSupplier = count($allRows);
+        $rows          = array_slice($allRows, 0, $limit);
+        $sisaRows      = array_slice($allRows, $limit);
+
+        $labels = [];
+        $series = [];
+        $shares = [];
+
+        foreach ($rows as $r) {
+            $labels[] = $r['nama_supplier'];
+            $series[] = (float) $r['total_pengeluaran'];
+            $shares[] = (float) $r['share_pengeluaran_pct'];
+        }
+
+        // Sisa supplier di luar Top-N digabung menjadi satu bar "Lainnya"
+        $nilaiLainnya  = (float) array_sum(array_column($sisaRows, 'total_pengeluaran'));
+        $jumlahLainnya = count($sisaRows);
+        $shareLainnya  = $totalAll > 0 ? round($nilaiLainnya / $totalAll * 100, 2) : 0.0;
+
+        if ($jumlahLainnya > 0) {
+            $labels[] = 'Lainnya (' . $jumlahLainnya . ' supplier)';
+            $series[] = $nilaiLainnya;
+            $shares[] = $shareLainnya;
+        }
+
+        return [
+            'raw'               => $rows,
+            'year'              => $year,
+            'limit'             => $limit,
+            'labels'            => $labels,
+            'series'            => $series,
+            'shares'            => $shares,
+            'total_all'         => $totalAll,
+            'total_supplier'    => $totalSupplier,
+            'jumlah_lainnya'    => $jumlahLainnya,
+            'nilai_lainnya'     => $nilaiLainnya,
+            'share_lainnya_pct' => $shareLainnya,
+            'sql'               => trim($sql),
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  6. KOMPOSISI SALDO PER AKUN KAS (KAS & BANK)
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Komposisi saldo kas per akun (Kas Tangan, Kas Kecil, Kas BCA, dll).
+     *
+     * Saldo akhir dihitung mengikuti aturan bisnis SaldoService:
+     *   Saldo normal Debit : saldo_awal + mutasi_debit - mutasi_kredit
+     * Akun dengan saldo <= 0 berstatus "Perlu Topping Up" karena tidak
+     * akan dapat dipakai sebagai sumber dana BKK (cekSaldoCukup).
+     */
+    public function getCashAccountBalanceComposition_l1H(): array
+    {
+        $sql = "
+            SELECT
+                c.kode_coa,
+                c.nama_coa,
+                c.tipe,
+                COALESCE(c.saldo_awal, 0) AS saldo_awal,
+                COALESCE(SUM(j.debit), 0) AS mutasi_debit,
+                COALESCE(SUM(j.kredit), 0) AS mutasi_kredit,
+                -- Saldo akhir akun kas (saldo normal Debit)
+                COALESCE(c.saldo_awal, 0) + COALESCE(SUM(j.debit), 0) - COALESCE(SUM(j.kredit), 0) AS saldo_akhir
+            FROM coa c
+            LEFT JOIN jurnal_umum_d j ON j.kode_coa = c.kode_coa COLLATE utf8mb4_general_ci
+            WHERE c.is_off = 0
+              AND c.is_header = 'D'
+              AND c.saldo_normal = 'Debit'
+              AND (c.tipe = 'kasbank' OR LOWER(c.nama_coa) LIKE 'kas%')
+            GROUP BY c.id, c.kode_coa, c.nama_coa, c.tipe, c.saldo_awal
+            ORDER BY saldo_akhir DESC, c.kode_coa ASC
         ";
 
         $rows = $this->db->query($sql)->getResultArray();
 
         $labels = [];
         $series = [];
+        $total  = 0.0;
 
-        foreach ($rows as $r) {
-            $labels[] = $r['nama_supplier'];
-            $series[] = (float) $r['total_pengeluaran'];
+        foreach ($rows as &$r) {
+            $saldo = round((float) $r['saldo_akhir'], 2);
+            $r['saldo_akhir'] = $saldo;
+            $r['status'] = $saldo <= 0 ? 'Perlu Topping Up' : 'Siap Digunakan';
+
+            $labels[] = $r['kode_coa'] . ' - ' . $r['nama_coa'];
+            $series[] = $saldo > 0 ? $saldo : 0.0;
+            $total   += $saldo;
         }
+        unset($r);
 
         return [
-            'raw'    => $rows,
-            'labels' => $labels,
-            'series' => $series,
-            'sql'    => trim($sql),
+            'raw'        => $rows,
+            'labels'     => $labels,
+            'series'     => $series,
+            'total_saldo'=> round($total, 2),
+            'jumlah_akun'=> count($rows),
+            'sql'        => trim($sql),
         ];
     }
 
     // ─────────────────────────────────────────────────────────────────
-    //  6. ACTIONABLE AUDIT: PENGELUARAN BERNILAI TINGGI (THRESHOLD ALERTS)
+    //  7. ACTIONABLE AUDIT: PENGELUARAN BERNILAI TINGGI (THRESHOLD ALERTS)
     // ─────────────────────────────────────────────────────────────────
 
     /**
@@ -413,7 +548,7 @@ class DashboardAnalyticsService
     }
 
     // ─────────────────────────────────────────────────────────────────
-    //  7. DEMO DATASET INJECTOR (MULTI-MONTH EXECUTIVE SIMULATOR)
+    //  8. DEMO DATASET INJECTOR (MULTI-MONTH EXECUTIVE SIMULATOR)
     // ─────────────────────────────────────────────────────────────────
 
     /**

@@ -125,6 +125,26 @@ final class DashboardAnalyticsTest extends CIUnitTestCase
         $this->assertStringContainsString('SUM(total_pengeluaran) OVER ()', $suppliers['sql']);
     }
 
+    public function testCashAccountBalanceComposition(): void
+    {
+        $kas = $this->service->getCashAccountBalanceComposition_l1H();
+
+        $this->assertIsArray($kas);
+        $this->assertArrayHasKey('raw', $kas);
+        $this->assertArrayHasKey('labels', $kas);
+        $this->assertArrayHasKey('series', $kas);
+        $this->assertArrayHasKey('total_saldo', $kas);
+        $this->assertArrayHasKey('jumlah_akun', $kas);
+
+        if (!empty($kas['raw'])) {
+            $first = $kas['raw'][0];
+            $this->assertArrayHasKey('kode_coa', $first);
+            $this->assertArrayHasKey('nama_coa', $first);
+            $this->assertArrayHasKey('saldo_akhir', $first);
+            $this->assertArrayHasKey('status', $first);
+        }
+    }
+
     public function testDemoDatasetInjectionAndCleanReset(): void
     {
         // 1. Suntikkan demo dataset
