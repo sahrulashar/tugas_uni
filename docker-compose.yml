@@ -14,6 +14,7 @@ services:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
       - app
+      - phpmyadmin
     networks:
       - erp_network
 
